@@ -25,33 +25,52 @@ This is also a pure C# implementation.
 
 ## Usage
 
-    TBD
+### Example
 
-## Methods
+	var glob = new Glob("**/bin");
+	var match = glob.IsMatch(@"C:\files\bin\");
 
-### glob
+### Static Usage
 
-Search through the filesystem asynchronously.
+    var match = Glob.IsMatch(@"C:\files\bin\", "**/bin");	
 
-#### Params
+## Extension Methods
 
-* pattern: String
-* flags: Optional - currently is not used but its here to work as a drop-in replacement
-* cb: function
+### DirectoryInfo.GlobDirectories
 
-#### Example
-
-    TBD
-
-### fnmatch
-
-Test if a string matches a pattern. (no i/o performed)
+Enumerate through all matching directories recursively.
 
 #### Params
 
 * pattern: String
-* str: String to test
 
 #### Example
 
-    TBD
+    var root = new DirectoryInfo("C:\");
+	var allBinFolders = root.GlobDirectories("**/bin");
+
+### DirectoryInfo.GlobFiles
+
+Enumerate through all matching files recursively.
+
+#### Params
+
+* pattern: String
+
+#### Example
+
+    var root = new DirectoryInfo("C:\");
+	var allDllFiles = root.GlobFiles("**/*.dll");
+
+### DirectoryInfo.GlobFileSystemInfos
+
+Enumerate through all matching files and folders recursively.
+
+#### Params
+
+* pattern: String
+
+#### Example
+
+    var root = new DirectoryInfo("C:\");
+	var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");

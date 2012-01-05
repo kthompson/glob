@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Glob
 {
-    public class Token
+    class Token
     {
         public Token(TokenKind kind, string spelling)
         {

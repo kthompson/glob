@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Glob.AST;
 
 namespace Glob
 {
-    public class Parser
+    class Parser
     {
         private Scanner _scanner;
         private Token _currentToken;
@@ -38,11 +37,11 @@ namespace Glob
             this._currentToken = this._scanner.Scan();
         }
 
-        private Identifier ParseIdentifier()
+        private GlobNode ParseIdentifier()
         {
             if (this._currentToken.Kind == TokenKind.Identifier)
             {
-                var identifier = new Identifier(this._currentToken.Spelling);
+                var identifier = new GlobNode(GlobNodeType.Identifier, this._currentToken.Spelling);
                 this.AcceptIt();
                 return identifier;
             }
@@ -50,9 +49,9 @@ namespace Glob
             throw new Exception("Unable to parse Identifier");
         }
 
-        private LiteralSet ParseLiteralSet()
+        private GlobNode ParseLiteralSet()
         {
-            var items = new List<Identifier>();
+            var items = new List<GlobNode>();
             this.Accept(TokenKind.LiteralSetStart);
             items.Add(this.ParseIdentifier());
 
@@ -62,24 +61,30 @@ namespace Glob
                 items.Add(this.ParseIdentifier());
             }
             this.Accept(TokenKind.LiteralSetEnd);
-            return new LiteralSet(items);
+            return new GlobNode(GlobNodeType.LiteralSet, items);
         }
 
-        private CharacterSet ParseCharacterSet()
+        private GlobNode ParseCharacterSet()
         {
             this.Accept(TokenKind.CharacterSetStart);
             var characterSet = this.ParseIdentifier();
             this.Accept(TokenKind.CharacterSetEnd);
-            return new CharacterSet(characterSet);
+            return new GlobNode(GlobNodeType.CharacterSet, characterSet);
         }
 
-        private Wildcard ParseWildcard(TokenKind kind)
+        private GlobNode ParseWildcard()
         {
-            this.Accept(kind);
-            return new Wildcard(kind);
+            this.Accept(TokenKind.Wildcard);
+            return new GlobNode(GlobNodeType.WildcardString);
         }
 
-        private SubSegment ParseSubSegment()
+        private GlobNode ParseCharacterWildcard()
+        {
+            this.Accept(TokenKind.CharacterWildcard);
+            return new GlobNode(GlobNodeType.CharacterWildcard);
+        }
+
+        private GlobNode ParseSubSegment()
         {
             switch (this._currentToken.Kind)
             {
@@ -90,22 +95,28 @@ namespace Glob
                 case TokenKind.LiteralSetStart:
                     return this.ParseLiteralSet();
                 case TokenKind.CharacterWildcard:
+                    return this.ParseCharacterWildcard();
                 case TokenKind.Wildcard:
-                    return this.ParseWildcard(this._currentToken.Kind);
+                    return this.ParseWildcard();
                 default:
                     throw new Exception("Unable to parse PathSubSegment");
             }
         }
 
-        private Segment ParseSegment()
+        private GlobNode ParseSegment()
         {
             if (this._currentToken.Kind == TokenKind.DirectoryWildcard)
             {
                 this.AcceptIt();
-                return new WildcardSegment();
+                return new GlobNode(GlobNodeType.DirectoryWildcard);
             }
 
-            var items = new List<SubSegment>();
+            return ParsePathSegment();
+        }
+
+        private GlobNode ParsePathSegment()
+        {
+            var items = new List<GlobNode>();
             while (true)
             {
                 switch (this._currentToken.Kind)
@@ -123,13 +134,13 @@ namespace Glob
                 break;
             }
 
-            return new PathSegment(items);
+            return new GlobNode(GlobNodeType.PathSegment, items);
         }
 
-        private Root ParseRoot()
+        private GlobNode ParseRoot()
         {
             if (this._currentToken.Kind == TokenKind.PathSeperator)
-                return new Root(); //dont eat it so we can leave it for the segments
+                return new GlobNode(GlobNodeType.Root); //dont eat it so we can leave it for the segments
 
 
             if (this._currentToken.Kind == TokenKind.Identifier &&
@@ -138,16 +149,15 @@ namespace Glob
             {
                 var ident = this.ParseIdentifier();
                 this.Accept(TokenKind.WindowsRoot);
-                return new Root(ident);
-
+                return new GlobNode(GlobNodeType.Root, ident);
             }
 
-            return new Root(Directory.GetCurrentDirectory());
+            return new GlobNode(GlobNodeType.Root, Directory.GetCurrentDirectory());
         }
 
-        private ParsedPath ParsePath()
+        private GlobNode ParseTree()
         {
-            var items = new List<Segment>();
+            var items = new List<GlobNode>();
 
             items.Add(this.ParseRoot());
 
@@ -157,16 +167,16 @@ namespace Glob
                 items.Add(this.ParseSegment());
             }
 
-            return new ParsedPath(items);
+            return new GlobNode(GlobNodeType.Tree, items);
         }
 
-        public ParsedPath Parse(string text = null)
+        public GlobNode Parse(string text = null)
         {
             if (text != null)
                 this._scanner = new Scanner(text);
 
             this.AcceptIt();
-            var path = this.ParsePath();
+            var path = this.ParseTree();
             if (this._currentToken.Kind != TokenKind.EOT)
             {
                 throw new Exception("Expected EOT");

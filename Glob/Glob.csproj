@@ -40,15 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AST\CharacterSet.cs" />
-    <Compile Include="AST\Identifier.cs" />
-    <Compile Include="AST\Node.cs" />
-    <Compile Include="AST\ParsedPath.cs" />
-    <Compile Include="AST\PathSegment.cs" />
-    <Compile Include="AST\Root.cs" />
-    <Compile Include="AST\SubSegment.cs" />
-    <Compile Include="AST\Wildcard.cs" />
-    <Compile Include="AST\WildcardSegment.cs" />
+    <Compile Include="GlobExtensions.cs" />
+    <Compile Include="GlobNode.cs" />
+    <Compile Include="Glob.cs" />
+    <Compile Include="GlobOptions.cs" />
+    <Compile Include="GlobRunner.cs" />
+    <Compile Include="GlobToRegexVisitor.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Scanner.cs" />
     <Compile Include="Token.cs" />

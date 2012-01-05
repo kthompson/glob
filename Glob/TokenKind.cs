@@ -1,6 +1,6 @@
 ﻿namespace Glob
 {
-    public enum TokenKind
+    enum TokenKind
     {
         Wildcard = 0,               // *
         CharacterWildcard = 1,      // ?
