@@ -8,7 +8,7 @@ namespace Glob.Tests
 {
     public class GlobTests
     {
-        [Fact(Skip = "Currently failing")]
+        [Fact]
         public void CanParseSimpleFilename()
         {
             var glob = new Glob("*.txt");
@@ -23,6 +23,14 @@ namespace Glob.Tests
             var glob = new Glob("/some/dir/folder/foo.*");
             Assert.True(glob.IsMatch("/some/dir/folder/foo.txt"));
             Assert.True(glob.IsMatch("/some/dir/folder/foo.csv"));
+        }
+
+        [Fact]
+        public void CanMatchSingleFile()
+        {
+            var glob = new Glob("*file.txt");
+            Assert.True(glob.IsMatch("bigfile.txt"));
+            Assert.True(glob.IsMatch("smallfile.txt"));
         }
     }
 }

@@ -14,7 +14,15 @@ namespace Glob
         public Parser(string pattern = null)
         {
             if (!string.IsNullOrEmpty(pattern))
-                this._scanner = new Scanner(pattern);
+            {
+                InitializeScanner(pattern);
+            }
+        }
+
+        private void InitializeScanner(string pattern)
+        {
+            this._scanner = new Scanner(pattern);
+            this._currentToken = _scanner.Scan();
         }
 
         private void Accept(TokenKind expectedKind)
@@ -143,13 +151,11 @@ namespace Glob
                 return new GlobNode(GlobNodeType.Root); //dont eat it so we can leave it for the segments
 
 
-            if (this._currentToken.Kind == TokenKind.Identifier &&
-               this._currentToken.Spelling.Length == 1 &&
-               this._scanner.Peek().Kind == TokenKind.WindowsRoot)
+            if (this._currentToken.Kind == TokenKind.WindowsRoot)
             {
-                var ident = this.ParseIdentifier();
+                var root = new GlobNode(GlobNodeType.Root, this._currentToken.Spelling);
                 this.Accept(TokenKind.WindowsRoot);
-                return new GlobNode(GlobNodeType.Root, ident);
+                return root;
             }
 
             return new GlobNode(GlobNodeType.Root, "");
@@ -159,7 +165,8 @@ namespace Glob
         {
             var items = new List<GlobNode>();
 
-            items.Add(this.ParseRoot());
+            if (this._currentToken.Kind == TokenKind.PathSeperator || this._currentToken.Kind == TokenKind.WindowsRoot)
+                items.Add(this.ParseRoot());
 
             while (this._currentToken.Kind == TokenKind.PathSeperator)
             {
@@ -167,27 +174,35 @@ namespace Glob
                 items.Add(this.ParseSegment());
             }
 
+            if (_currentToken.Kind != TokenKind.EOT)
+                items.Add(this.ParseSegment());
+            
             return new GlobNode(GlobNodeType.Tree, items);
         }
 
         public GlobNode Parse(string text = null)
         {
             if (text != null)
-                this._scanner = new Scanner(text);
+                InitializeScanner(text);
 
-            //switch (this._scanner.Peek().Kind)
-            //{
-            //    case TokenKind.WindowsRoot:
-            //    case TokenKind.PathSeperator:
+            GlobNode path;
 
-            //}
-            this.AcceptIt();
-            var path = this.ParseTree();
-            if (this._currentToken.Kind != TokenKind.EOT)
+            switch (this._currentToken.Kind)
             {
-                throw new Exception("Expected EOT, got " + this._currentToken.Kind);
+                case TokenKind.WindowsRoot:
+                case TokenKind.PathSeperator:
+                case TokenKind.Identifier:
+                case TokenKind.CharacterSetStart:
+                case TokenKind.LiteralSetStart:
+                case TokenKind.CharacterWildcard:
+                case TokenKind.Wildcard:
+                    path =  this.ParseTree();
+                    break;
+                default:
+                    throw new InvalidOperationException("Expected Tree, found: " + _currentToken.Kind);
             }
 
+            this.Accept(TokenKind.EOT);
             return path;
         }
     }
