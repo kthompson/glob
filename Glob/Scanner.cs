@@ -50,6 +50,15 @@ namespace Glob
                 this._currentCharacter = this._source[this._sourceIndex];
         }
 
+        private char? PeekChar()
+        {
+            var sourceIndex = this._sourceIndex + 1;
+            if (sourceIndex >= this._source.Length)
+                return null;
+            else
+                return this._source[sourceIndex];
+        }
+
         public Token Peek()
         {
             var index = this._sourceIndex;
@@ -69,6 +78,16 @@ namespace Glob
 
         private TokenKind ScanToken()
         {
+            if(this._currentCharacter == null)
+                return TokenKind.EOT;
+
+            if (char.IsLetter(this._currentCharacter.Value) && this.PeekChar() == ':')
+            {
+                TakeIt(); // letter
+                TakeIt(); // :
+                return TokenKind.WindowsRoot;
+            }
+
             if (IsAlphaNumeric(this._currentCharacter))
             {
                 while (IsAlphaNumeric(this._currentCharacter))
@@ -120,13 +139,6 @@ namespace Glob
                     this.TakeIt();
                     return TokenKind.PathSeperator;
 
-                case ':':
-                    this.TakeIt();
-                    return TokenKind.WindowsRoot;
-
-                case null:
-                    return TokenKind.EOT;
-
                 default:
                     throw new Exception("Unable to scan for next token. Stuck on '" + this._currentCharacter + "'");
             }
@@ -134,7 +146,7 @@ namespace Glob
 
         private static bool IsAlphaNumeric(char? c)
         {
-            return c != null && char.IsLetterOrDigit(c.Value);
+            return c != null && (char.IsLetterOrDigit(c.Value) || c == '.');
         }
     }
 }

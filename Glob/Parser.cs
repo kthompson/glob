@@ -152,7 +152,7 @@ namespace Glob
                 return new GlobNode(GlobNodeType.Root, ident);
             }
 
-            return new GlobNode(GlobNodeType.Root, Directory.GetCurrentDirectory());
+            return new GlobNode(GlobNodeType.Root, "");
         }
 
         private GlobNode ParseTree()
@@ -175,11 +175,17 @@ namespace Glob
             if (text != null)
                 this._scanner = new Scanner(text);
 
+            //switch (this._scanner.Peek().Kind)
+            //{
+            //    case TokenKind.WindowsRoot:
+            //    case TokenKind.PathSeperator:
+
+            //}
             this.AcceptIt();
             var path = this.ParseTree();
             if (this._currentToken.Kind != TokenKind.EOT)
             {
-                throw new Exception("Expected EOT");
+                throw new Exception("Expected EOT, got " + this._currentToken.Kind);
             }
 
             return path;

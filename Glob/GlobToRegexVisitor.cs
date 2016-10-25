@@ -61,6 +61,8 @@ namespace Glob
                     return ProcessCharacterWildcard(node);
                 case GlobNodeType.WildcardString:
                     return ProcessWildcardString(node);
+                default:
+                    throw new InvalidOperationException("Expected SubSegment, found " + node.Type);
             }
         }
 
