@@ -9,10 +9,7 @@ See: http://en.wikipedia.org/wiki/Glob_(programming) for more info.
 
 * Windows
 * Macintosh OS X (Darwin)
-* FreeBSD
-* NetBSD
 * Linux
-* Solaris
 
 
 ## Why another glob library?
