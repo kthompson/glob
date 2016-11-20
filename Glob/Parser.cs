@@ -149,8 +149,7 @@ namespace Glob
         {
             if (this._currentToken.Kind == TokenKind.PathSeperator)
                 return new GlobNode(GlobNodeType.Root); //dont eat it so we can leave it for the segments
-
-
+            
             if (this._currentToken.Kind == TokenKind.WindowsRoot)
             {
                 var root = new GlobNode(GlobNodeType.Root, this._currentToken.Spelling);
@@ -187,10 +186,10 @@ namespace Glob
             return new GlobNode(GlobNodeType.Tree, items);
         }
 
-        public GlobNode Parse(string text = null)
+        public GlobNode Parse()
         {
-            if (text != null)
-                InitializeScanner(text);
+            if(this._scanner == null)
+                throw new InvalidOperationException("Scanner was not initialized. Ensure you are passing a pattern to Parse.");
 
             GlobNode path;
 
@@ -212,6 +211,13 @@ namespace Glob
             this.Accept(TokenKind.EOT);
             return path;
         }
-    }
 
+        public GlobNode Parse(string text)
+        {
+            if (text != null)
+                InitializeScanner(text);
+
+            return this.Parse();
+        }
+    }
 }

@@ -24,7 +24,7 @@ namespace Glob
 
         private static string ProcessTree(GlobNode node)
         {
-            return string.Join("/", node.Children.Select(ProcessSegment));
+            return string.Join(@"[/\\]", node.Children.Select(ProcessSegment));
         }
 
         private static string ProcessSegment(GlobNode node)
@@ -68,12 +68,12 @@ namespace Glob
 
         private static string ProcessWildcardString(GlobNode node)
         {
-            return @"[^/]*";
+            return @"[^/\\]*"; //TOOD: we may need to take a better look at using a Windows mode vs a Linux mode for filename matching.
         }
 
         private static string ProcessCharacterWildcard(GlobNode node)
         {
-            return @"[^/]{1}";
+            return @"[^/\\]{1}";
         }
 
         private static string ProcessLiteralSet(GlobNode node)
