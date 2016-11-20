@@ -15,5 +15,10 @@ namespace Glob
 
         public TokenKind Kind { get; private set; }
         public string Spelling { get; private set; }
+
+        public override string ToString()
+        {
+            return Kind + ": " + Spelling;
+        }
     }
 }

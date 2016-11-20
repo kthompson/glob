@@ -161,12 +161,19 @@ namespace Glob
             return new GlobNode(GlobNodeType.Root, "");
         }
 
+        // Tree := ( Root | Segment ) ( '/' Segment )*
         private GlobNode ParseTree()
         {
             var items = new List<GlobNode>();
 
             if (this._currentToken.Kind == TokenKind.PathSeperator || this._currentToken.Kind == TokenKind.WindowsRoot)
+            {
                 items.Add(this.ParseRoot());
+            }
+            else
+            {
+                items.Add(this.ParseSegment());
+            }
 
             while (this._currentToken.Kind == TokenKind.PathSeperator)
             {
