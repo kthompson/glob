@@ -1,4 +1,10 @@
-﻿## What is a glob?
+﻿# Glob
+[![Build status](https://ci.appveyor.com/api/projects/status/6c049qvny8mer3oy?svg=true)](https://ci.appveyor.com/project/kthompson/glob) [![Nuget](https://img.shields.io/nuget/v/glob.svg)](https://www.nuget.org/packages/Glob/)
+
+A C# Glob library for .NET and .NET Core.
+
+
+## What is a glob?
 
 A glob is a pattern-matching syntax that shells use.  Like when you do
 `rm *.cs`, the `*.cs` is a glob. 
@@ -30,13 +36,6 @@ This is also a pure C# implementation.
 ### Static Usage
 
     var match = Glob.IsMatch(@"C:\files\bin\", "**/bin");	
-
-## Build Status
-
-[![.NET Build Status](https://img.shields.io/appveyor/ci/kthompson/glob/master.svg)](https://ci.appveyor.com/project/kthompson/glob)
-
-[![Nuget](https://img.shields.io/nuget/v/glob.svg)](https://www.nuget.org/packages/Glob/)
-
 
 ## Extension Methods
 
