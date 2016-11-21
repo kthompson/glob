@@ -42,40 +42,28 @@ namespace Glob.Tests
         [Fact]
         public void TestSimpleFilePattern()
         {
-            AssertCollection(GetRegexForGlobPattern("*.txt"),
+            Assert.Collection(GetRegexForGlobPattern("*.txt"),
                 s => Assert.Equal(@"C:\Users\Kevin\Desktop\notes.txt", s));
         }
 
         [Fact]
         public void RootPatternMatchWithoutDirectory()
         {
-            AssertCollection(GetRegexForGlobPattern(@"C:\*.*"));
+            Assert.Collection(GetRegexForGlobPattern(@"C:\*.*"));
         }
 
         [Fact]
         public void LinuxRootWithDirectoryWildcard()
         {
-            AssertCollection(GetRegexForGlobPattern(@"/**/*.sln"),
+            Assert.Collection(GetRegexForGlobPattern(@"/**/*.sln"),
                 s => Assert.Equal(@"/mnt/e/code/csharp-glob/Glob.sln", s));
         }
 
         [Fact]
         public void WindowsRootWithDirectoryWildcard()
         {
-            AssertCollection(GetRegexForGlobPattern(@"C:\**\*.txt"),
+            Assert.Collection(GetRegexForGlobPattern(@"C:\**\*.txt"),
                 s => Assert.Equal(@"C:\Users\Kevin\Desktop\notes.txt", s));
-        }
-
-        //TODO: replace with Assert.Collection from xunit when we update.
-        private void AssertCollection<T>(IEnumerable<T> items, params Action<T>[] actions)
-        {
-            var list = items.ToList();
-            Assert.Equal(list.Count, actions.Length);
-
-            for (var i = 0; i < list.Count; i++)
-            {
-                actions[i](list[i]);
-            }
         }
 
         private IEnumerable<string> GetRegexForGlobPattern(string pattern)

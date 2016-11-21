@@ -1,4 +1,4 @@
-## What is a glob?
+﻿## What is a glob?
 
 A glob is a pattern-matching syntax that shells use.  Like when you do
 `rm *.cs`, the `*.cs` is a glob. 
@@ -30,6 +30,13 @@ This is also a pure C# implementation.
 ### Static Usage
 
     var match = Glob.IsMatch(@"C:\files\bin\", "**/bin");	
+
+## Build Status
+
+[![.NET Build Status](https://img.shields.io/appveyor/ci/kthompson/csharp-glob/master.svg)](https://ci.appveyor.com/project/kthompson/csharp-glob)
+
+[![Nuget](https://img.shields.io/nuget/v/csharp-glob.svg)](http://targetaddress.com)
+
 
 ## Extension Methods
 
