@@ -33,9 +33,9 @@ This is also a pure C# implementation.
 
 ## Build Status
 
-[![.NET Build Status](https://img.shields.io/appveyor/ci/kthompson/csharp-glob/master.svg)](https://ci.appveyor.com/project/kthompson/csharp-glob)
+[![.NET Build Status](https://img.shields.io/appveyor/ci/kthompson/glob/master.svg)](https://ci.appveyor.com/project/kthompson/glob)
 
-[![Nuget](https://img.shields.io/nuget/v/csharp-glob.svg)](http://targetaddress.com)
+[![Nuget](https://img.shields.io/nuget/v/glob.svg)](https://www.nuget.org/packages/Glob/)
 
 
 ## Extension Methods

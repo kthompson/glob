@@ -5,14 +5,14 @@
     "Kevin Thompson <kevin.thompson@theautomaters.com>"
   ],
   "packOptions": {
-    "projectUrl": "https://github.com/kthompson/csharp-glob/",
-    "licenseUrl": "https://github.com/kthompson/csharp-glob/blob/master/LICENSE",
+    "projectUrl": "https://github.com/kthompson/glob/",
+    "licenseUrl": "https://github.com/kthompson/glob/blob/master/LICENSE",
     "owners": [
       "Kevin Thompson <kevin.thompson@theautomaters.com>"
     ],
     "repository": {
       "type": "git",
-      "url": "https://github.com/kthompson/csharp-glob"
+      "url": "https://github.com/kthompson/glob"
     },
     "summary": "A C# globbing library for file pattern matching",
     "tags": [
