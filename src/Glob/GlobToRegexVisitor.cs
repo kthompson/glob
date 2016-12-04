@@ -13,7 +13,7 @@ namespace Glob
             if (node.Type != GlobNodeType.Tree)
                 throw new InvalidOperationException();
 
-            return ProcessTree(node);
+            return ProcessTree(node) + "$";
         }
 
         private void Assert(GlobNode node, GlobNodeType type)
