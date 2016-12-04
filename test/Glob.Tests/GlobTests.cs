@@ -42,5 +42,14 @@ namespace Glob.Tests
             Assert.True(glob.IsMatch("folder/smallfile.txt"));
             Assert.False(glob.IsMatch("folder/smallfile.txt.min"));
         }
+
+        [Fact]
+        public void CanMatchSingleFileWithAnyNameOrExtension()
+        {
+            var glob = new Glob("folder/*.*");
+            Assert.True(glob.IsMatch("folder/bigfile.txt"));
+            Assert.True(glob.IsMatch("folder/smallfile.txt"));
+            Assert.True(glob.IsMatch("folder/smallfile.txt.min"));
+        }
     }
 }
