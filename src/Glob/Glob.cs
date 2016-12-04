@@ -30,7 +30,7 @@ namespace Glob
             var parser = new Parser(this.Pattern);
             _root = parser.Parse();
 
-            _regex = new Regex(GlobToRegexVisitor.Process(_root));
+            _regex = new Regex(GlobToRegexVisitor.Process(_root) + "$");
         }
 
         public bool IsMatch(string input)
