@@ -32,6 +32,9 @@
         "System.Text.RegularExpressions": "*",
         "System.IO.FileSystem": "*"
       }
-    }
+    },
+    "net40": {},
+    "net45": {},
+    "net46": {}
   }
 }
