@@ -8,6 +8,7 @@
 
         CharacterSetStart = 3,     // [
         CharacterSetEnd = 4,       // ]
+        CharacterSetInvert = 1,      // !
 
         LiteralSetStart = 5,       // {
         LiteralSetSeperator = 6,   // ,

@@ -51,5 +51,46 @@ namespace Glob.Tests
             Assert.True(glob.IsMatch("folder/smallfile.txt"));
             Assert.True(glob.IsMatch("folder/smallfile.txt.min"));
         }
+
+        [Fact]
+        public void CanMatchSingleFileUsingCharRange()
+        {
+            var glob = new Glob("*fil[e-z].txt");
+            Assert.True(glob.IsMatch("bigfile.txt"));
+            Assert.True(glob.IsMatch("smallfilf.txt"));
+            Assert.False(glob.IsMatch("smallfila.txt"));
+            Assert.False(glob.IsMatch("smallfilez.txt"));
+        }
+
+        [Fact]
+        public void CanMatchSingleFileUsingNumberRange()
+        {
+            var glob = new Glob("*file[1-9].txt");
+            Assert.True(glob.IsMatch("bigfile1.txt"));
+            Assert.True(glob.IsMatch("smallfile8.txt"));
+            Assert.False(glob.IsMatch("smallfile0.txt"));
+            Assert.False(glob.IsMatch("smallfilea.txt"));
+        }
+
+        [Fact]
+        public void CanMatchSingleFileUsingCharList()
+        {
+            var glob = new Glob("*file[abc].txt");
+            Assert.True(glob.IsMatch("bigfilea.txt"));
+            Assert.True(glob.IsMatch("smallfileb.txt"));
+            Assert.False(glob.IsMatch("smallfiled.txt"));
+            Assert.False(glob.IsMatch("smallfileaa.txt"));
+        }
+
+        [Fact]
+        public void CanMatchSingleFileUsingInvertedCharList()
+        {
+            var glob = new Glob("*file[!abc].txt");
+            Assert.False(glob.IsMatch("bigfilea.txt"));
+            Assert.False(glob.IsMatch("smallfileb.txt"));
+            Assert.True(glob.IsMatch("smallfiled.txt"));
+            Assert.True(glob.IsMatch("smallfile-.txt"));
+            Assert.False(glob.IsMatch("smallfileaa.txt"));
+        }
     }
 }
