@@ -32,9 +32,9 @@ namespace Glob
             switch (node.Type)
             {
                 case GlobNodeType.Root:
-                    return ProcessRoot(node);
+                    return ProcessRoot((Root)node);
                 case GlobNodeType.DirectoryWildcard:
-                    return ProcessDirectoryWildcard(node);
+                    return ProcessDirectoryWildcard((DirectoryWildcard)node);
                 case GlobNodeType.PathSegment:
                     return ProcessPathSegment(node);
                 default:
@@ -52,54 +52,54 @@ namespace Glob
             switch (node.Type)
             {
                 case GlobNodeType.Identifier:
-                    return ProcessIdentifier(node);
+                    return ProcessIdentifier((Identifier)node);
                 case GlobNodeType.CharacterSet:
-                    return ProcessCharacterSet(node);
+                    return ProcessCharacterSet((CharacterSet)node);
                 case GlobNodeType.LiteralSet:
-                    return ProcessLiteralSet(node);
+                    return ProcessLiteralSet((LiteralSet)node);
                 case GlobNodeType.CharacterWildcard:
-                    return ProcessCharacterWildcard(node);
-                case GlobNodeType.WildcardString:
-                    return ProcessWildcardString(node);
+                    return ProcessCharacterWildcard((CharacterWildcard)node);
+                case GlobNodeType.StringWildcard:
+                    return ProcessStringWildcard((StringWildcard)node);
                 default:
                     throw new InvalidOperationException("Expected SubSegment, found " + node.Type);
             }
         }
 
-        private static string ProcessWildcardString(GlobNode node)
+        private static string ProcessStringWildcard(StringWildcard node)
         {
             return @"[^/\\]*"; //TOOD: we may need to take a better look at using a Windows mode vs a Linux mode for filename matching.
         }
 
-        private static string ProcessCharacterWildcard(GlobNode node)
+        private static string ProcessCharacterWildcard(CharacterWildcard node)
         {
             return @"[^/\\]{1}";
         }
 
-        private static string ProcessLiteralSet(GlobNode node)
+        private static string ProcessLiteralSet(LiteralSet node)
         {
-            return "(" + string.Join(",", node.Children.Select(ProcessIdentifier)) + ")";
+            return "(" + string.Join(",", node.Literals.Select(ProcessIdentifier)) + ")";
         }
 
-        private static string ProcessCharacterSet(GlobNode node)
+        private static string ProcessCharacterSet(CharacterSet node)
         {
-            return "[" + ProcessIdentifier(node.Children.First()) + "]";
+            return (node.Inverted ? "[^" : "[" ) + ProcessIdentifier(node.Characters) + "]";
         }
 
-        private static string ProcessIdentifier(GlobNode node)
+        private static string ProcessIdentifier(Identifier node)
         {
-            return Regex.Escape(node.Text);
+            return Regex.Escape(node.Value);
         }
 
-        private static string ProcessDirectoryWildcard(GlobNode node)
+        private static string ProcessDirectoryWildcard(DirectoryWildcard node)
         {
             return ".*";
         }
 
-        private static string ProcessRoot(GlobNode node)
+        private static string ProcessRoot(Root node)
         {
-            if (node.Children.Count > 0) //windows root
-                return Regex.Escape(node.Children[0].Text + ":");
+            if (node.Text != "") //windows root
+                return Regex.Escape(node.Text);
 
             if (!string.IsNullOrEmpty(node.Text)) // CWD
                 return Regex.Escape(node.Text);

@@ -112,6 +112,10 @@ namespace Glob
                     this.TakeIt();
                     return TokenKind.CharacterWildcard;
 
+                case '!':
+                    this.TakeIt();
+                    return TokenKind.CharacterSetInvert;
+
                 case '[':
                     this.TakeIt();
                     return TokenKind.CharacterSetStart;
@@ -127,7 +131,6 @@ namespace Glob
                 case ',':
                     this.TakeIt();
                     return TokenKind.LiteralSetSeperator;
-
 
                 case '}':
                     this.TakeIt();
@@ -145,7 +148,7 @@ namespace Glob
 
         private static bool IsAlphaNumeric(char? c)
         {
-            return c != null && (char.IsLetterOrDigit(c.Value) || c == '.');
+            return c != null && (char.IsLetterOrDigit(c.Value) || c == '.' || c == '-');
         }
     }
 }

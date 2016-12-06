@@ -13,8 +13,8 @@ namespace Glob
             this.Spelling = spelling;
         }
 
-        public TokenKind Kind { get; private set; }
-        public string Spelling { get; private set; }
+        public TokenKind Kind { get; }
+        public string Spelling { get; }
 
         public override string ToString()
         {
