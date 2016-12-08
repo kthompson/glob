@@ -8,6 +8,7 @@ namespace Glob
 {
     public class Glob
     {
+        private readonly GlobOptions _options;
         public string Pattern { get; private set; }
 
         private GlobNode _root;
@@ -15,6 +16,7 @@ namespace Glob
 
         public Glob(string pattern, GlobOptions options = GlobOptions.None)
         {
+            _options = options;
             this.Pattern = pattern;
             if(options.HasFlag(GlobOptions.Compiled))
             {
@@ -27,10 +29,15 @@ namespace Glob
             if(_root != null)
                 return;
 
+            if (_regex != null)
+                return;
+
             var parser = new Parser(this.Pattern);
             _root = parser.Parse();
 
-            _regex = new Regex(GlobToRegexVisitor.Process(_root));
+            var regexPattern = GlobToRegexVisitor.Process(_root);
+
+            _regex = new Regex(regexPattern, _options == GlobOptions.Compiled ? RegexOptions.Compiled | RegexOptions.Singleline : RegexOptions.Singleline);
         }
 
         public bool IsMatch(string input)

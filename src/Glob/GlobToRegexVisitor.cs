@@ -10,24 +10,23 @@ namespace Glob
     {
         public static string Process(GlobNode node)
         {
-            if (node.Type != GlobNodeType.Tree)
-                throw new InvalidOperationException();
+            Assert(node, GlobNodeType.Tree);
 
-            return ProcessTree(node) + "$";
+            return ProcessTree((Tree)node) + "$";
         }
 
-        private void Assert(GlobNode node, GlobNodeType type)
+        private static void Assert(GlobNode node, GlobNodeType type)
         {
             if (node.Type != type)
                 throw new InvalidOperationException();
         }
 
-        private static string ProcessTree(GlobNode node)
+        private static string ProcessTree(Tree node)
         {
-            return string.Join(@"[/\\]", node.Children.Select(ProcessSegment));
+            return string.Join(@"[/\\]", node.Segments.Select(ProcessSegment));
         }
 
-        private static string ProcessSegment(GlobNode node)
+        private static string ProcessSegment(PathSegment node)
         {
             switch (node.Type)
             {
@@ -42,9 +41,9 @@ namespace Glob
             }
         }
 
-        private static string ProcessPathSegment(GlobNode node)
+        private static string ProcessPathSegment(PathSegment node)
         {
-            return string.Join("", node.Children.Select(ProcessSubSegment));
+            return string.Join("", node.SubSegments.Select(ProcessSubSegment));
         }
 
         private static string ProcessSubSegment(GlobNode node)

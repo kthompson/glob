@@ -6,37 +6,40 @@ namespace Glob
 
     class StringWildcard : GlobNode
     {
-        public StringWildcard()
+        public static readonly StringWildcard Default = new StringWildcard();
+
+        private StringWildcard()
             : base(GlobNodeType.StringWildcard)
         {
-
         }
     }
 
     class CharacterWildcard : GlobNode
     {
-        public CharacterWildcard()
+        public static readonly CharacterWildcard Default = new CharacterWildcard();
+
+        private CharacterWildcard()
             : base(GlobNodeType.CharacterWildcard)
         {
-
         }
     }
 
-    class DirectoryWildcard : GlobNode
+    class DirectoryWildcard : PathSegment
     {
-        public DirectoryWildcard()
-            : base(GlobNodeType.DirectoryWildcard)
-        {
+        public static readonly DirectoryWildcard Default = new DirectoryWildcard();
 
+        private DirectoryWildcard()
+            : base(GlobNodeType.DirectoryWildcard, new GlobNode[0])
+        {
         }
     }
 
-    class Root : GlobNode
+    class Root : PathSegment
     {
         public string Text { get; }
 
         public Root(string text = "")
-            : base(GlobNodeType.Root)
+            : base(GlobNodeType.Root, new GlobNode[0])
         {
             Text = text;
         }
@@ -77,24 +80,42 @@ namespace Glob
         }
     }
 
-    class GlobNode 
+    class PathSegment : GlobNode 
     {
+        public IEnumerable<GlobNode> SubSegments { get; }
 
-        public GlobNode(GlobNodeType type, IEnumerable<GlobNode> children)
+        protected PathSegment(GlobNodeType type, IEnumerable<GlobNode> parts)
+            : base(type)
         {
-            this.Type = type;
-            this.Children = new List<GlobNode>(children);
+            SubSegments = parts.ToList();
         }
 
+        public PathSegment(IEnumerable<GlobNode> parts) 
+            : base(GlobNodeType.PathSegment)
+        {
+            SubSegments = parts.ToList();
+        }
+    }
+
+    class Tree : GlobNode
+    {
+        public IEnumerable<PathSegment> Segments { get; }
+
+        public Tree(IEnumerable<PathSegment> segments) 
+            : base(GlobNodeType.Tree)
+        {
+            Segments = segments.ToList();
+        }
+    }
+
+    class GlobNode 
+    {
         protected GlobNode(GlobNodeType type)
         {
             this.Type = type;
-            this.Children = new List<GlobNode>();
         }
 
         public GlobNodeType Type { get; private set; }
-
-        public List<GlobNode> Children { get; private set; }
     }
 
     enum GlobNodeType

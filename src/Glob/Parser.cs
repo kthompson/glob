@@ -88,13 +88,13 @@ namespace Glob
         private StringWildcard ParseWildcard()
         {
             this.Accept(TokenKind.Wildcard);
-            return new StringWildcard();
+            return StringWildcard.Default;
         }
 
         private CharacterWildcard ParseCharacterWildcard()
         {
             this.Accept(TokenKind.CharacterWildcard);
-            return new CharacterWildcard();
+            return CharacterWildcard.Default;
         }
 
         private GlobNode ParseSubSegment()
@@ -116,18 +116,18 @@ namespace Glob
             }
         }
 
-        private GlobNode ParseSegment()
+        private PathSegment ParseSegment()
         {
             if (this._currentToken.Kind == TokenKind.DirectoryWildcard)
             {
                 this.AcceptIt();
-                return new DirectoryWildcard();
+                return DirectoryWildcard.Default;
             }
 
             return ParsePathSegment();
         }
 
-        private GlobNode ParsePathSegment()
+        private PathSegment ParsePathSegment()
         {
             var items = new List<GlobNode>();
             while (true)
@@ -147,10 +147,10 @@ namespace Glob
                 break;
             }
 
-            return new GlobNode(GlobNodeType.PathSegment, items);
+            return new PathSegment(items);
         }
 
-        private GlobNode ParseRoot()
+        private Root ParseRoot()
         {
             if (this._currentToken.Kind == TokenKind.PathSeperator)
                 return new Root(); //dont eat it so we can leave it for the segments
@@ -168,7 +168,7 @@ namespace Glob
         // Tree := ( Root | Segment ) ( '/' Segment )*
         private GlobNode ParseTree()
         {
-            var items = new List<GlobNode>();
+            var items = new List<PathSegment>();
 
             if (this._currentToken.Kind == TokenKind.PathSeperator || this._currentToken.Kind == TokenKind.WindowsRoot)
             {
@@ -188,7 +188,7 @@ namespace Glob
             if (_currentToken.Kind != TokenKind.EOT)
                 items.Add(this.ParseSegment());
             
-            return new GlobNode(GlobNodeType.Tree, items);
+            return new Tree(items);
         }
 
         public GlobNode Parse()

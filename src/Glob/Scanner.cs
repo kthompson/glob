@@ -10,15 +10,15 @@ namespace Glob
         private readonly string _source;
 
         private int _sourceIndex;
-        private char? _currentCharacter;
-        private readonly StringBuilder _currentSpelling;
+        private int _currentCharacter;
+        private int _startIndex;
         private TokenKind _currentKind;
 
         public Scanner(string source)
         {
             this._source = source;
             this._sourceIndex = 0;
-            this._currentSpelling = new StringBuilder();
+            this._startIndex = 0;
             SetCurrentCharacter();
         }
 
@@ -35,7 +35,6 @@ namespace Glob
 
         public void TakeIt()
         {
-            this._currentSpelling.Append(this._currentCharacter);
             this._sourceIndex++;
 
             SetCurrentCharacter();
@@ -44,16 +43,16 @@ namespace Glob
         private void SetCurrentCharacter()
         {
             if (this._sourceIndex >= this._source.Length)
-                this._currentCharacter = null;
+                this._currentCharacter = -1;
             else
                 this._currentCharacter = this._source[this._sourceIndex];
         }
 
-        private char? PeekChar()
+        private int PeekChar()
         {
             var sourceIndex = this._sourceIndex + 1;
             if (sourceIndex >= this._source.Length)
-                return null;
+                return -1;
             else
                 return this._source[sourceIndex];
         }
@@ -69,32 +68,37 @@ namespace Glob
 
         public Token Scan()
         {
-            this._currentSpelling.Clear();
             this._currentKind = this.ScanToken();
 
-            return new Token(this._currentKind, this._currentSpelling.ToString());
+            var spelling = _source.Substring(_startIndex, _sourceIndex - _startIndex);
+
+            _startIndex = _sourceIndex;
+
+            return new Token(_currentKind, spelling);
         }
 
         private TokenKind ScanToken()
         {
-            if(this._currentCharacter == null)
+            if(this._currentCharacter == -1)
                 return TokenKind.EOT;
 
-            if (char.IsLetter(this._currentCharacter.Value) && this.PeekChar() == ':')
-            {
-                TakeIt(); // letter
-                TakeIt(); // :
-                return TokenKind.WindowsRoot;
-            }
+            var current = (char) _currentCharacter;
 
-            if (IsAlphaNumeric(this._currentCharacter))
+            if (char.IsLetter(current))
             {
-                while (IsAlphaNumeric(this._currentCharacter))
+                if (this.PeekChar() == ':')
                 {
-                    this.TakeIt();
+                    TakeIt(); // letter
+                    TakeIt(); // :
+                    return TokenKind.WindowsRoot;
                 }
 
-                return TokenKind.Identifier;
+                return TakeIdentifier();
+            }
+
+            if (IsNumeric(current))
+            {
+                return TakeIdentifier();
             }
 
             switch (this._currentCharacter)
@@ -142,13 +146,22 @@ namespace Glob
                     return TokenKind.PathSeperator;
 
                 default:
-                    throw new Exception("Unable to scan for next token. Stuck on '" + this._currentCharacter + "'");
+                    throw new Exception("Unable to scan for next token. Stuck on '" + (char)this._currentCharacter + "'");
             }
         }
 
-        private static bool IsAlphaNumeric(char? c)
+        private TokenKind TakeIdentifier()
         {
-            return c != null && (char.IsLetterOrDigit(c.Value) || c == '.' || c == '-');
+            while (IsAlphaNumeric((char)this._currentCharacter))
+            {
+                this.TakeIt();
+            }
+
+            return TokenKind.Identifier;
         }
+
+        private static bool IsAlphaNumeric(char c) => char.IsLetter(c) || IsNumeric(c);
+
+        private static bool IsNumeric(char c) => char.IsDigit(c) || c == '.' || c == '-';
     }
 }

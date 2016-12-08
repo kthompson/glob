@@ -1,5 +1,5 @@
 {
-  "version": "0.3.0-*",
+  "version": "0.3.1-*",
   "title": "A C# Glob pattern matcher for .NET",
   "authors": [
     "Kevin Thompson <kevin.thompson@theautomaters.com>"
@@ -18,7 +18,7 @@
     "tags": [
       "C#", "glob", "minimatch"
     ],
-    "releaseNotes": "Update to support .NET Standard 1.3"
+    "releaseNotes": "Performance improvements"
   },
   "buildOptions": {
     "debugType": "portable"
