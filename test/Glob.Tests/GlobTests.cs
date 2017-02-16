@@ -9,6 +9,8 @@ namespace Glob.Tests
 {
     public class GlobTests
     {
+        private readonly string SourceRoot = Path.Combine(".", "..", "..");
+
         [Fact]
         public void CanParseSimpleFilename()
         {
@@ -97,7 +99,7 @@ namespace Glob.Tests
         [Fact]
         public void CanMatchBinFolderGlob()
         {
-            var root = new DirectoryInfo(@"C:\");
+            var root = new DirectoryInfo(SourceRoot);
             var allBinFolders = root.GlobDirectories("**/bin");
 
             Assert.True(allBinFolders.Any(), "There should be some bin folders");
@@ -107,7 +109,7 @@ namespace Glob.Tests
         public void CanMatchDllExtension()
         {
 
-            var root = new DirectoryInfo(@"C:\");
+            var root = new DirectoryInfo(SourceRoot);
             var allDllFiles = root.GlobFiles("**/*.dll");
 
             Assert.True(allDllFiles.Any(), "There should be some DLL files");
@@ -117,7 +119,7 @@ namespace Glob.Tests
         public void CanMatchInfoInFileSystemInfo()
         {
 
-            var root = new DirectoryInfo(@"C:\");
+            var root = new DirectoryInfo(SourceRoot);
             var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
 
             Assert.True(allInfoFilesAndFolders.Any(), "There should be some 'allInfoFilesAndFolders'");
@@ -126,34 +128,34 @@ namespace Glob.Tests
         [Fact]
         public void CanMatchConfigFilesInMsDirectory()
         {
-            var globPattern = @"**/*.config";
+            var globPattern = @"**/*.json";
 
-            var root = new DirectoryInfo(@"C:\Windows\Microsoft.NET");
+            var root = new DirectoryInfo(SourceRoot);
             var result = root.GlobFiles(globPattern).ToList();
 
             Assert.NotNull(result);
-            Assert.True(result.Any(x => x.Name == "machine.config"), $"There should be some machine.config files in '{root.FullName}'");
+            Assert.True(result.Any(x => x.Name == "project.json"), $"There should be some project.json files in '{root.FullName}'");
         }
 
         [Fact]
         public void CanMatchConfigFilesOrFoldersInMsDirectory()
         {
-            var globPattern = @"**/*[Cc]onfig";
+            var globPattern = @"**/*[Tt]est*";
 
-            var root = new DirectoryInfo(@"C:\Windows\Microsoft.NET");
+            var root = new DirectoryInfo(SourceRoot);
             var result = root.GlobFileSystemInfos(globPattern).ToList();
 
             Assert.NotNull(result);
-            Assert.True(result.Any(x => x.Name == "security.config"), $"There should be some security.config files in '{root.FullName}'");
-            Assert.True(result.Any(x => x.Name == "machine.config"), $"There should some folder with 'Config' in '{root.FullName}'");
+            Assert.True(result.Any(x => x.Name == "GlobTests.cs"), $"There should be some GlobTests.cs files in '{root.FullName}'");
+            Assert.True(result.Any(x => x.Name == "test"), $"There should some folder with 'test' in '{root.FullName}'");
         }
 
         [Fact]
         public void CanMatchDirectoriesInMsDirectory()
         {
-            var globPattern = @"**/*v*.0*";
+            var globPattern = @"**/*Gl*.Te*";
 
-            var root = new DirectoryInfo(@"C:\Windows\Microsoft.NET");
+            var root = new DirectoryInfo(SourceRoot);
             var result = root.GlobDirectories(globPattern).ToList();
 
             Assert.NotNull(result);
