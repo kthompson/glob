@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -91,6 +92,42 @@ namespace Glob.Tests
             Assert.True(glob.IsMatch("smallfiled.txt"));
             Assert.True(glob.IsMatch("smallfile-.txt"));
             Assert.False(glob.IsMatch("smallfileaa.txt"));
+        }
+
+        [Fact]
+        public void GlobFiles()
+        {
+            var globPattern = @"**/*.config";
+
+            var root = new DirectoryInfo(@"C:\Windows\Microsoft.NET");
+            var result = root.GlobFiles(globPattern).ToList();
+
+            Assert.NotNull(result);
+            Assert.True(result.Any(x => x.Name == "machine.config"), $"There should be some machine.config files in '{root.FullName}'");
+        }
+
+        [Fact]
+        public void GlobFileSystemInfos()
+        {
+            var globPattern = @"**/*.config";
+
+            var root = new DirectoryInfo(@"C:\Windows\Microsoft.NET");
+            var result = root.GlobFileSystemInfos(globPattern).ToList();
+
+            Assert.NotNull(result);
+            Assert.True(result.Any(x => x.Name == "machine.config"), $"There should be some machine.config files in '{root.FullName}'");
+        }
+
+        [Fact]
+        public void GlobDirectories()
+        {
+            var globPattern = @"**/*v*.0*";
+
+            var root = new DirectoryInfo(@"C:\Windows\Microsoft.NET");
+            var result = root.GlobDirectories(globPattern).ToList();
+
+            Assert.NotNull(result);
+            Assert.True(result.Any(), $"There should be some directories that match glob: {globPattern} in '{root.FullName}'");
         }
     }
 }
