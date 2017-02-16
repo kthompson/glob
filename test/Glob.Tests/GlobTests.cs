@@ -95,7 +95,36 @@ namespace Glob.Tests
         }
 
         [Fact]
-        public void GlobFiles()
+        public void CanMatchBinFolderGlob()
+        {
+            var root = new DirectoryInfo(@"C:\");
+            var allBinFolders = root.GlobDirectories("**/bin");
+
+            Assert.True(allBinFolders.Any(), "There should be some bin folders");
+        }
+
+        [Fact]
+        public void CanMatchDllExtension()
+        {
+
+            var root = new DirectoryInfo(@"C:\");
+            var allDllFiles = root.GlobFiles("**/*.dll");
+
+            Assert.True(allDllFiles.Any(), "There should be some DLL files");
+        }
+
+        [Fact]
+        public void CanMatchInfoInFileSystemInfo()
+        {
+
+            var root = new DirectoryInfo(@"C:\");
+            var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
+
+            Assert.True(allInfoFilesAndFolders.Any(), "There should be some 'allInfoFilesAndFolders'");
+        }
+
+        [Fact]
+        public void CanMatchConfigFilesInMsDirectory()
         {
             var globPattern = @"**/*.config";
 
@@ -107,19 +136,20 @@ namespace Glob.Tests
         }
 
         [Fact]
-        public void GlobFileSystemInfos()
+        public void CanMatchConfigFilesOrFoldersInMsDirectory()
         {
-            var globPattern = @"**/*.config";
+            var globPattern = @"**/*[Cc]onfig";
 
             var root = new DirectoryInfo(@"C:\Windows\Microsoft.NET");
             var result = root.GlobFileSystemInfos(globPattern).ToList();
 
             Assert.NotNull(result);
-            Assert.True(result.Any(x => x.Name == "machine.config"), $"There should be some machine.config files in '{root.FullName}'");
+            Assert.True(result.Any(x => x.Name == "security.config"), $"There should be some security.config files in '{root.FullName}'");
+            Assert.True(result.Any(x => x.Name == "machine.config"), $"There should some folder with 'Config' in '{root.FullName}'");
         }
 
         [Fact]
-        public void GlobDirectories()
+        public void CanMatchDirectoriesInMsDirectory()
         {
             var globPattern = @"**/*v*.0*";
 

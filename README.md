@@ -49,7 +49,7 @@ Enumerate through all matching directories recursively.
 
 #### Example
 
-    var root = new DirectoryInfo("C:\");
+    var root = new DirectoryInfo(@"C:\");
 	var allBinFolders = root.GlobDirectories("**/bin");
 
 ### DirectoryInfo.GlobFiles
@@ -62,7 +62,7 @@ Enumerate through all matching files recursively.
 
 #### Example
 
-    var root = new DirectoryInfo("C:\");
+    var root = new DirectoryInfo(@"C:\");
 	var allDllFiles = root.GlobFiles("**/*.dll");
 
 ### DirectoryInfo.GlobFileSystemInfos
@@ -75,5 +75,5 @@ Enumerate through all matching files and folders recursively.
 
 #### Example
 
-    var root = new DirectoryInfo("C:\");
+    var root = new DirectoryInfo(@"C:\");
 	var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
