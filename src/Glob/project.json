@@ -1,5 +1,5 @@
 {
-  "version": "0.3.1-*",
+  "version": "0.3.2-*",
   "title": "A C# Glob pattern matcher for .NET",
   "authors": [
     "Kevin Thompson <kevin.thompson@theautomaters.com>"
