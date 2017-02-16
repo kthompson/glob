@@ -207,6 +207,7 @@ namespace Glob
                 case TokenKind.LiteralSetStart:
                 case TokenKind.CharacterWildcard:
                 case TokenKind.Wildcard:
+                case TokenKind.DirectoryWildcard:
                     path =  this.ParseTree();
                     break;
                 default:

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -91,6 +92,72 @@ namespace Glob.Tests
             Assert.True(glob.IsMatch("smallfiled.txt"));
             Assert.True(glob.IsMatch("smallfile-.txt"));
             Assert.False(glob.IsMatch("smallfileaa.txt"));
+        }
+
+        [Fact]
+        public void CanMatchBinFolderGlob()
+        {
+            var root = new DirectoryInfo(@"C:\");
+            var allBinFolders = root.GlobDirectories("**/bin");
+
+            Assert.True(allBinFolders.Any(), "There should be some bin folders");
+        }
+
+        [Fact]
+        public void CanMatchDllExtension()
+        {
+
+            var root = new DirectoryInfo(@"C:\");
+            var allDllFiles = root.GlobFiles("**/*.dll");
+
+            Assert.True(allDllFiles.Any(), "There should be some DLL files");
+        }
+
+        [Fact]
+        public void CanMatchInfoInFileSystemInfo()
+        {
+
+            var root = new DirectoryInfo(@"C:\");
+            var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
+
+            Assert.True(allInfoFilesAndFolders.Any(), "There should be some 'allInfoFilesAndFolders'");
+        }
+
+        [Fact]
+        public void CanMatchConfigFilesInMsDirectory()
+        {
+            var globPattern = @"**/*.config";
+
+            var root = new DirectoryInfo(@"C:\Windows\Microsoft.NET");
+            var result = root.GlobFiles(globPattern).ToList();
+
+            Assert.NotNull(result);
+            Assert.True(result.Any(x => x.Name == "machine.config"), $"There should be some machine.config files in '{root.FullName}'");
+        }
+
+        [Fact]
+        public void CanMatchConfigFilesOrFoldersInMsDirectory()
+        {
+            var globPattern = @"**/*[Cc]onfig";
+
+            var root = new DirectoryInfo(@"C:\Windows\Microsoft.NET");
+            var result = root.GlobFileSystemInfos(globPattern).ToList();
+
+            Assert.NotNull(result);
+            Assert.True(result.Any(x => x.Name == "security.config"), $"There should be some security.config files in '{root.FullName}'");
+            Assert.True(result.Any(x => x.Name == "machine.config"), $"There should some folder with 'Config' in '{root.FullName}'");
+        }
+
+        [Fact]
+        public void CanMatchDirectoriesInMsDirectory()
+        {
+            var globPattern = @"**/*v*.0*";
+
+            var root = new DirectoryInfo(@"C:\Windows\Microsoft.NET");
+            var result = root.GlobDirectories(globPattern).ToList();
+
+            Assert.NotNull(result);
+            Assert.True(result.Any(), $"There should be some directories that match glob: {globPattern} in '{root.FullName}'");
         }
     }
 }
