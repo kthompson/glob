@@ -9,7 +9,7 @@ namespace Glob.Tests
 {
     public class GlobTests
     {
-        private readonly string SourceRoot = Path.Combine(".", "..", "..");
+        private readonly string SourceRoot = Environment.GetEnvironmentVariable("APPVEYOR_BUILD_FOLDER") ?? Path.Combine(".", "..", "..");
 
         [Fact]
         public void CanParseSimpleFilename()
