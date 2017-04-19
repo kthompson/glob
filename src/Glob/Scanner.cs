@@ -96,7 +96,7 @@ namespace Glob
                 return TakeIdentifier();
             }
 
-            if (IsNumeric(current))
+            if (IsNumeric(current) || current == '_')
             {
                 return TakeIdentifier();
             }
@@ -152,7 +152,8 @@ namespace Glob
 
         private TokenKind TakeIdentifier()
         {
-            while (IsAlphaNumeric((char)this._currentCharacter))
+            
+            while (IsIdentifierCharacter((char)this._currentCharacter))
             {
                 this.TakeIt();
             }
@@ -160,7 +161,7 @@ namespace Glob
             return TokenKind.Identifier;
         }
 
-        private static bool IsAlphaNumeric(char c) => char.IsLetter(c) || IsNumeric(c);
+        private static bool IsIdentifierCharacter(char c) => char.IsLetter(c) || IsNumeric(c) || c == '_';
 
         private static bool IsNumeric(char c) => char.IsDigit(c) || c == '.' || c == '-';
     }
