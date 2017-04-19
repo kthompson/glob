@@ -29,6 +29,15 @@ namespace Glob.Tests
         }
 
         [Fact]
+        public void CanMatchUnderscore()
+        {
+            var glob = new Glob("a_*file.txt");
+            Assert.True(glob.IsMatch("a_bigfile.txt"));
+            Assert.True(glob.IsMatch("a_file.txt"));
+            Assert.False(glob.IsMatch("another_file.txt"));
+        }
+
+        [Fact]
         public void CanMatchSingleFile()
         {
             var glob = new Glob("*file.txt");
