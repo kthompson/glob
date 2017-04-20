@@ -1,0 +1,13 @@
+language: csharp
+dist: trusty
+dotnet: 1.0.1
+mono: none
+env:
+  global:
+    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+    - DOTNET_CLI_TELEMETRY_OPTOUT: 1
+before_install:
+  - dotnet restore -v Minimal
+script:
+  - dotnet build "src\Glob" -c Release --no-dependencies -f netstandard1.3
+  - dotnet test "test\Glob.Tests\Glob.Tests.csproj" -c Release
