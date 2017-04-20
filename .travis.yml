@@ -1,0 +1,9 @@
+language: csharp
+mono: none
+dotnet: 1.0.1
+dist: trusty
+install:
+  - dotnet restore -v Minimal
+  - dotnet build "src\Glob" -c Release --no-dependencies
+script:
+  - dotnet test test\Glob.Tests\Glob.Tests.csproj -c Release
