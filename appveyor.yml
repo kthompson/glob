@@ -13,9 +13,9 @@ before_build:
 build_script:
 - dotnet build "src\Glob" -c %CONFIGURATION% --no-dependencies
 after_build:
-- dotnet pack "src\Glob" -c %CONFIGURATION% --no-build -o artifacts
+- dotnet pack "src\Glob" -c %CONFIGURATION% --no-build -o ..\..\artifacts
 test_script:
-- dotnet test "test\Glob.Tests" -c %CONFIGURATION%
+- dotnet test test\Glob.Tests\Glob.Tests.csproj -c %CONFIGURATION%
 artifacts:
 - path: artifacts\**\*.*
 cache:
