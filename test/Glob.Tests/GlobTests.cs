@@ -9,7 +9,7 @@ namespace Glob.Tests
 {
     public class GlobTests
     {
-        private readonly string SourceRoot = Environment.GetEnvironmentVariable("APPVEYOR_BUILD_FOLDER") ?? Path.Combine(".", "..", "..");
+        private readonly string SourceRoot = Environment.GetEnvironmentVariable("APPVEYOR_BUILD_FOLDER") ?? Path.Combine("..", "..", "..", "..", "..");
 
         [Fact]
         public void CanParseSimpleFilename()
@@ -128,13 +128,13 @@ namespace Glob.Tests
         [Fact]
         public void CanMatchConfigFilesInMsDirectory()
         {
-            var globPattern = @"**/*.json";
+            var globPattern = @"**/*.sln";
 
             var root = new DirectoryInfo(SourceRoot);
             var result = root.GlobFiles(globPattern).ToList();
 
             Assert.NotNull(result);
-            Assert.True(result.Any(x => x.Name == "project.json"), $"There should be some project.json files in '{root.FullName}'");
+            Assert.True(result.Any(x => x.Name == "Glob.sln"), $"There should be some Glob.sln files in '{root.FullName}'");
         }
 
         [Fact]
