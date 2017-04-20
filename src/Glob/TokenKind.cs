@@ -14,7 +14,7 @@
         LiteralSetSeperator = 6,   // ,
         LiteralSetEnd = 7,         // }
 
-        PathSeperator = 8,          // / \
+        PathSeparator = 8,          // / \
 
         Identifier = 9,              // Letter or Number
 

@@ -7,9 +7,14 @@ namespace Glob.Tests
         [Fact]
         public void Issue3()
         {
-            var parser = new Parser();
-            var glob = parser.Parse("root/b.txt");
+            Parse("root/b.txt");
+        }
 
+        private static GlobNode Parse(string pattern)
+        {
+            var parser = new Parser();
+            var glob = parser.Parse(pattern);
+            return glob;
         }
 
         [Fact]
@@ -21,9 +26,10 @@ namespace Glob.Tests
             var tree = Assert.IsType<Tree>(glob);
             Assert.Collection(tree.Segments, segment =>
             {
-                Assert.Equal(GlobNodeType.PathSegment, segment.Type);
+                Assert.Equal(GlobNodeType.DirectorySegment, segment.Type);
+                var directory = Assert.IsType<DirectorySegment>(segment);
 
-                Assert.Collection(segment.SubSegments, node =>
+                Assert.Collection(directory.SubSegments, node =>
                 {
                     Assert.Equal(GlobNodeType.StringWildcard, node.Type);
                     Assert.IsType<StringWildcard>(node);
@@ -34,6 +40,65 @@ namespace Glob.Tests
                     Assert.Equal(".txt", ident.Value);
                 });
             });
+        }
+
+        [Fact]
+        public void CanParseStarStarBin()
+        {
+            var glob = Parse("**/bin");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments, 
+                segment => Assert.Same(DirectoryWildcard.Default, segment),
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment =>
+                        {
+                            var identifier = Assert.IsType<Identifier>(subSegment);
+                            Assert.Equal("bin", identifier.Value);
+                        });
+                });
+        }
+
+        [Fact]
+        public void CanParseThis1()
+        {
+            var x = new CharacterSet("a-fG-L", false);
+            AssertIdentifier(x.Characters, "a-fG-L");
+            Assert.Equal(x.ExpandedCharacters, "abcdefGHIJKL");
+        }
+
+        [Fact]
+        public void CanParseThis()
+        {
+            var glob = Parse("*fil[e-z].txt");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => Assert.Same(StringWildcard.Default, subSegment),
+                        subSegment => AssertIdentifier(subSegment, "fil"),
+                        subSegment =>
+                        {
+                            var set = Assert.IsType<CharacterSet>(subSegment);
+                            Assert.False(set.Inverted);
+                            AssertIdentifier(set.Characters, "e-z");
+                            Assert.Equal(set.ExpandedCharacters, "efghijklmnopqrstuvwxyz");
+
+                        },
+                        subSegment => AssertIdentifier(subSegment, ".txt"));
+                });
+
+        }
+
+        private static void AssertIdentifier(SubSegment subSegment, string expected)
+        {
+            var identifier = Assert.IsType<Identifier>(subSegment);
+
+            Assert.Equal(expected, identifier.Value);
         }
     }
 }

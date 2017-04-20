@@ -6,6 +6,6 @@ namespace Glob
     public enum GlobOptions
     {
         None,
-        Compiled, 
+        Compiled
     }
 }

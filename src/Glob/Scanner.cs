@@ -22,17 +22,6 @@ namespace Glob
             SetCurrentCharacter();
         }
 
-        public void Take(char character)
-        {
-            if(this._currentCharacter == character)
-            {
-                this.TakeIt();
-                return;
-            }
-
-            throw new InvalidOperationException($"Expected '{character}'");
-        }
-
         public void TakeIt()
         {
             this._sourceIndex++;
@@ -53,17 +42,8 @@ namespace Glob
             var sourceIndex = this._sourceIndex + 1;
             if (sourceIndex >= this._source.Length)
                 return -1;
-            else
-                return this._source[sourceIndex];
-        }
 
-        public Token Peek()
-        {
-            var index = this._sourceIndex;
-            var token = this.Scan();
-            this._sourceIndex = index;
-            SetCurrentCharacter();
-            return token;
+            return this._source[sourceIndex];
         }
 
         public Token Scan()
@@ -86,7 +66,7 @@ namespace Glob
 
             if (char.IsLetter(current))
             {
-                if (this.PeekChar() == ':')
+                if (_sourceIndex == 0 && this.PeekChar() == ':')
                 {
                     TakeIt(); // letter
                     TakeIt(); // :
@@ -143,7 +123,7 @@ namespace Glob
                 case '/':
                 case '\\':
                     this.TakeIt();
-                    return TokenKind.PathSeperator;
+                    return TokenKind.PathSeparator;
 
                 default:
                     throw new Exception("Unable to scan for next token. Stuck on '" + (char)this._currentCharacter + "'");

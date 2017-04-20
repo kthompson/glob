@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Glob.Tests
 {
-    public class RegexVisitorTests
+    public class PathTests
     {
         private static string[] filenames = new[]
         {

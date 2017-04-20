@@ -1,10 +1,71 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Glob
 {
+    abstract class GlobNode
+    {
+        protected GlobNode(GlobNodeType type)
+        {
+            this.Type = type;
+        }
 
-    class StringWildcard : GlobNode
+        public GlobNodeType Type { get; }
+    }
+
+    class Tree : GlobNode
+    {
+        public Segment[] Segments { get; }
+
+        public Tree(IEnumerable<Segment> segments)
+            : base(GlobNodeType.Tree)
+        {
+            Segments = segments.ToArray();
+        }
+    }
+
+    class Root : Segment
+    {
+        public string Text { get; }
+
+        public Root(string text = "")
+            : base(GlobNodeType.Root)
+        {
+            Text = text;
+        }
+    }
+
+    class DirectoryWildcard : Segment
+    {
+        public static readonly DirectoryWildcard Default = new DirectoryWildcard();
+
+        private DirectoryWildcard()
+            : base(GlobNodeType.DirectoryWildcard)
+        {
+        }
+    }
+
+    class DirectorySegment : Segment
+    {
+        public SubSegment[] SubSegments { get; }
+
+        public DirectorySegment(IEnumerable<SubSegment> subSegments)
+            : base(GlobNodeType.DirectorySegment)
+        {
+            SubSegments = subSegments.ToArray();
+        }
+    }
+
+    abstract class Segment : GlobNode
+    {
+        protected Segment(GlobNodeType type)
+            : base(type)
+        {
+        }
+    }
+
+    class StringWildcard : SubSegment
     {
         public static readonly StringWildcard Default = new StringWildcard();
 
@@ -14,7 +75,7 @@ namespace Glob
         }
     }
 
-    class CharacterWildcard : GlobNode
+    class CharacterWildcard : SubSegment
     {
         public static readonly CharacterWildcard Default = new CharacterWildcard();
 
@@ -24,110 +85,117 @@ namespace Glob
         }
     }
 
-    class DirectoryWildcard : PathSegment
-    {
-        public static readonly DirectoryWildcard Default = new DirectoryWildcard();
-
-        private DirectoryWildcard()
-            : base(GlobNodeType.DirectoryWildcard, new GlobNode[0])
-        {
-        }
-    }
-
-    class Root : PathSegment
-    {
-        public string Text { get; }
-
-        public Root(string text = "")
-            : base(GlobNodeType.Root, new GlobNode[0])
-        {
-            Text = text;
-        }
-    }
-
-    class CharacterSet : GlobNode
+    class CharacterSet : SubSegment
     {
         public bool Inverted { get; }
         public Identifier Characters { get; }
+        public string ExpandedCharacters { get; }
 
         public CharacterSet(Identifier characters, bool inverted)
             : base(GlobNodeType.CharacterSet)
         {
             Characters = characters;
             Inverted = inverted;
+            this.ExpandedCharacters = CalculateExpandedForm(characters.Value);
+        }
+
+        public bool Matches(char c) => ExpandedCharacters.Contains(c) != this.Inverted;
+
+        private string CalculateExpandedForm(string chars)
+        {
+            if (!chars.Contains("-"))
+                return chars;
+
+            var sb = new StringBuilder();
+            var i = 0;
+            var len = chars.Length;
+            while (true)
+            {
+                if (i >= len)
+                    break;
+
+                if (chars[i] == '-')
+                {
+                    if (i == len - 1)
+                    {
+                        sb.Append('-');
+                    }
+                    else
+                    {
+                        for (var c = chars[i - 1] + 1; c <= chars[i + 1]; c++)
+                        {
+                            sb.Append((char)c);
+                        }
+                        i++; // skip trailing range
+                    }
+                }
+                else
+                {
+                    sb.Append(chars[i]);
+                }
+                i++;
+            }
+
+            return sb.ToString();
         }
     }
 
-    class Identifier : GlobNode
+
+    class Identifier : SubSegment
     {
         public string Value { get; }
 
-        public Identifier(string value) 
+        public Identifier(string value)
             : base(GlobNodeType.Identifier)
         {
             Value = value;
         }
+
+        public static implicit operator Identifier(string value)
+        {
+            return new Identifier(value);
+        }
     }
 
-    class LiteralSet : GlobNode
+    class LiteralSet : SubSegment
     {
-        public IEnumerable<Identifier> Literals { get; }
+        public Identifier[] Literals { get; }
 
-        public LiteralSet(IEnumerable<Identifier> literals) 
+        public LiteralSet(params Identifier[] literals)
             : base(GlobNodeType.Identifier)
         {
-            Literals = literals.ToList();
+            Literals = literals.ToArray();
+        }
+
+        public LiteralSet(IEnumerable<Identifier> literals)
+            : base(GlobNodeType.Identifier)
+        {
+            Literals = literals.ToArray();
         }
     }
 
-    class PathSegment : GlobNode 
+    abstract class SubSegment : GlobNode
     {
-        public IEnumerable<GlobNode> SubSegments { get; }
-
-        protected PathSegment(GlobNodeType type, IEnumerable<GlobNode> parts)
+        public SubSegment(GlobNodeType type)
             : base(type)
         {
-            SubSegments = parts.ToList();
         }
-
-        public PathSegment(IEnumerable<GlobNode> parts) 
-            : base(GlobNodeType.PathSegment)
-        {
-            SubSegments = parts.ToList();
-        }
-    }
-
-    class Tree : GlobNode
-    {
-        public IEnumerable<PathSegment> Segments { get; }
-
-        public Tree(IEnumerable<PathSegment> segments) 
-            : base(GlobNodeType.Tree)
-        {
-            Segments = segments.ToList();
-        }
-    }
-
-    class GlobNode 
-    {
-        protected GlobNode(GlobNodeType type)
-        {
-            this.Type = type;
-        }
-
-        public GlobNodeType Type { get; private set; }
     }
 
     enum GlobNodeType
     {
-        CharacterSet, //string, no children
-        Tree, // children
-        Identifier, //string
-        LiteralSet, //children
-        PathSegment, //children
-        Root, //string 
-        StringWildcard, //string
-        CharacterWildcard, //string
+        Tree,
+
+        // Segments
+        Root,
         DirectoryWildcard,
+        DirectorySegment,
+
+        // SubSegments
+        CharacterSet,
+        Identifier,
+        LiteralSet,
+        StringWildcard,
+        CharacterWildcard
     }
 }

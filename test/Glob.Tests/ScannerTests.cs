@@ -30,9 +30,9 @@ namespace Glob.Tests
         public void CanParseFileNameWithUnderscore()
         {
             var scanner = new Scanner("_foo_bar.*");
-            AssertToken( TokenKind.Identifier, "_foo_bar.", scanner.Scan() );
-            AssertToken( TokenKind.Wildcard, "*", scanner.Scan() );
-            AssertToken( TokenKind.EOT, "", scanner.Scan() );
+            AssertToken(TokenKind.Identifier, "_foo_bar.", scanner.Scan());
+            AssertToken(TokenKind.Wildcard, "*", scanner.Scan());
+            AssertToken(TokenKind.EOT, "", scanner.Scan());
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Glob.Tests
         {
             var scanner = new Scanner(@"C:\*.txt");
             AssertToken(TokenKind.WindowsRoot, "C:", scanner.Scan());
-            AssertToken(TokenKind.PathSeperator, "\\", scanner.Scan());
+            AssertToken(TokenKind.PathSeparator, "\\", scanner.Scan());
             AssertToken(TokenKind.Wildcard, "*", scanner.Scan());
             AssertToken(TokenKind.Identifier, ".txt", scanner.Scan());
             AssertToken(TokenKind.EOT, "", scanner.Scan());

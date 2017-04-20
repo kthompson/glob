@@ -97,7 +97,8 @@ namespace Glob
             return CharacterWildcard.Default;
         }
 
-        private GlobNode ParseSubSegment()
+        // SubSegment := Identifier | CharacterSet | LiteralSet | CharacterWildcard | Wildcard
+        private SubSegment ParseSubSegment()
         {
             switch (this._currentToken.Kind)
             {
@@ -112,11 +113,16 @@ namespace Glob
                 case TokenKind.Wildcard:
                     return this.ParseWildcard();
                 default:
-                    throw new Exception("Unable to parse PathSubSegment");
+                    throw new Exception(
+                        "Unable to parse SubSegment. " +
+                        "   Expected one of Identifier | CharacterSet | LiteralSet | CharacterWildcard | Wildcard. " +
+                        $"Found: {this._currentToken.Kind}"
+                    );
             }
         }
 
-        private PathSegment ParseSegment()
+        // Segment := DirectoryWildcard | DirectorySegment
+        private Segment ParseSegment()
         {
             if (this._currentToken.Kind == TokenKind.DirectoryWildcard)
             {
@@ -124,12 +130,17 @@ namespace Glob
                 return DirectoryWildcard.Default;
             }
 
-            return ParsePathSegment();
+            return ParseDirectorySegment();
         }
 
-        private PathSegment ParsePathSegment()
+        // DirectorySegment := SubSegment SubSegment*
+        private Segment ParseDirectorySegment()
         {
-            var items = new List<GlobNode>();
+            var items = new List<SubSegment>
+            {
+                this.ParseSubSegment()
+            };
+
             while (true)
             {
                 switch (this._currentToken.Kind)
@@ -147,14 +158,14 @@ namespace Glob
                 break;
             }
 
-            return new PathSegment(items);
+            return new DirectorySegment(items);
         }
 
         private Root ParseRoot()
         {
-            if (this._currentToken.Kind == TokenKind.PathSeperator)
+            if (this._currentToken.Kind == TokenKind.PathSeparator)
                 return new Root(); //dont eat it so we can leave it for the segments
-            
+
             if (this._currentToken.Kind == TokenKind.WindowsRoot)
             {
                 var root = new Root(this._currentToken.Spelling);
@@ -166,11 +177,11 @@ namespace Glob
         }
 
         // Tree := ( Root | Segment ) ( '/' Segment )*
-        private GlobNode ParseTree()
+        protected internal Tree ParseTree()
         {
-            var items = new List<PathSegment>();
+            var items = new List<Segment>();
 
-            if (this._currentToken.Kind == TokenKind.PathSeperator || this._currentToken.Kind == TokenKind.WindowsRoot)
+            if (this._currentToken.Kind == TokenKind.PathSeparator || this._currentToken.Kind == TokenKind.WindowsRoot)
             {
                 items.Add(this.ParseRoot());
             }
@@ -179,7 +190,7 @@ namespace Glob
                 items.Add(this.ParseSegment());
             }
 
-            while (this._currentToken.Kind == TokenKind.PathSeperator)
+            while (this._currentToken.Kind == TokenKind.PathSeparator)
             {
                 this.AcceptIt();
                 items.Add(this.ParseSegment());
@@ -187,28 +198,28 @@ namespace Glob
 
             if (_currentToken.Kind != TokenKind.EOT)
                 items.Add(this.ParseSegment());
-            
+
             return new Tree(items);
         }
 
         public GlobNode Parse()
         {
-            if(this._scanner == null)
+            if (this._scanner == null)
                 throw new InvalidOperationException("Scanner was not initialized. Ensure you are passing a pattern to Parse.");
 
-            GlobNode path;
+            Tree path;
 
             switch (this._currentToken.Kind)
             {
                 case TokenKind.WindowsRoot:
-                case TokenKind.PathSeperator:
+                case TokenKind.PathSeparator:
                 case TokenKind.Identifier:
                 case TokenKind.CharacterSetStart:
                 case TokenKind.LiteralSetStart:
                 case TokenKind.CharacterWildcard:
                 case TokenKind.Wildcard:
                 case TokenKind.DirectoryWildcard:
-                    path =  this.ParseTree();
+                    path = this.ParseTree();
                     break;
                 default:
                     throw new InvalidOperationException("Expected Tree, found: " + _currentToken.Kind);

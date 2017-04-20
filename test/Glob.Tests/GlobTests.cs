@@ -12,6 +12,13 @@ namespace Glob.Tests
         private readonly string SourceRoot = Environment.GetEnvironmentVariable("APPVEYOR_BUILD_FOLDER") ?? Path.Combine("..", "..", "..", "..", "..");
 
         [Fact]
+        public void ShouldMatchFullGlob()
+        {
+            var glob = new Glob("Foo.txt");
+            Assert.False(glob.IsMatch("SomeFoo.txt")); // this fails because IsMatch is true
+        }
+
+        [Fact]
         public void CanParseSimpleFilename()
         {
             var glob = new Glob("*.txt");
@@ -117,7 +124,6 @@ namespace Glob.Tests
         [Fact]
         public void CanMatchDllExtension()
         {
-
             var root = new DirectoryInfo(SourceRoot);
             var allDllFiles = root.GlobFiles("**/*.dll");
 
@@ -127,7 +133,6 @@ namespace Glob.Tests
         [Fact]
         public void CanMatchInfoInFileSystemInfo()
         {
-
             var root = new DirectoryInfo(SourceRoot);
             var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
 
