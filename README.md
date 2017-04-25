@@ -20,13 +20,16 @@ See: http://en.wikipedia.org/wiki/Glob_(programming) for more info.
 * Macintosh OS X (Darwin)
 * Linux
 
+## Supported Pattern expressions
 
-## Why another glob library?
-
-From all of my searching I have not been able to find a glob utility that works on Windows and *nix.
-If you need something that works on all platforms... This is what you need.
-
-This is also a pure C# implementation.
+| Pattern   | Description                                                                    |
+|-----------|--------------------------------------------------------------------------------|
+| *         | matches any number of characters including none, excluding directory seperator |
+| ?         | matches a single character                                                     |
+| [abc]     | matches one character in the brackets                                          |
+| [!abc]    | matches any character not in the brackets                                      |
+| **        | match zero or more directories                                                 |
+| {abc,123} | comma delimited set of literals, matched 'abc' or '123'                        |
 
 
 ## Usage
