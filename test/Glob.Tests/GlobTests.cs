@@ -170,5 +170,13 @@ namespace Glob.Tests
             Assert.NotNull(result);
             Assert.True(result.Any(), $"There should be some directories that match glob: {globPattern} in '{root.FullName}'");
         }
+
+        [Fact]
+        public void CanMatchDirectoryWildcardInTopLevelDirectory()
+        {
+            const string globPattern = @"/**/somefile";
+            var glob = new Glob(globPattern);
+            Assert.True(glob.IsMatch("/somefile"));
+        }
     }
 }

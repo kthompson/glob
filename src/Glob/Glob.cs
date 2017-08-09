@@ -37,6 +37,9 @@ namespace Glob
 
             var regexPattern = GlobToRegexVisitor.Process(_root);
 
+            // Post-process to handle matching files located in top-level directory by Directory Wildcard
+            regexPattern = regexPattern.Replace(".*[/\\\\]", "(.*[/\\\\])?");
+
             _regex = new Regex(regexPattern, _options == GlobOptions.Compiled ? RegexOptions.Compiled | RegexOptions.Singleline : RegexOptions.Singleline);
         }
 
