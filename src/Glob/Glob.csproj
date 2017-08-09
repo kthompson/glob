@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <AssemblyTitle>A C# Glob pattern matcher for .NET</AssemblyTitle>
-    <VersionPrefix>0.3.3</VersionPrefix>
+    <VersionPrefix>0.3.4</VersionPrefix>
     <Authors>Kevin Thompson &lt;kevin.thompson@theautomaters.com&gt;</Authors>
     <TargetFrameworks>netstandard1.3;net40;net45;net46</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>Glob</AssemblyName>
     <PackageId>Glob</PackageId>
     <PackageTags>C#;glob;minimatch</PackageTags>
-    <PackageReleaseNotes>Allow underscores in identifiers</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix directory wildcard issue</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
