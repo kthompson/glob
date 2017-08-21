@@ -178,5 +178,23 @@ namespace Glob.Tests
             var glob = new Glob(globPattern);
             Assert.True(glob.IsMatch("/somefile"));
         }
+
+
+        [Fact]
+        public void CanMatchGlobWhenIgnoringCase()
+        {
+            var globCaseSensitive = new Glob("*file.txt");
+            Assert.True(globCaseSensitive.IsMatch("bigfile.txt"));
+            Assert.True(globCaseSensitive.IsMatch("smallfile.txt"));
+            Assert.False(globCaseSensitive.IsMatch("bigfile.Txt"));
+            Assert.False(globCaseSensitive.IsMatch("smallFile.TxT"));
+
+            var globCaseInsensitive = new Glob("*file.txt", GlobOptions.IgnoreCase);
+            Assert.True(globCaseInsensitive.IsMatch("bigfile.txt"));
+            Assert.True(globCaseInsensitive.IsMatch("smallfile.txt"));
+            Assert.True(globCaseInsensitive.IsMatch("bigfile.Txt"));
+            Assert.True(globCaseInsensitive.IsMatch("smallFile.TxT"));
+        }
+
     }
 }

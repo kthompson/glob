@@ -5,7 +5,8 @@ namespace Glob
     [Flags]
     public enum GlobOptions
     {
-        None,
-        Compiled, 
+        None = 0,
+        Compiled = 1, 
+        IgnoreCase = 2
     }
 }

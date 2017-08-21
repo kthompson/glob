@@ -40,7 +40,13 @@ namespace Glob
             // Post-process to handle matching files located in top-level directory by Directory Wildcard
             regexPattern = regexPattern.Replace(".*[/\\\\]", "(.*[/\\\\])?");
 
-            _regex = new Regex(regexPattern, _options == GlobOptions.Compiled ? RegexOptions.Compiled | RegexOptions.Singleline : RegexOptions.Singleline);
+            RegexOptions regexOptions = RegexOptions.Singleline;
+            if (_options.HasFlag(GlobOptions.Compiled))
+                regexOptions |= RegexOptions.Compiled;
+            if (_options.HasFlag(GlobOptions.IgnoreCase))
+                regexOptions |= RegexOptions.IgnoreCase;
+            
+            _regex = new Regex(regexPattern, regexOptions);
         }
 
         public bool IsMatch(string input)
