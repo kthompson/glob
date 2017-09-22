@@ -98,4 +98,4 @@ Enumerate through all matching files and folders recursively.
 
 ## Performance
 
-[See benchmarks](test/Glob.Benchmarks/BenchmarkDotNet.Artifacts/results/Benchmarks-report-github.md)
+[See benchmarks](test/Glob.Benchmarks/BenchmarkDotNet.Artifacts/results/GlobExpressions.Benchmarks.GlobBenchmarks-report-github.md)

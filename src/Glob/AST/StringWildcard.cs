@@ -8,5 +8,7 @@
             : base(GlobNodeType.StringWildcard)
         {
         }
+
+        public override string ToString() => "*";
     }
 }

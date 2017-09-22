@@ -8,5 +8,10 @@
             : base(GlobNodeType.DirectoryWildcard)
         {
         }
+
+        public override string ToString()
+        {
+            return "**";
+        }
     }
 }

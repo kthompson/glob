@@ -10,6 +10,8 @@
             Value = value;
         }
 
+        public override string ToString() => Value;
+
         public static implicit operator Identifier(string value)
         {
             return new Identifier(value);

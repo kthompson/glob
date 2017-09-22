@@ -50,7 +50,7 @@ namespace GlobExpressions
                     if (len + pathIndex > pathSegment.Length)
                         return false;
 
-                    if (!string.Equals(pathSegment.Substring(pathIndex, ident.Value.Length), ident.Value, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                    if (!SubstringEquals(pathSegment, pathIndex, ident.Value, caseSensitive))
                         return false;
 
                     return MatchesSubSegment(segments, nextSegment, -1, pathSegment, pathIndex + len, caseSensitive);
@@ -66,5 +66,9 @@ namespace GlobExpressions
                     return false;
             }
         }
+
+        private static bool SubstringEquals(string segment, int segmentIndex, string search, bool caseSensitive) =>
+            string.Equals(segment.Substring(segmentIndex, search.Length), search,
+            caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
     }
 }

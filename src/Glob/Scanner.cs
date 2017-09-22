@@ -50,11 +50,11 @@ namespace GlobExpressions
         {
             this._currentKind = this.ScanToken();
 
-            var spelling = _source.Substring(_startIndex, _sourceIndex - _startIndex);
+            var token = new Token(_currentKind, _source, _startIndex, _sourceIndex - _startIndex);
 
             _startIndex = _sourceIndex;
 
-            return new Token(_currentKind, spelling);
+            return token;
         }
 
         private TokenKind ScanToken()

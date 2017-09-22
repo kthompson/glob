@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using BenchmarkDotNet.Attributes;
 using GlobExpressions.AST;
 
@@ -36,6 +37,13 @@ namespace GlobExpressions.Benchmarks
         public object BenchmarkParseToTree()
         {
             return new Parser(Pattern).ParseTree();
+        }
+
+        [Benchmark]
+        public void PathTraversal()
+        {
+            var SourceRoot = Path.Combine("..", "..", "..", "..", "..");
+            var results = Glob.Files(SourceRoot, "test/*Tests/**/*.cs").ToList();
         }
     }
 }

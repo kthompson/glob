@@ -160,7 +160,7 @@ namespace GlobExpressions
         private Root ParseRoot()
         {
             if (this._currentToken.Kind == TokenKind.PathSeparator)
-                return new Root(); //dont eat it so we can leave it for the segments
+                return new Root(); // don't eat it so we can leave it for the segments
 
             if (this._currentToken.Kind == TokenKind.WindowsRoot)
             {

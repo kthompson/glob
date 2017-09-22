@@ -8,5 +8,7 @@
             : base(GlobNodeType.CharacterWildcard)
         {
         }
+
+        public override string ToString() => "?";
     }
 }

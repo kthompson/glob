@@ -12,5 +12,10 @@ namespace GlobExpressions.AST
         {
             SubSegments = subSegments.ToArray();
         }
+
+        public override string ToString()
+        {
+            return string.Join("", SubSegments.Select(x => x.ToString()));
+        }
     }
 }

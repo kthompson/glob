@@ -18,5 +18,7 @@ namespace GlobExpressions.AST
         {
             Literals = literals.ToArray();
         }
+
+        public override string ToString() => $"{{{string.Join(",", Literals.Select(lit => lit.ToString()))}}}";
     }
 }

@@ -2,13 +2,12 @@
 using System.IO;
 using System.Linq;
 using Xunit;
+using static GlobExpressions.Tests.TestHelpers;
 
 namespace GlobExpressions.Tests
 {
     public class GlobExtensionTests
     {
-        private readonly string SourceRoot = Environment.GetEnvironmentVariable("APPVEYOR_BUILD_FOLDER") ?? Path.Combine("..", "..", "..", "..", "..");
-
         [Fact]
         public void CanMatchBinFolderGlob()
         {

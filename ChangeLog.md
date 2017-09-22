@@ -9,14 +9,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Add Glob.Files and Glob.Directories APIs
 - Support for Case-Insensitive globbing
+- Reduced string allocations in Scanner
 
 ### Changed
 - All types are now located in the GlobExpressions namespace instead of Glob
+- Path traversal has been updated which may cause a different ordering of returned results
 
 ### Fixed
 - Fix bug where not all files are returned when using GlobExtensions
 - Fix NullReferenceException for empty patterns
 - Fix issue where directory wildcard and identifier cannot be mixed in a single Segment
+- Fix issue that caused unnecessary directory traversal (#20)
+- Fix issue where Glob.Directories did not always match properly
 
 [Unreleased]: https://github.com/kthompson/glob/compare/0.4.0...HEAD
 [0.4.0]: https://github.com/kthompson/glob/compare/0.3.3...0.4.0

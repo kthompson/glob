@@ -1,13 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using GlobExpressions.AST;
 using Xunit;
+using Xunit.Abstractions;
+using static GlobExpressions.Tests.TestHelpers;
 
 namespace GlobExpressions.Tests
 {
     public class PathTraverserTests
     {
+        private readonly ITestOutputHelper _printer;
+
+        public PathTraverserTests(ITestOutputHelper printer)
+        {
+            _printer = printer;
+        }
+
         [Fact]
         public void ShouldMatchStringWildcard()
         {
@@ -170,6 +181,36 @@ namespace GlobExpressions.Tests
             Assert.False(list.MatchesSegment("abcc", false));
             Assert.False(list.MatchesSegment("abdc", false));
             Assert.False(list.MatchesSegment("ab1c", false));
+        }
+
+        [Fact]
+        public void TraverseFiles()
+        {
+            var results = new DirectoryInfo(SourceRoot).Traverse("**/*Tests/**/P*", true, true, false).ToList();
+
+            results.ForEach(file => _printer.WriteLine(file.FullName));
+
+            Assert.Equal(3, results.Count);
+        }
+
+        [Fact]
+        public void TraverseDirectories()
+        {
+            var results = new DirectoryInfo(SourceRoot).Traverse("**/*Tests/**/P*", true, false, true).ToList();
+
+            results.ForEach(file => _printer.WriteLine(file.FullName));
+
+            Assert.Single(results);
+        }
+
+        [Fact]
+        public void TraverseFilesAndDirectories()
+        {
+            var results = new DirectoryInfo(Path.Combine(SourceRoot, "test")).Traverse("**/*Tests/**/P*", true, true, true).ToList();
+
+            results.ForEach(file => _printer.WriteLine(file.FullName));
+
+            Assert.Equal(4, results.Count);
         }
     }
 }
