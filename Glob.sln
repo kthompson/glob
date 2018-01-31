@@ -1,16 +1,16 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F967A574-936D-4CCE-B01F-E21F972F7E77}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		appveyor.yml = appveyor.yml
+		ChangeLog.md = ChangeLog.md
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glob", "src\Glob\Glob.csproj", "{5A5A5C43-BE46-4FE3-817F-C851E56913A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Glob", "src\Glob\Glob.csproj", "{5A5A5C43-BE46-4FE3-817F-C851E56913A2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Glob.Tests", "test\Glob.Tests\Glob.Tests.csproj", "{DBE93B48-45C0-4D89-99F5-446500566A8F}"
 EndProject
@@ -37,5 +37,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A29FBFB8-B98C-4EDA-8C3D-DFFC9D5CBE18}
 	EndGlobalSection
 EndGlobal
