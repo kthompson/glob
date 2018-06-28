@@ -93,3 +93,8 @@ Enumerate through all matching files and folders recursively.
 
     var root = new DirectoryInfo(@"C:\");
 	var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
+
+
+## Performance
+
+[See benchmarks](test/Glob.Benchmarks/BenchmarkDotNet.Artifacts/results/Benchmarks-report-github.md)
