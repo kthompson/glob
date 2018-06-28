@@ -41,7 +41,17 @@ See: http://en.wikipedia.org/wiki/Glob_(programming) for more info.
 
 ### Static Usage
 
+#### Single file
+
     var match = Glob.IsMatch(@"C:\files\bin\", "**/bin");	
+
+#### Files in a directory
+
+    string[] matchingFiles = Glob.Files(@"C:\files\bin\", "**/bin").ToArray();	
+
+#### Directories in a directory
+
+    string[] matchingDirectories = Glob.Directories(@"C:\files\bin\", "**/bin").ToArray();	
 
 ## Extension Methods
 

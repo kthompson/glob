@@ -93,5 +93,56 @@ namespace GlobExpressions
 
         public static bool IsMatch(string input, string pattern, GlobOptions options = GlobOptions.None) =>
             new Glob(pattern, options).IsMatch(input);
+
+        public static IEnumerable<string> Files(string workingDirectory, string pattern)
+        {
+            var directoryInfo = new DirectoryInfo(workingDirectory);
+            var truncateLength = directoryInfo.FullName.Length + 1;
+
+            return Files(directoryInfo, pattern).Select(info => info.FullName.Remove(0, truncateLength));
+        }
+
+        public static IEnumerable<FileInfo> Files(DirectoryInfo workingDirectory, string pattern)
+        {
+            var glob = new Glob(pattern, GlobOptions.Compiled);
+            var truncateLength = workingDirectory.FullName.Length + 1;
+
+            return workingDirectory.EnumerateFiles("*", SearchOption.AllDirectories)
+                .Where(info => glob.IsMatch(info.FullName.Remove(0, truncateLength)));
+        }
+
+        public static IEnumerable<string> Directories(string workingDirectory, string pattern)
+        {
+            var directoryInfo = new DirectoryInfo(workingDirectory);
+            var truncateLength = directoryInfo.FullName.Length + 1;
+
+            return Directories(directoryInfo, pattern).Select(info => info.FullName.Remove(0, truncateLength));
+        }
+
+        public static IEnumerable<DirectoryInfo> Directories(DirectoryInfo workingDirectory, string pattern)
+        {
+            var glob = new Glob(pattern, GlobOptions.Compiled);
+            var truncateLength = workingDirectory.FullName.Length + 1;
+
+            return workingDirectory.EnumerateDirectories("*", SearchOption.AllDirectories)
+                .Where(info => glob.IsMatch(info.FullName.Remove(0, truncateLength)));
+        }
+
+        public static IEnumerable<string> FilesAndDirectories(string workingDirectory, string pattern)
+        {
+            var directoryInfo = new DirectoryInfo(workingDirectory);
+            var truncateLength = directoryInfo.FullName.Length + 1;
+
+            return FilesAndDirectories(directoryInfo, pattern).Select(info => info.FullName.Remove(0, truncateLength));
+        }
+
+        public static IEnumerable<FileSystemInfo> FilesAndDirectories(DirectoryInfo workingDirectory, string pattern)
+        {
+            var glob = new Glob(pattern, GlobOptions.Compiled);
+            var truncateLength = workingDirectory.FullName.Length + 1;
+
+            return workingDirectory.EnumerateFileSystemInfos("*", SearchOption.AllDirectories)
+                .Where(info => glob.IsMatch(info.FullName.Remove(0, truncateLength)));
+        }
     }
 }

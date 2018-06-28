@@ -3,15 +3,15 @@ using BenchmarkDotNet.Attributes;
 
 namespace GlobExpressions.Benchmarks
 {
-    public class Benchmarks
+    public class GlobBenchmarks
     {
-        private static readonly string Pattern = "p?th/*a[bcd]b[e-g]a[1-4][!wxyz][!a-c][!1-3].*";
+        private const string Pattern = "p?th/*a[bcd]b[e-g]a[1-4][!wxyz][!a-c][!1-3].*";
         private Glob _compiled;
         private Glob _uncompiled;
         private Tree _segments;
         private string[] _pathSegments;
 
-        public Benchmarks()
+        public GlobBenchmarks()
         {
             this._compiled = new Glob(Pattern, GlobOptions.Compiled);
             this._uncompiled = new Glob(Pattern);

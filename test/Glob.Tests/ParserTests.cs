@@ -66,7 +66,7 @@ namespace GlobExpressions.Tests
         {
             var x = new CharacterSet("a-fG-L", false);
             AssertIdentifier(x.Characters, "a-fG-L");
-            Assert.Equal(x.ExpandedCharacters, "abcdefGHIJKL");
+            Assert.Equal("abcdefGHIJKL", x.ExpandedCharacters);
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace GlobExpressions.Tests
                             var set = Assert.IsType<CharacterSet>(subSegment);
                             Assert.False(set.Inverted);
                             AssertIdentifier(set.Characters, "e-z");
-                            Assert.Equal(set.ExpandedCharacters, "efghijklmnopqrstuvwxyz");
+                            Assert.Equal("efghijklmnopqrstuvwxyz", set.ExpandedCharacters);
                         },
                         subSegment => AssertIdentifier(subSegment, ".txt"));
                 });

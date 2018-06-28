@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyTitle>A C# Glob pattern matcher for .NET</AssemblyTitle>
     <VersionPrefix>0.4.0</VersionPrefix>
-    <Authors>Kevin Thompson &lt;kevin.thompson@theautomaters.com&gt;</Authors>
+    <Authors>Kevin Thompson &lt;kevin@theautomaters.com&gt;</Authors>
     <TargetFrameworks>netstandard1.3;net40;net45;net46</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>Glob</AssemblyName>

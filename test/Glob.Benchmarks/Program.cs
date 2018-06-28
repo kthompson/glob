@@ -17,7 +17,7 @@ namespace GlobExpressions.Benchmarks
             config.Add(DefaultConfig.Instance);
             config.Set(config.GetSummaryStyle().WithTimeUnit(TimeUnit.Nanosecond));
 
-            BenchmarkRunner.Run<Benchmarks>(config);
+            BenchmarkRunner.Run<GlobBenchmarks>(config);
         }
     }
 }

@@ -8,8 +8,7 @@ namespace GlobExpressions.Tests
 {
     public class PathTests
     {
-        private static string[] filenames = new[]
-        {
+        private static readonly string[] filenames = {
             @"C:\Users\Kevin\Desktop\notes.txt",
             @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi",
             @"C:\Users\Kevin\Downloads\lotus_nightlight.stl",
@@ -49,7 +48,7 @@ namespace GlobExpressions.Tests
         [Fact]
         public void RootPatternMatchWithoutDirectory()
         {
-            Assert.Collection(GetRegexForGlobPattern(@"C:\*.*"));
+            Assert.Empty(GetRegexForGlobPattern(@"C:\*.*"));
         }
 
         [Fact]
