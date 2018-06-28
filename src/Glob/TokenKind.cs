@@ -1,4 +1,4 @@
-﻿namespace Glob
+﻿namespace GlobExpressions
 {
     enum TokenKind
     {

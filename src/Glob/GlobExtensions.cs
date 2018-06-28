@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Glob
+namespace GlobExpressions
 {
     public static class GlobExtensions
     {

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using BenchmarkDotNet.Attributes;
 
-namespace Glob.Benchmarks
+namespace GlobExpressions.Benchmarks
 {
     public class Benchmarks
     {
@@ -15,7 +15,6 @@ namespace Glob.Benchmarks
         {
             this._compiled = new Glob(Pattern, GlobOptions.Compiled);
             this._uncompiled = new Glob(Pattern);
-
 
             this._segments = new Parser(Pattern).ParseTree();
 

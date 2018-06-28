@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Text;
 
-namespace Glob
+namespace GlobExpressions
 {
-    abstract class GlobNode
+    internal abstract class GlobNode
     {
         protected GlobNode(GlobNodeType type)
         {
@@ -14,7 +14,7 @@ namespace Glob
         public GlobNodeType Type { get; }
     }
 
-    class Tree : GlobNode
+    internal class Tree : GlobNode
     {
         public Segment[] Segments { get; }
 
@@ -25,7 +25,7 @@ namespace Glob
         }
     }
 
-    class Root : Segment
+    internal class Root : Segment
     {
         public string Text { get; }
 
@@ -36,7 +36,7 @@ namespace Glob
         }
     }
 
-    class DirectoryWildcard : Segment
+    internal class DirectoryWildcard : Segment
     {
         public static readonly DirectoryWildcard Default = new DirectoryWildcard();
 
@@ -46,7 +46,7 @@ namespace Glob
         }
     }
 
-    class DirectorySegment : Segment
+    internal class DirectorySegment : Segment
     {
         public SubSegment[] SubSegments { get; }
 
@@ -57,7 +57,7 @@ namespace Glob
         }
     }
 
-    abstract class Segment : GlobNode
+    internal abstract class Segment : GlobNode
     {
         protected Segment(GlobNodeType type)
             : base(type)
@@ -65,7 +65,7 @@ namespace Glob
         }
     }
 
-    class StringWildcard : SubSegment
+    internal class StringWildcard : SubSegment
     {
         public static readonly StringWildcard Default = new StringWildcard();
 
@@ -75,7 +75,7 @@ namespace Glob
         }
     }
 
-    class CharacterWildcard : SubSegment
+    internal class CharacterWildcard : SubSegment
     {
         public static readonly CharacterWildcard Default = new CharacterWildcard();
 
@@ -85,7 +85,7 @@ namespace Glob
         }
     }
 
-    class CharacterSet : SubSegment
+    internal class CharacterSet : SubSegment
     {
         public bool Inverted { get; }
         public Identifier Characters { get; }
@@ -140,8 +140,7 @@ namespace Glob
         }
     }
 
-
-    class Identifier : SubSegment
+    internal class Identifier : SubSegment
     {
         public string Value { get; }
 
@@ -157,7 +156,7 @@ namespace Glob
         }
     }
 
-    class LiteralSet : SubSegment
+    internal class LiteralSet : SubSegment
     {
         public Identifier[] Literals { get; }
 
@@ -174,7 +173,7 @@ namespace Glob
         }
     }
 
-    abstract class SubSegment : GlobNode
+    internal abstract class SubSegment : GlobNode
     {
         public SubSegment(GlobNodeType type)
             : base(type)
@@ -182,17 +181,19 @@ namespace Glob
         }
     }
 
-    enum GlobNodeType
+    internal enum GlobNodeType
     {
         Tree,
 
         // Segments
         Root,
+
         DirectoryWildcard,
         DirectorySegment,
 
         // SubSegments
         CharacterSet,
+
         Identifier,
         LiteralSet,
         StringWildcard,

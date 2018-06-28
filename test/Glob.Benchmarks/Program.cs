@@ -7,7 +7,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Horology;
 using BenchmarkDotNet.Running;
 
-namespace Glob.Benchmarks
+namespace GlobExpressions.Benchmarks
 {
     public class Program
     {

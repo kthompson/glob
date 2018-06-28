@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Glob.Tests
+namespace GlobExpressions.Tests
 {
     public class PathTraverserTests
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace Glob.Tests
+namespace GlobExpressions.Tests
 {
     public class PathTests
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Xunit;
 
-namespace Glob.Tests
+namespace GlobExpressions.Tests
 {
     public class GlobExtensionTests
     {
@@ -57,8 +57,8 @@ namespace Glob.Tests
             var result = root.GlobFiles(globPattern).OrderBy(x => x.Name).ToList();
 
             Assert.Collection(
-                result, 
-                file => Assert.Equal("Glob.Benchmarks.csproj", file.Name), 
+                result,
+                file => Assert.Equal("Glob.Benchmarks.csproj", file.Name),
                 file => Assert.Equal("Glob.csproj", file.Name),
                 file => Assert.Equal("Glob.Tests.csproj", file.Name)
             );
@@ -88,6 +88,5 @@ namespace Glob.Tests
             Assert.NotNull(result);
             Assert.True(result.Any(), $"There should be some directories that match glob: {globPattern} in '{root.FullName}'");
         }
-
     }
 }

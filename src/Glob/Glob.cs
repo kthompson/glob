@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Glob
+namespace GlobExpressions
 {
     public class Glob
     {
@@ -13,7 +13,6 @@ namespace Glob
 
         private Tree _root;
         private Segment[] _segments;
-
 
         public Glob(string pattern, GlobOptions options = GlobOptions.None)
         {
@@ -46,7 +45,7 @@ namespace Glob
             if (_segments.Length == 1)
             {
                 var last = pathSegments.LastOrDefault();
-                var tail = (last == null) ? new string[0] : new[] {last};
+                var tail = (last == null) ? new string[0] : new[] { last };
 
                 if (IsMatch(_segments, 0, tail, 0))
                     return true;
@@ -55,7 +54,7 @@ namespace Glob
             return IsMatch(_segments, 0, pathSegments, 0);
         }
 
-        static bool IsMatch(Segment[] pattern, int patternIndex, string[] input, int inputIndex)
+        private static bool IsMatch(Segment[] pattern, int patternIndex, string[] input, int inputIndex)
         {
             while (true)
             {
@@ -68,7 +67,6 @@ namespace Glob
 
                 var inputHead = input[inputIndex];
                 var patternHead = pattern[patternIndex];
-
 
                 switch (patternHead)
                 {
@@ -90,12 +88,10 @@ namespace Glob
                 }
 
                 return false;
-
             }
         }
 
         public static bool IsMatch(string input, string pattern, GlobOptions options = GlobOptions.None) =>
             new Glob(pattern, options).IsMatch(input);
-
     }
 }

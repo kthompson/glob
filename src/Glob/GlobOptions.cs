@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Glob
+namespace GlobExpressions
 {
     [Flags]
     public enum GlobOptions

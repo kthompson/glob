@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Glob.Tests
+namespace GlobExpressions.Tests
 {
     public class ParserTests
     {
@@ -47,7 +47,7 @@ namespace Glob.Tests
         {
             var glob = Parse("**/bin");
             var tree = Assert.IsType<Tree>(glob);
-            Assert.Collection(tree.Segments, 
+            Assert.Collection(tree.Segments,
                 segment => Assert.Same(DirectoryWildcard.Default, segment),
                 segment =>
                 {
@@ -87,11 +87,9 @@ namespace Glob.Tests
                             Assert.False(set.Inverted);
                             AssertIdentifier(set.Characters, "e-z");
                             Assert.Equal(set.ExpandedCharacters, "efghijklmnopqrstuvwxyz");
-
                         },
                         subSegment => AssertIdentifier(subSegment, ".txt"));
                 });
-
         }
 
         private static void AssertIdentifier(SubSegment subSegment, string expected)
