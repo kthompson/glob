@@ -88,5 +88,29 @@ namespace GlobExpressions.Tests
             Assert.NotNull(result);
             Assert.True(result.Any(), $"There should be some directories that match glob: {globPattern} in '{root.FullName}'");
         }
+
+        [Fact]
+        public void CanMatchFilesInDirectoriesWithTrailingSlash()
+        {
+            var globPattern = @"**/*Gl*.Te*";
+            var root = new DirectoryInfo(SourceRoot + Path.DirectorySeparatorChar).FullName;
+            var result = Glob.Files(root, globPattern).ToList();
+
+            Assert.NotNull(result);
+            Assert.All(result, path => Assert.StartsWith("test", path));
+            Assert.True(result.Any(), $"There should be some directories that match glob: {globPattern} in '{root}'");
+        }
+
+        [Fact]
+        public void CanMatchFilesInDirectoriesWithoutTrailingSlash()
+        {
+            var globPattern = @"**/*Gl*.Te*";
+            var root = new DirectoryInfo(SourceRoot).FullName;
+            var result = Glob.Files(root, globPattern).ToList();
+
+            Assert.NotNull(result);
+            Assert.All(result, path => Assert.StartsWith("test", path));
+            Assert.True(result.Any(), $"There should be some directories that match glob: {globPattern} in '{root}'");
+        }
     }
 }
