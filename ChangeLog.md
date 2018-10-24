@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Fix bug where not all files are returned when using GlobExtensions
+- Fix NullReferenceException for empty patterns
 
 [Unreleased]: https://github.com/kthompson/glob/compare/0.4.0...HEAD
 [0.4.0]: https://github.com/kthompson/glob/compare/0.3.3...0.4.0

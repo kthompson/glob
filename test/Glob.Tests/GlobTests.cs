@@ -6,7 +6,6 @@ namespace GlobExpressions.Tests
 {
     public class GlobTests
     {
-        
         [Fact]
         public void ShouldMatchFullGlob()
         {
@@ -47,7 +46,6 @@ namespace GlobExpressions.Tests
             Assert.True(glob.IsMatch("bigfile.txt"));
             Assert.True(glob.IsMatch("smallfile.txt"));
         }
-
 
         [Fact]
         public void CanMatchSingleFileOnExtension()
@@ -114,6 +112,15 @@ namespace GlobExpressions.Tests
             const string globPattern = @"/**/somefile";
             var glob = new Glob(globPattern);
             Assert.True(glob.IsMatch("/somefile"));
+        }
+
+        [Fact]
+        public void GlobShouldNotMatchAnythingForEmptyString()
+        {
+            const string globPattern = @"";
+            var glob = new Glob(globPattern);
+            Assert.False(glob.IsMatch("/somefile"));
+            Assert.False(glob.IsMatch(""));
         }
     }
 }

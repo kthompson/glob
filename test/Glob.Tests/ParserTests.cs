@@ -12,16 +12,14 @@ namespace GlobExpressions.Tests
 
         private static GlobNode Parse(string pattern)
         {
-            var parser = new Parser();
-            var glob = parser.Parse(pattern);
-            return glob;
+            var parser = new Parser(pattern);
+            return parser.Parse();
         }
 
         [Fact]
         public void CanParseSimpleFilename()
         {
-            var parser = new Parser();
-            var glob = parser.Parse("*.txt");
+            var glob = Parse("*.txt");
             Assert.Equal(GlobNodeType.Tree, glob.Type);
             var tree = Assert.IsType<Tree>(glob);
             Assert.Collection(tree.Segments, segment =>

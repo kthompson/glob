@@ -5,22 +5,14 @@ using System.Text;
 
 namespace GlobExpressions
 {
-    class Parser
+    internal class Parser
     {
-        private Scanner _scanner;
+        private readonly Scanner _scanner;
         private Token _currentToken;
 
         public Parser(string pattern = null)
         {
-            if (!string.IsNullOrEmpty(pattern))
-            {
-                InitializeScanner(pattern);
-            }
-        }
-
-        private void InitializeScanner(string pattern)
-        {
-            this._scanner = new Scanner(pattern);
+            this._scanner = new Scanner(pattern ?? "");
             this._currentToken = _scanner.Scan();
         }
 
@@ -104,14 +96,19 @@ namespace GlobExpressions
             {
                 case TokenKind.Identifier:
                     return this.ParseIdentifier();
+
                 case TokenKind.CharacterSetStart:
                     return this.ParseCharacterSet();
+
                 case TokenKind.LiteralSetStart:
                     return this.ParseLiteralSet();
+
                 case TokenKind.CharacterWildcard:
                     return this.ParseCharacterWildcard();
+
                 case TokenKind.Wildcard:
                     return this.ParseWildcard();
+
                 default:
                     throw new Exception(
                         "Unable to parse SubSegment. " +
@@ -181,13 +178,19 @@ namespace GlobExpressions
         {
             var items = new List<Segment>();
 
-            if (this._currentToken.Kind == TokenKind.PathSeparator || this._currentToken.Kind == TokenKind.WindowsRoot)
+            switch (this._currentToken.Kind)
             {
-                items.Add(this.ParseRoot());
-            }
-            else
-            {
-                items.Add(this.ParseSegment());
+                case TokenKind.EOT:
+                    break;
+
+                case TokenKind.PathSeparator:
+                case TokenKind.WindowsRoot:
+                    items.Add(this.ParseRoot());
+                    break;
+
+                default:
+                    items.Add(this.ParseSegment());
+                    break;
             }
 
             while (this._currentToken.Kind == TokenKind.PathSeparator)
@@ -204,9 +207,6 @@ namespace GlobExpressions
 
         public GlobNode Parse()
         {
-            if (this._scanner == null)
-                throw new InvalidOperationException("Scanner was not initialized. Ensure you are passing a pattern to Parse.");
-
             Tree path;
 
             switch (this._currentToken.Kind)
@@ -221,20 +221,13 @@ namespace GlobExpressions
                 case TokenKind.DirectoryWildcard:
                     path = this.ParseTree();
                     break;
+
                 default:
                     throw new InvalidOperationException("Expected Tree, found: " + _currentToken.Kind);
             }
 
             this.Accept(TokenKind.EOT);
             return path;
-        }
-
-        public GlobNode Parse(string text)
-        {
-            if (text != null)
-                InitializeScanner(text);
-
-            return this.Parse();
         }
     }
 }
