@@ -4,7 +4,7 @@ using Xunit;
 
 namespace GlobExpressions.Tests
 {
-    public class GlobTests
+    public class lobTests
     {
         [Fact]
         public void ShouldMatchFullGlob()
@@ -187,6 +187,14 @@ namespace GlobExpressions.Tests
             Assert.True(glob.IsMatch("Cd"));
             Assert.True(glob.IsMatch("cD"));
             Assert.True(glob.IsMatch("CD"));
+        }
+
+        [Fact]
+        public void ShouldNotMatchLiteralSet()
+        {
+            const string globPattern = @"{ab,cd}";
+            var glob = new Glob(globPattern, GlobOptions.CaseInsensitive);
+            Assert.False(glob.IsMatch("dc"));
         }
     }
 }
