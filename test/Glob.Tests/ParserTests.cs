@@ -99,6 +99,55 @@ namespace GlobExpressions.Tests
             Assert.Empty(tree.Segments);
         }
 
+        [Fact]
+        public void CanParseDoubleWildcard()
+        {
+            var glob = Parse("a**/*.cs");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => AssertIdentifier(subSegment, "a"),
+                        subSegment => Assert.Same(StringWildcard.Default, subSegment)
+                    );
+                },
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => Assert.Same(StringWildcard.Default, subSegment),
+                        subSegment => AssertIdentifier(subSegment, ".cs")
+                    );
+                });
+        }
+
+        [Fact]
+        public void CanParseDoubleWildcardPrefix()
+        {
+            var glob = Parse("**a/*.cs");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => Assert.Same(StringWildcard.Default, subSegment),
+                        subSegment => AssertIdentifier(subSegment, "a")
+                    );
+                },
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => Assert.Same(StringWildcard.Default, subSegment),
+                        subSegment => AssertIdentifier(subSegment, ".cs")
+                    );
+                }
+                );
+        }
+
         private static void AssertIdentifier(SubSegment subSegment, string expected)
         {
             var identifier = Assert.IsType<Identifier>(subSegment);

@@ -120,24 +120,14 @@ namespace GlobExpressions
         }
 
         // Segment := DirectoryWildcard | DirectorySegment
+        // DirectorySegment := SubSegment SubSegment*
         private Segment ParseSegment()
         {
-            if (this._currentToken.Kind == TokenKind.DirectoryWildcard)
-            {
-                this.AcceptIt();
-                return DirectoryWildcard.Default;
-            }
-
-            return ParseDirectorySegment();
-        }
-
-        // DirectorySegment := SubSegment SubSegment*
-        private Segment ParseDirectorySegment()
-        {
-            var items = new List<SubSegment>
-            {
-                this.ParseSubSegment()
-            };
+            /** NOTE: DirectoryWildcard should normally take a whole segment, but in the case
+             * of a DirectoryWildcard being combined with a SubSegment we will convert the
+             * DirectoryWildcard to a normal Wildcard */
+            var items = new List<SubSegment>();
+            var isDirectoryWildcard = false;
 
             while (true)
             {
@@ -150,11 +140,19 @@ namespace GlobExpressions
                     case TokenKind.Wildcard:
                         items.Add(this.ParseSubSegment());
                         continue;
-                    default:
-                        break;
+
+                    case TokenKind.DirectoryWildcard:
+                        // treat DirectoryWildcard as StringWildcard if we have more than one SubSegment
+                        isDirectoryWildcard = true;
+                        this.AcceptIt();
+                        items.Add(StringWildcard.Default);
+                        continue;
                 }
                 break;
             }
+
+            if (items.Count == 1 && isDirectoryWildcard)
+                return DirectoryWildcard.Default;
 
             return new DirectorySegment(items);
         }

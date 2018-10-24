@@ -171,5 +171,20 @@ namespace GlobExpressions.Tests
             var glob = new Glob(globPattern, GlobOptions.CaseInsensitive);
             Assert.False(glob.IsMatch("dc"));
         }
+
+        [Theory]
+        [InlineData("a**/*.cs", "ab/c.cs", "a/b/c.cs")]
+        [InlineData("a**/*.cs", "a/c.cs")]
+        [InlineData("**a/*.cs", "a/c.cs", "b/a/a.cs")]
+        [InlineData("**a/*.cs", "ba/c.cs")]
+        public void TestDoubleWildcard(string pattern, string positiveMatch, string negativeMatch = null)
+        {
+            var glob = new Glob(pattern);
+            if (positiveMatch != null)
+                Assert.True(glob.IsMatch(positiveMatch));
+
+            if (negativeMatch != null)
+                Assert.False(glob.IsMatch(negativeMatch));
+        }
     }
 }

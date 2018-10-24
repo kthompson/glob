@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GlobExpressions
 {
-    class Scanner
+    internal class Scanner
     {
         private readonly string _source;
 
@@ -59,10 +59,10 @@ namespace GlobExpressions
 
         private TokenKind ScanToken()
         {
-            if(this._currentCharacter == -1)
+            if (this._currentCharacter == -1)
                 return TokenKind.EOT;
 
-            var current = (char) _currentCharacter;
+            var current = (char)_currentCharacter;
 
             if (char.IsLetter(current))
             {
@@ -92,6 +92,7 @@ namespace GlobExpressions
                     }
 
                     return TokenKind.Wildcard;
+
                 case '?':
                     this.TakeIt();
                     return TokenKind.CharacterWildcard;
@@ -132,7 +133,6 @@ namespace GlobExpressions
 
         private TokenKind TakeIdentifier()
         {
-            
             while (IsIdentifierCharacter((char)this._currentCharacter))
             {
                 this.TakeIt();
