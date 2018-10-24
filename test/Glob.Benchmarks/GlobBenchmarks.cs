@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using BenchmarkDotNet.Attributes;
+using GlobExpressions.AST;
 
 namespace GlobExpressions.Benchmarks
 {

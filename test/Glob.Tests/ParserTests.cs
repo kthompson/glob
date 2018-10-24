@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using GlobExpressions.AST;
+using Xunit;
 
 namespace GlobExpressions.Tests
 {

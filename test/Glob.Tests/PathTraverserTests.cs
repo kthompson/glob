@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GlobExpressions.AST;
 using Xunit;
 
 namespace GlobExpressions.Tests
@@ -112,7 +113,6 @@ namespace GlobExpressions.Tests
             Assert.True(list.MatchesSegment("abdc"));
             Assert.True(list.MatchesSegment("ab1c"));
         }
-
 
         [Fact]
         public void ShouldMatchCharacterSetRange()

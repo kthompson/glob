@@ -2,15 +2,16 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using GlobExpressions.AST;
 
 namespace GlobExpressions
 {
-    static class Matcher
+    internal static class Matcher
     {
         public static bool MatchesSegment(this DirectorySegment segment, string pathSegment) =>
             MatchesSubSegment(segment.SubSegments, 0, pathSegment, 0);
 
-        static bool MatchesSubSegment(SubSegment[] segments, int segmentIndex, string pathSegment, int pathIndex)
+        private static bool MatchesSubSegment(SubSegment[] segments, int segmentIndex, string pathSegment, int pathIndex)
         {
             var nextSegment = segmentIndex + 1;
             if (nextSegment > segments.Length)
@@ -52,7 +53,6 @@ namespace GlobExpressions
                     return inThere && MatchesSubSegment(segments, nextSegment, pathSegment, pathIndex + 1);
             }
             return false;
-
         }
     }
 }
