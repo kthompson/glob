@@ -91,6 +91,14 @@ namespace GlobExpressions.Tests
                 });
         }
 
+        [Fact]
+        public void CanParseEmptyString()
+        {
+            var node = Parse("");
+            var tree = Assert.IsType<Tree>(node);
+            Assert.Empty(tree.Segments);
+        }
+
         private static void AssertIdentifier(SubSegment subSegment, string expected)
         {
             var identifier = Assert.IsType<Identifier>(subSegment);

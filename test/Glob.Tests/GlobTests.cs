@@ -4,47 +4,32 @@ using Xunit;
 
 namespace GlobExpressions.Tests
 {
-    public class lobTests
+    public class GlobTests
     {
         [Fact]
         public void ShouldMatchFullGlob()
         {
             var glob = new Glob("Foo.txt");
-            Assert.False(glob.IsMatch("SomeFoo.txt")); // this fails because IsMatch is true
+            Assert.False(glob.IsMatch("SomeFoo.txt"));
         }
 
-        [Fact]
-        public void CanParseSimpleFilename()
+        [Theory]
+        [InlineData("*.txt", @"c:\windows\file.txt", "file.zip")]
+        [InlineData("*.txt", "file.txt")]
+        [InlineData("/some/dir/folder/foo.*", "/some/dir/folder/foo.txt")]
+        [InlineData("/some/dir/folder/foo.*", "/some/dir/folder/foo.csv")]
+        [InlineData("a_*file.txt", "a_bigfile.txt", "another_file.txt")]
+        [InlineData("a_*file.txt", "a_file.txt")]
+        [InlineData("*file.txt", "bigfile.txt")]
+        [InlineData("*file.txt", "smallfile.txt")]
+        public void TestWildcard(string pattern, string positiveMatch, string negativeMatch = null)
         {
-            var glob = new Glob("*.txt");
-            Assert.True(glob.IsMatch("file.txt"));
-            Assert.False(glob.IsMatch("file.zip"));
-            Assert.True(glob.IsMatch(@"c:\windows\file.txt"));
-        }
+            var glob = new Glob(pattern);
 
-        [Fact]
-        public void CanParseDots()
-        {
-            var glob = new Glob("/some/dir/folder/foo.*");
-            Assert.True(glob.IsMatch("/some/dir/folder/foo.txt"));
-            Assert.True(glob.IsMatch("/some/dir/folder/foo.csv"));
-        }
-
-        [Fact]
-        public void CanMatchUnderscore()
-        {
-            var glob = new Glob("a_*file.txt");
-            Assert.True(glob.IsMatch("a_bigfile.txt"));
-            Assert.True(glob.IsMatch("a_file.txt"));
-            Assert.False(glob.IsMatch("another_file.txt"));
-        }
-
-        [Fact]
-        public void CanMatchSingleFile()
-        {
-            var glob = new Glob("*file.txt");
-            Assert.True(glob.IsMatch("bigfile.txt"));
-            Assert.True(glob.IsMatch("smallfile.txt"));
+            if (positiveMatch != null)
+                Assert.True(glob.IsMatch(positiveMatch));
+            if (negativeMatch != null)
+                Assert.False(glob.IsMatch(negativeMatch));
         }
 
         [Fact]
@@ -65,45 +50,35 @@ namespace GlobExpressions.Tests
             Assert.True(glob.IsMatch("folder/smallfile.txt.min"));
         }
 
-        [Fact]
-        public void CanMatchSingleFileUsingCharRange()
+        [Theory]
+        [InlineData("*fil[e-z].txt", "bigfile.txt", "smallfila.txt")]
+        [InlineData("*fil[e-z].txt", "smallfilf.txt", "smallfilez.txt")]
+        [InlineData("*file[1-9].txt", "bigfile1.txt", "smallfile0.txt")]
+        [InlineData("*file[1-9].txt", "smallfile8.txt", "smallfilea.txt")]
+        public void TestCharacterRange(string pattern, string positiveMatch, string negativeMatch = null)
         {
-            var glob = new Glob("*fil[e-z].txt");
-            Assert.True(glob.IsMatch("bigfile.txt"));
-            Assert.True(glob.IsMatch("smallfilf.txt"));
-            Assert.False(glob.IsMatch("smallfila.txt"));
-            Assert.False(glob.IsMatch("smallfilez.txt"));
+            var glob = new Glob(pattern);
+
+            if (positiveMatch != null)
+                Assert.True(glob.IsMatch(positiveMatch));
+            if (negativeMatch != null)
+                Assert.False(glob.IsMatch(negativeMatch));
         }
 
-        [Fact]
-        public void CanMatchSingleFileUsingNumberRange()
+        [Theory]
+        [InlineData("*file[abc].txt", "bigfilea.txt", "smallfiled.txt")]
+        [InlineData("*file[abc].txt", "smallfileb.txt", "smallfileaa.txt")]
+        [InlineData("*file[!abc].txt", "smallfiled.txt", "bigfilea.txt")]
+        [InlineData("*file[!abc].txt", "smallfile-.txt", "smallfileaa.txt")]
+        [InlineData("*file[!abc].txt", null, "smallfileb.txt")]
+        public void TestCharacterList(string pattern, string positiveMatch, string negativeMatch = null)
         {
-            var glob = new Glob("*file[1-9].txt");
-            Assert.True(glob.IsMatch("bigfile1.txt"));
-            Assert.True(glob.IsMatch("smallfile8.txt"));
-            Assert.False(glob.IsMatch("smallfile0.txt"));
-            Assert.False(glob.IsMatch("smallfilea.txt"));
-        }
+            var glob = new Glob(pattern);
 
-        [Fact]
-        public void CanMatchSingleFileUsingCharList()
-        {
-            var glob = new Glob("*file[abc].txt");
-            Assert.True(glob.IsMatch("bigfilea.txt"));
-            Assert.True(glob.IsMatch("smallfileb.txt"));
-            Assert.False(glob.IsMatch("smallfiled.txt"));
-            Assert.False(glob.IsMatch("smallfileaa.txt"));
-        }
-
-        [Fact]
-        public void CanMatchSingleFileUsingInvertedCharList()
-        {
-            var glob = new Glob("*file[!abc].txt");
-            Assert.False(glob.IsMatch("bigfilea.txt"));
-            Assert.False(glob.IsMatch("smallfileb.txt"));
-            Assert.True(glob.IsMatch("smallfiled.txt"));
-            Assert.True(glob.IsMatch("smallfile-.txt"));
-            Assert.False(glob.IsMatch("smallfileaa.txt"));
+            if (positiveMatch != null)
+                Assert.True(glob.IsMatch(positiveMatch));
+            if (negativeMatch != null)
+                Assert.False(glob.IsMatch(negativeMatch));
         }
 
         [Fact]

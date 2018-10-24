@@ -25,7 +25,7 @@ namespace GlobExpressions
                 return;
             }
 
-            throw new Exception("Parser error Unexpected TokenKind detected.");
+            throw new Exception($"Parser expected {expectedKind}, Got {this._currentToken.Kind}.");
         }
 
         private void AcceptIt()
@@ -220,6 +220,7 @@ namespace GlobExpressions
                 case TokenKind.CharacterWildcard:
                 case TokenKind.Wildcard:
                 case TokenKind.DirectoryWildcard:
+                case TokenKind.EOT:
                     path = this.ParseTree();
                     break;
 
