@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Add Glob.Files and Glob.Directories APIs
+- Support for Case-Insensitive globbing
 
 ### Changed
 - All types are now located in the GlobExpressions namespace instead of Glob

@@ -14,10 +14,13 @@ namespace GlobExpressions
 
         private Tree _root;
         private Segment[] _segments;
+        private readonly bool _caseSensitive;
 
         public Glob(string pattern, GlobOptions options = GlobOptions.None)
         {
             this.Pattern = pattern;
+            _caseSensitive = !options.HasFlag(GlobOptions.CaseInsensitive);
+
             if (options.HasFlag(GlobOptions.Compiled))
             {
                 this.Compile();
@@ -55,7 +58,7 @@ namespace GlobExpressions
             return IsMatch(_segments, 0, pathSegments, 0);
         }
 
-        private static bool IsMatch(Segment[] pattern, int patternIndex, string[] input, int inputIndex)
+        private bool IsMatch(Segment[] pattern, int patternIndex, string[] input, int inputIndex)
         {
             while (true)
             {
@@ -82,7 +85,7 @@ namespace GlobExpressions
                         inputIndex++;
                         continue;
 
-                    case DirectorySegment dir when dir.MatchesSegment(inputHead):
+                    case DirectorySegment dir when dir.MatchesSegment(inputHead, _caseSensitive):
                         patternIndex++;
                         inputIndex++;
                         continue;

@@ -8,10 +8,10 @@ namespace GlobExpressions
 {
     internal static class Matcher
     {
-        public static bool MatchesSegment(this DirectorySegment segment, string pathSegment) =>
-            MatchesSubSegment(segment.SubSegments, 0, pathSegment, 0);
+        public static bool MatchesSegment(this DirectorySegment segment, string pathSegment, bool caseSensitive) =>
+            MatchesSubSegment(segment.SubSegments, 0, pathSegment, 0, caseSensitive);
 
-        private static bool MatchesSubSegment(SubSegment[] segments, int segmentIndex, string pathSegment, int pathIndex)
+        private static bool MatchesSubSegment(SubSegment[] segments, int segmentIndex, string pathSegment, int pathIndex, bool caseSensitive)
         {
             var nextSegment = segmentIndex + 1;
             if (nextSegment > segments.Length)
@@ -23,34 +23,34 @@ namespace GlobExpressions
             {
                 // match zero or more chars
                 case StringWildcard _:
-                    return MatchesSubSegment(segments, segmentIndex + 1, pathSegment, pathIndex) // zero
+                    return MatchesSubSegment(segments, segmentIndex + 1, pathSegment, pathIndex, caseSensitive) // zero
                            || (pathIndex < pathSegment.Length &&
-                               MatchesSubSegment(segments, segmentIndex, pathSegment, pathIndex + 1)); // or one+
+                               MatchesSubSegment(segments, segmentIndex, pathSegment, pathIndex + 1, caseSensitive)); // or one+
 
                 case CharacterWildcard _:
-                    return pathIndex < pathSegment.Length && MatchesSubSegment(segments, nextSegment, pathSegment, pathIndex + 1);
+                    return pathIndex < pathSegment.Length && MatchesSubSegment(segments, nextSegment, pathSegment, pathIndex + 1, caseSensitive);
 
                 case Identifier ident:
                     var len = ident.Value.Length;
                     if (len + pathIndex > pathSegment.Length)
                         return false;
 
-                    if (pathSegment.Substring(pathIndex, ident.Value.Length) != ident.Value)
+                    if (!string.Equals(pathSegment.Substring(pathIndex, ident.Value.Length), ident.Value, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                         return false;
 
-                    return MatchesSubSegment(segments, nextSegment, pathSegment, pathIndex + len);
+                    return MatchesSubSegment(segments, nextSegment, pathSegment, pathIndex + len, caseSensitive);
 
                 case LiteralSet literalSet:
                     //TODO we can probably optimize this somehow to get rid of the allocations...
                     var tail = segments.Skip(nextSegment).ToArray();
-                    return literalSet.Literals.Any(lit => MatchesSubSegment(new SubSegment[] { lit }.Concat(tail).ToArray(), 0, pathSegment, pathIndex));
+                    return literalSet.Literals.Any(lit => MatchesSubSegment(new SubSegment[] { lit }.Concat(tail).ToArray(), 0, pathSegment, pathIndex, caseSensitive));
 
                 case CharacterSet set:
                     if (pathIndex == pathSegment.Length)
                         return false;
 
-                    var inThere = set.Matches(pathSegment[pathIndex]);
-                    return inThere && MatchesSubSegment(segments, nextSegment, pathSegment, pathIndex + 1);
+                    var inThere = set.Matches(pathSegment[pathIndex], caseSensitive);
+                    return inThere && MatchesSubSegment(segments, nextSegment, pathSegment, pathIndex + 1, caseSensitive);
             }
             return false;
         }

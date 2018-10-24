@@ -17,9 +17,9 @@ namespace GlobExpressions.Tests
                 StringWildcard.Default,
             });
 
-            Assert.True(list.MatchesSegment(""));
-            Assert.True(list.MatchesSegment("a"));
-            Assert.True(list.MatchesSegment("abc"));
+            Assert.True(list.MatchesSegment("", false));
+            Assert.True(list.MatchesSegment("a", false));
+            Assert.True(list.MatchesSegment("abc", false));
         }
 
         [Fact]
@@ -33,20 +33,20 @@ namespace GlobExpressions.Tests
                 new Identifier("cd"),
             });
 
-            Assert.True(list.MatchesSegment("abcd"));
-            Assert.True(list.MatchesSegment("abcdcd"));
-            Assert.True(list.MatchesSegment("ab123456cd"));
+            Assert.True(list.MatchesSegment("abcd", false));
+            Assert.True(list.MatchesSegment("abcdcd", false));
+            Assert.True(list.MatchesSegment("ab123456cd", false));
 
-            Assert.False(list.MatchesSegment("ab123456cd11"));
-            Assert.False(list.MatchesSegment("abcd1"));
-            Assert.False(list.MatchesSegment("abcdcd1"));
-            Assert.False(list.MatchesSegment("ab123456cd1"));
+            Assert.False(list.MatchesSegment("ab123456cd11", false));
+            Assert.False(list.MatchesSegment("abcd1", false));
+            Assert.False(list.MatchesSegment("abcdcd1", false));
+            Assert.False(list.MatchesSegment("ab123456cd1", false));
         }
 
         [Fact]
         public void ShouldMatchLiteralSet()
         {
-            // ab*(cd|ef)
+            // ab*{cd,ef}
             var list = new DirectorySegment(new SubSegment[]
             {
                 new Identifier("ab"),
@@ -54,18 +54,18 @@ namespace GlobExpressions.Tests
                 new LiteralSet("cd", "ef"),
             });
 
-            Assert.True(list.MatchesSegment("abcd"));
-            Assert.True(list.MatchesSegment("abcdcd"));
-            Assert.True(list.MatchesSegment("ab123456cd"));
+            Assert.True(list.MatchesSegment("abcd", false));
+            Assert.True(list.MatchesSegment("abcdcd", false));
+            Assert.True(list.MatchesSegment("ab123456cd", false));
 
-            Assert.True(list.MatchesSegment("abef"));
-            Assert.True(list.MatchesSegment("abcdef"));
-            Assert.True(list.MatchesSegment("ab123456ef"));
+            Assert.True(list.MatchesSegment("abef", false));
+            Assert.True(list.MatchesSegment("abcdef", false));
+            Assert.True(list.MatchesSegment("ab123456ef", false));
 
-            Assert.False(list.MatchesSegment("ab123456cd11"));
-            Assert.False(list.MatchesSegment("abcd1"));
-            Assert.False(list.MatchesSegment("abcdcd1"));
-            Assert.False(list.MatchesSegment("ab123456cd1"));
+            Assert.False(list.MatchesSegment("ab123456cd11", false));
+            Assert.False(list.MatchesSegment("abcd1", false));
+            Assert.False(list.MatchesSegment("abcdcd1", false));
+            Assert.False(list.MatchesSegment("ab123456cd1", false));
         }
 
         [Fact]
@@ -78,16 +78,16 @@ namespace GlobExpressions.Tests
                 CharacterWildcard.Default
             });
 
-            Assert.True(list.MatchesSegment("abc"));
-            Assert.True(list.MatchesSegment("abd"));
-            Assert.True(list.MatchesSegment("ab1"));
+            Assert.True(list.MatchesSegment("abc", false));
+            Assert.True(list.MatchesSegment("abd", false));
+            Assert.True(list.MatchesSegment("ab1", false));
 
-            Assert.False(list.MatchesSegment("eab"));
-            Assert.False(list.MatchesSegment("abef"));
-            Assert.False(list.MatchesSegment("ab123456cd11"));
-            Assert.False(list.MatchesSegment("abcd1"));
-            Assert.False(list.MatchesSegment("abcdcd1"));
-            Assert.False(list.MatchesSegment("ab123456cd1"));
+            Assert.False(list.MatchesSegment("eab", false));
+            Assert.False(list.MatchesSegment("abef", false));
+            Assert.False(list.MatchesSegment("ab123456cd11", false));
+            Assert.False(list.MatchesSegment("abcd1", false));
+            Assert.False(list.MatchesSegment("abcdcd1", false));
+            Assert.False(list.MatchesSegment("ab123456cd1", false));
         }
 
         [Fact]
@@ -101,17 +101,17 @@ namespace GlobExpressions.Tests
                 new CharacterSet("abc", false)
             });
 
-            Assert.True(list.MatchesSegment("abca"));
-            Assert.True(list.MatchesSegment("abda"));
-            Assert.True(list.MatchesSegment("ab1a"));
+            Assert.True(list.MatchesSegment("abca", false));
+            Assert.True(list.MatchesSegment("abda", false));
+            Assert.True(list.MatchesSegment("ab1a", false));
 
-            Assert.True(list.MatchesSegment("abcb"));
-            Assert.True(list.MatchesSegment("abdb"));
-            Assert.True(list.MatchesSegment("ab1b"));
+            Assert.True(list.MatchesSegment("abcb", false));
+            Assert.True(list.MatchesSegment("abdb", false));
+            Assert.True(list.MatchesSegment("ab1b", false));
 
-            Assert.True(list.MatchesSegment("abcc"));
-            Assert.True(list.MatchesSegment("abdc"));
-            Assert.True(list.MatchesSegment("ab1c"));
+            Assert.True(list.MatchesSegment("abcc", false));
+            Assert.True(list.MatchesSegment("abdc", false));
+            Assert.True(list.MatchesSegment("ab1c", false));
         }
 
         [Fact]
@@ -125,17 +125,17 @@ namespace GlobExpressions.Tests
                 new CharacterSet("a-c", false)
             });
 
-            Assert.True(list.MatchesSegment("abca"));
-            Assert.True(list.MatchesSegment("abda"));
-            Assert.True(list.MatchesSegment("ab1a"));
+            Assert.True(list.MatchesSegment("abca", false));
+            Assert.True(list.MatchesSegment("abda", false));
+            Assert.True(list.MatchesSegment("ab1a", false));
 
-            Assert.True(list.MatchesSegment("abcb"));
-            Assert.True(list.MatchesSegment("abdb"));
-            Assert.True(list.MatchesSegment("ab1b"));
+            Assert.True(list.MatchesSegment("abcb", false));
+            Assert.True(list.MatchesSegment("abdb", false));
+            Assert.True(list.MatchesSegment("ab1b", false));
 
-            Assert.True(list.MatchesSegment("abcc"));
-            Assert.True(list.MatchesSegment("abdc"));
-            Assert.True(list.MatchesSegment("ab1c"));
+            Assert.True(list.MatchesSegment("abcc", false));
+            Assert.True(list.MatchesSegment("abdc", false));
+            Assert.True(list.MatchesSegment("ab1c", false));
         }
 
         [Fact]
@@ -149,27 +149,27 @@ namespace GlobExpressions.Tests
                 new CharacterSet("abc", true)
             });
 
-            Assert.True(list.MatchesSegment("abcd"));
-            Assert.True(list.MatchesSegment("abdd"));
-            Assert.True(list.MatchesSegment("ab1d"));
-            Assert.True(list.MatchesSegment("abce"));
-            Assert.True(list.MatchesSegment("abde"));
-            Assert.True(list.MatchesSegment("ab1e"));
-            Assert.True(list.MatchesSegment("abcf"));
-            Assert.True(list.MatchesSegment("abdf"));
-            Assert.True(list.MatchesSegment("ab1f"));
+            Assert.True(list.MatchesSegment("abcd", false));
+            Assert.True(list.MatchesSegment("abdd", false));
+            Assert.True(list.MatchesSegment("ab1d", false));
+            Assert.True(list.MatchesSegment("abce", false));
+            Assert.True(list.MatchesSegment("abde", false));
+            Assert.True(list.MatchesSegment("ab1e", false));
+            Assert.True(list.MatchesSegment("abcf", false));
+            Assert.True(list.MatchesSegment("abdf", false));
+            Assert.True(list.MatchesSegment("ab1f", false));
 
-            Assert.False(list.MatchesSegment("abca"));
-            Assert.False(list.MatchesSegment("abda"));
-            Assert.False(list.MatchesSegment("ab1a"));
+            Assert.False(list.MatchesSegment("abca", false));
+            Assert.False(list.MatchesSegment("abda", false));
+            Assert.False(list.MatchesSegment("ab1a", false));
 
-            Assert.False(list.MatchesSegment("abcb"));
-            Assert.False(list.MatchesSegment("abdb"));
-            Assert.False(list.MatchesSegment("ab1b"));
+            Assert.False(list.MatchesSegment("abcb", false));
+            Assert.False(list.MatchesSegment("abdb", false));
+            Assert.False(list.MatchesSegment("ab1b", false));
 
-            Assert.False(list.MatchesSegment("abcc"));
-            Assert.False(list.MatchesSegment("abdc"));
-            Assert.False(list.MatchesSegment("ab1c"));
+            Assert.False(list.MatchesSegment("abcc", false));
+            Assert.False(list.MatchesSegment("abdc", false));
+            Assert.False(list.MatchesSegment("ab1c", false));
         }
     }
 }

@@ -6,6 +6,7 @@ namespace GlobExpressions
     public enum GlobOptions
     {
         None,
-        Compiled
+        Compiled,
+        CaseInsensitive
     }
 }

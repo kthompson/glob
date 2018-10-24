@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 
 namespace GlobExpressions.AST
@@ -17,7 +18,9 @@ namespace GlobExpressions.AST
             this.ExpandedCharacters = CalculateExpandedForm(characters.Value);
         }
 
-        public bool Matches(char c) => ExpandedCharacters.Contains(c) != this.Inverted;
+        public bool Matches(char c, bool caseSensitive) => Contains(c, caseSensitive) != this.Inverted;
+
+        private bool Contains(char c, bool caseSensitive) => ExpandedCharacters.IndexOf(c.ToString(), caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) >= 0;
 
         private string CalculateExpandedForm(string chars)
         {
