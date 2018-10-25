@@ -1,7 +1,8 @@
 ﻿# Glob
 
 [![Join the chat at https://gitter.im/kthompson/glob](https://badges.gitter.im/kthompson/glob.svg)](https://gitter.im/kthompson/glob?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build status](https://ci.appveyor.com/api/projects/status/github/kthompson/glob?branch=master&svg=true)](https://ci.appveyor.com/project/kthompson/glob) [![Travis](https://img.shields.io/travis/kthompson/glob/master.svg)](https://travis-ci.org/kthompson/glob) [![Nuget](https://img.shields.io/nuget/v/glob.svg)](https://www.nuget.org/packages/Glob/)
+[![Build status](https://automaters.visualstudio.com/Glob/_apis/build/status/Glob)](https://automaters.visualstudio.com/Glob/_build/latest?definitionId=4)
+[![Nuget](https://img.shields.io/nuget/v/glob.svg)](https://www.nuget.org/packages/Glob/)
 
 
 A C# Glob library for .NET and .NET Core.
