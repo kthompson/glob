@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>Benchmarks</title>
+<title>GlobExpressions.Benchmarks.GlobBenchmarks</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,23 +13,21 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet=v0.10.4, OS=Windows 10.0.15063
-Processor=Intel Core i7-4790K CPU 4.00GHz (Haswell), ProcessorCount=8
-Frequency=3897223 Hz, Resolution=256.5930 ns, Timer=TSC
-dotnet cli version=1.1.0
-  [Host]     : .NET Core 4.6.25211.01, 64bit RyuJIT
-  DefaultJob : .NET Core 4.6.25211.01, 64bit RyuJIT
+BenchmarkDotNet=v0.11.1, OS=Windows 10.0.17134.345 (1803/April2018Update/Redstone4)
+Intel Core i7-4790K CPU 4.00GHz (Haswell), 1 CPU, 8 logical and 4 physical cores
+.NET Core SDK=2.1.403
+  [Host]     : .NET Core 2.1.5 (CoreCLR 4.6.26919.02, CoreFX 4.6.26919.02), 64bit RyuJIT
+  DefaultJob : .NET Core 2.1.5 (CoreCLR 4.6.26919.02, CoreFX 4.6.26919.02), 64bit RyuJIT
 </code></pre>
 <pre><code></code></pre>
 
 <table>
-<thead><tr><th>              Method</th><th>   Mean</th><th>Error</th><th>StdDev</th><th>Scaled</th><th>ScaledSD</th>
+<thead><tr><th>              Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Scaled</th><th>ScaledSD</th>
 </tr>
-</thead><tbody><tr><td>           ParseGlob</td><td>2,408.0587 ns</td><td>15.7785 ns</td><td>13.1757 ns</td><td>0.70</td><td>0.01</td>
-</tr><tr><td> ParseAndCompileGlob</td><td>2,445.5885 ns</td><td>16.6519 ns</td><td>15.5762 ns</td><td>0.71</td><td>0.01</td>
-</tr><tr><td>TestMatchForUncompiledGlob</td><td>3,460.6207 ns</td><td>25.3431 ns</td><td>22.4660 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td> BenchmarkParseToLst</td><td>2,629.4912 ns</td><td>22.0370 ns</td><td>19.5353 ns</td><td>0.76</td><td>0.01</td>
-</tr><tr><td>BenchmarkParseToTree</td><td>2,436.2178 ns</td><td>46.9586 ns</td><td>50.2451 ns</td><td>0.70</td><td>0.01</td>
+</thead><tbody><tr><td>ParseGlob</td><td>2,437.0 ns</td><td>48.34 ns</td><td>108.1 ns</td><td>2,393.1 ns</td><td>0.74</td><td>0.04</td>
+</tr><tr><td>ParseAndCompileGlob</td><td>2,481.9 ns</td><td>49.59 ns</td><td>122.6 ns</td><td>2,444.3 ns</td><td>0.75</td><td>0.04</td>
+</tr><tr><td>TestMatchForUncompiledGlob</td><td>3,313.3 ns</td><td>65.77 ns</td><td>115.2 ns</td><td>3,338.7 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>BenchmarkParseToTree</td><td>2,518.1 ns</td><td>72.36 ns</td><td>205.3 ns</td><td>2,453.3 ns</td><td>0.76</td><td>0.07</td>
 </tr></tbody></table>
 </body>
 </html>
