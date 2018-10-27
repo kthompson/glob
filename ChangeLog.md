@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Fixed
+
+
+## [1.0.0]
+### Added
 - Add Glob.Files and Glob.Directories APIs
 - Support for Case-Insensitive globbing
 - Reduced string allocations in Scanner
@@ -23,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix issue where Glob.Directories did not always match properly
 
 [Unreleased]: https://github.com/kthompson/glob/compare/0.4.0...HEAD
+[1.0.0]: https://github.com/kthompson/glob/compare/0.4.0...1.0.0
 [0.4.0]: https://github.com/kthompson/glob/compare/0.3.3...0.4.0
 [0.3.3]: https://github.com/kthompson/glob/compare/0.3.2...0.3.3
 [0.3.2]: https://github.com/kthompson/glob/compare/0.3.1...0.3.2

@@ -2,14 +2,30 @@
 
   <PropertyGroup>
     <AssemblyTitle>A C# Glob pattern matcher for .NET</AssemblyTitle>
-    <VersionPrefix>0.4.0</VersionPrefix>
+    <VersionPrefix>1.0.0</VersionPrefix>
     <Authors>Kevin Thompson &lt;kevin@theautomaters.com&gt;</Authors>
     <TargetFrameworks>netstandard1.3;net40;net45;net46</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>Glob</AssemblyName>
     <PackageId>Glob</PackageId>
     <PackageTags>C#;glob;minimatch</PackageTags>
-    <PackageReleaseNotes>Fix false positive bug and update internal parsing for better performance</PackageReleaseNotes>
+    <PackageReleaseNotes>
+      ### Added
+      - Add Glob.Files and Glob.Directories APIs
+      - Support for Case-Insensitive globbing
+      - Reduced string allocations in Scanner
+
+      ### Changed
+      - All types are now located in the GlobExpressions namespace instead of Glob
+      - Path traversal has been updated which may cause a different ordering of returned results
+
+      ### Fixed
+      - Fix bug where not all files are returned when using GlobExtensions
+      - Fix NullReferenceException for empty patterns
+      - Fix issue where directory wildcard and identifier cannot be mixed in a single Segment
+      - Fix issue that caused unnecessary directory traversal (#20)
+      - Fix issue where Glob.Directories did not always match properly
+    </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
