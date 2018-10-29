@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
@@ -14,6 +15,7 @@ namespace GlobExpressions.Tests
         }
 
         [Theory]
+        // Wildcard tests
         [InlineData("*.txt", @"c:\windows\file.txt", "file.zip")]
         [InlineData("*.txt", "file.txt")]
         [InlineData("/some/dir/folder/foo.*", "/some/dir/folder/foo.txt")]
@@ -22,7 +24,40 @@ namespace GlobExpressions.Tests
         [InlineData("a_*file.txt", "a_file.txt")]
         [InlineData("*file.txt", "bigfile.txt")]
         [InlineData("*file.txt", "smallfile.txt")]
-        public void TestWildcard(string pattern, string positiveMatch, string negativeMatch = null)
+
+        // Character Range tests
+        [InlineData("*fil[e-z].txt", "bigfile.txt", "smallfila.txt")]
+        [InlineData("*fil[e-z].txt", "smallfilf.txt", "smallfilez.txt")]
+        [InlineData("*file[1-9].txt", "bigfile1.txt", "smallfile0.txt")]
+        [InlineData("*file[1-9].txt", "smallfile8.txt", "smallfilea.txt")]
+
+        // CharacterList tests
+        [InlineData("*file[abc].txt", "bigfilea.txt", "smallfiled.txt")]
+        [InlineData("*file[abc].txt", "smallfileb.txt", "smallfileaa.txt")]
+        [InlineData("*file[!abc].txt", "smallfiled.txt", "bigfilea.txt")]
+        [InlineData("*file[!abc].txt", "smallfile-.txt", "smallfileaa.txt")]
+        [InlineData("*file[!abc].txt", null, "smallfileb.txt")]
+
+        // LiteralSet tests
+        [InlineData("a{b,c}d", "abd", "a")]
+        [InlineData("a{b,c}d", "acd")]
+
+        // Root tests
+        [InlineData("/**/*.sln", "/mnt/e/code/csharp-glob/Glob.sln", "/mnt/e/code/csharp-glob/Glob.Tests/Glob.Tests.csproj")]
+        [InlineData(@"C:\**\*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
+
+        // Double wildcard tests
+        [InlineData("a**/*.cs", "ab/c.cs", "a/b/c.cs")]
+        [InlineData("a**/*.cs", "a/c.cs")]
+        [InlineData("**a/*.cs", "a/c.cs", "b/a/a.cs")]
+        [InlineData("**a/*.cs", "ba/c.cs")]
+        [InlineData("**", "ba/c.cs")]
+        [InlineData("**", "a")]
+        [InlineData("**", "a/b")]
+        [InlineData("a/**", "a/b/c")]
+        [InlineData("a/**", "a")]
+        [InlineData("/**/somefile", "/somefile")]
+        public void TestGlobExpressions(string pattern, string positiveMatch, string negativeMatch = null)
         {
             var glob = new Glob(pattern);
 
@@ -48,50 +83,6 @@ namespace GlobExpressions.Tests
             Assert.True(glob.IsMatch("folder/bigfile.txt"));
             Assert.True(glob.IsMatch("folder/smallfile.txt"));
             Assert.True(glob.IsMatch("folder/smallfile.txt.min"));
-        }
-
-        [Theory]
-        [InlineData("*fil[e-z].txt", "bigfile.txt", "smallfila.txt")]
-        [InlineData("*fil[e-z].txt", "smallfilf.txt", "smallfilez.txt")]
-        [InlineData("*file[1-9].txt", "bigfile1.txt", "smallfile0.txt")]
-        [InlineData("*file[1-9].txt", "smallfile8.txt", "smallfilea.txt")]
-        public void TestCharacterRange(string pattern, string positiveMatch, string negativeMatch = null)
-        {
-            var glob = new Glob(pattern);
-
-            if (positiveMatch != null)
-                Assert.True(glob.IsMatch(positiveMatch));
-            if (negativeMatch != null)
-                Assert.False(glob.IsMatch(negativeMatch));
-        }
-
-        [Theory]
-        [InlineData("*file[abc].txt", "bigfilea.txt", "smallfiled.txt")]
-        [InlineData("*file[abc].txt", "smallfileb.txt", "smallfileaa.txt")]
-        [InlineData("*file[!abc].txt", "smallfiled.txt", "bigfilea.txt")]
-        [InlineData("*file[!abc].txt", "smallfile-.txt", "smallfileaa.txt")]
-        [InlineData("*file[!abc].txt", null, "smallfileb.txt")]
-        public void TestCharacterList(string pattern, string positiveMatch, string negativeMatch = null)
-        {
-            var glob = new Glob(pattern);
-
-            if (positiveMatch != null)
-                Assert.True(glob.IsMatch(positiveMatch));
-            if (negativeMatch != null)
-                Assert.False(glob.IsMatch(negativeMatch));
-        }
-
-        [Theory]
-        [InlineData("/**/*.sln", "/mnt/e/code/csharp-glob/Glob.sln", "/mnt/e/code/csharp-glob/Glob.Tests/Glob.Tests.csproj")]
-        [InlineData(@"C:\**\*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
-        public void TestRoots(string pattern, string positiveMatch, string negativeMatch = null)
-        {
-            var glob = new Glob(pattern);
-
-            if (positiveMatch != null)
-                Assert.True(glob.IsMatch(positiveMatch));
-            if (negativeMatch != null)
-                Assert.False(glob.IsMatch(negativeMatch));
         }
 
         [Fact]
@@ -175,26 +166,6 @@ namespace GlobExpressions.Tests
             const string globPattern = @"{ab,cd}";
             var glob = new Glob(globPattern, GlobOptions.CaseInsensitive);
             Assert.False(glob.IsMatch("dc"));
-        }
-
-        [Theory]
-        [InlineData("a**/*.cs", "ab/c.cs", "a/b/c.cs")]
-        [InlineData("a**/*.cs", "a/c.cs")]
-        [InlineData("**a/*.cs", "a/c.cs", "b/a/a.cs")]
-        [InlineData("**a/*.cs", "ba/c.cs")]
-        [InlineData("**", "ba/c.cs")]
-        [InlineData("**", "a")]
-        [InlineData("**", "a/b")]
-        [InlineData("a/**", "a/b/c")]
-        [InlineData("/**/somefile", "/somefile")]
-        public void TestDoubleWildcard(string pattern, string positiveMatch, string negativeMatch = null)
-        {
-            var glob = new Glob(pattern);
-            if (positiveMatch != null)
-                Assert.True(glob.IsMatch(positiveMatch));
-
-            if (negativeMatch != null)
-                Assert.False(glob.IsMatch(negativeMatch));
         }
     }
 }

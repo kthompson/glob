@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GlobExpressions.AST;
@@ -25,14 +24,14 @@ namespace GlobExpressions
                 return;
             }
 
-            throw new Exception($"Parser expected {expectedKind}, Got {this._currentToken.Kind}.");
+            throw new GlobPatternException($"Expected {expectedKind}, Got {this._currentToken.Kind}.");
         }
 
         private void AcceptIt()
         {
             if (this._scanner == null)
             {
-                throw new Exception("No source text was provided");
+                throw new GlobPatternException("No pattern was provided");
             }
             this._currentToken = this._scanner.Scan();
         }
@@ -46,7 +45,7 @@ namespace GlobExpressions
                 return identifier;
             }
 
-            throw new Exception("Unable to parse Identifier");
+            throw new GlobPatternException("Unable to parse Identifier");
         }
 
         private LiteralSet ParseLiteralSet()
@@ -111,7 +110,7 @@ namespace GlobExpressions
                     return this.ParseWildcard();
 
                 default:
-                    throw new Exception(
+                    throw new GlobPatternException(
                         "Unable to parse SubSegment. " +
                         "   Expected one of Identifier | CharacterSet | LiteralSet | CharacterWildcard | Wildcard. " +
                         $"Found: {this._currentToken.Kind}"
@@ -223,7 +222,7 @@ namespace GlobExpressions
                     break;
 
                 default:
-                    throw new InvalidOperationException("Expected Tree, found: " + _currentToken.Kind);
+                    throw new GlobPatternException("Expected Tree, found: " + _currentToken.Kind);
             }
 
             this.Accept(TokenKind.EOT);
