@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+## [1.0.1]
+### Fixed
+- Fix bug where ** does not properly `a` or `a/b` (#38)
 
 ## [1.0.0]
 ### Added
@@ -30,7 +33,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix issue that caused unnecessary directory traversal (#20)
 - Fix issue where Glob.Directories did not always match properly
 
-[Unreleased]: https://github.com/kthompson/glob/compare/0.4.0...HEAD
+[Unreleased]: https://github.com/kthompson/glob/compare/1.0.1...HEAD
+[1.0.0]: https://github.com/kthompson/glob/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/kthompson/glob/compare/0.4.0...1.0.0
 [0.4.0]: https://github.com/kthompson/glob/compare/0.3.3...0.4.0
 [0.3.3]: https://github.com/kthompson/glob/compare/0.3.2...0.3.3

@@ -81,12 +81,17 @@ namespace GlobExpressions.Tests
                 Assert.False(glob.IsMatch(negativeMatch));
         }
 
-        [Fact]
-        public void CanMatchDirectoryWildcardInTopLevelDirectory()
+        [Theory]
+        [InlineData("/**/*.sln", "/mnt/e/code/csharp-glob/Glob.sln", "/mnt/e/code/csharp-glob/Glob.Tests/Glob.Tests.csproj")]
+        [InlineData(@"C:\**\*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
+        public void TestRoots(string pattern, string positiveMatch, string negativeMatch = null)
         {
-            const string globPattern = @"/**/somefile";
-            var glob = new Glob(globPattern);
-            Assert.True(glob.IsMatch("/somefile"));
+            var glob = new Glob(pattern);
+
+            if (positiveMatch != null)
+                Assert.True(glob.IsMatch(positiveMatch));
+            if (negativeMatch != null)
+                Assert.False(glob.IsMatch(negativeMatch));
         }
 
         [Fact]
@@ -177,6 +182,11 @@ namespace GlobExpressions.Tests
         [InlineData("a**/*.cs", "a/c.cs")]
         [InlineData("**a/*.cs", "a/c.cs", "b/a/a.cs")]
         [InlineData("**a/*.cs", "ba/c.cs")]
+        [InlineData("**", "ba/c.cs")]
+        [InlineData("**", "a")]
+        [InlineData("**", "a/b")]
+        [InlineData("a/**", "a/b/c")]
+        [InlineData("/**/somefile", "/somefile")]
         public void TestDoubleWildcard(string pattern, string positiveMatch, string negativeMatch = null)
         {
             var glob = new Glob(pattern);

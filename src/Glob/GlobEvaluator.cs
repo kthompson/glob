@@ -4,36 +4,57 @@ namespace GlobExpressions
 {
     internal static class GlobEvaluator
     {
-        public static bool Eval(Segment[] pattern, int patternIndex, string[] input, int inputIndex, bool caseSensitive)
+        public static bool Eval(Segment[] segments, int segmentIndex, string[] input, int inputIndex, bool caseSensitive)
         {
             while (true)
             {
-                if (inputIndex == input.Length)
-                    return patternIndex == pattern.Length;
+                // no segments left
+                if (segmentIndex == segments.Length)
+                    return inputIndex == input.Length;
 
-                // we have a input to match but no pattern to match against so we are done.
-                if (patternIndex == pattern.Length)
-                    return false;
+                var isLastInput = inputIndex == input.Length - 1;
+                var isLastSegment = segmentIndex == segments.Length - 1;
 
-                var inputHead = input[inputIndex];
-                var patternHead = pattern[patternIndex];
-
-                switch (patternHead)
+                switch (segments[segmentIndex])
                 {
                     case DirectoryWildcard _:
-                        // return all consuming the wildcard
-                        return Eval(pattern, patternIndex + 1, input, inputIndex, caseSensitive) // 0 matches
-                               || Eval(pattern, patternIndex, input, inputIndex + 1, caseSensitive); // 1 or more
+                        // simple match last input and segment
+                        if (isLastInput && isLastSegment)
+                            return true;
 
-                    case Root root when inputHead == root.Text:
-                        patternIndex++;
-                        inputIndex++;
-                        continue;
+                        // match 0
+                        var matchConsumesWildCard = !isLastSegment && Eval(segments, segmentIndex + 1, input, inputIndex, caseSensitive);
+                        if (matchConsumesWildCard)
+                            return true;
 
-                    case DirectorySegment dir when dir.MatchesSegment(inputHead, caseSensitive):
-                        patternIndex++;
-                        inputIndex++;
-                        continue;
+                        // match 1+
+                        var skipInput = !isLastInput && Eval(segments, segmentIndex, input, inputIndex + 1, caseSensitive);
+
+                        return skipInput;
+
+                    case Root root:
+                        if (inputIndex < input.Length && input[inputIndex] == root.Text)
+                        {
+                            segmentIndex++;
+                            inputIndex++;
+                            continue;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+
+                    case DirectorySegment dir:
+                        if (inputIndex < input.Length && dir.MatchesSegment(input[inputIndex], caseSensitive))
+                        {
+                            segmentIndex++;
+                            inputIndex++;
+                            continue;
+                        }
+                        else
+                        {
+                            return false;
+                        }
                 }
 
                 return false;

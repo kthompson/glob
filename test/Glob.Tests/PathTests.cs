@@ -41,31 +41,31 @@ namespace GlobExpressions.Tests
         [Fact]
         public void TestSimpleFilePattern()
         {
-            Assert.Collection(GetRegexForGlobPattern("*.txt"),
+            Assert.Collection(GetGlobForPattern("*.txt"),
                 s => Assert.Equal(@"C:\Users\Kevin\Desktop\notes.txt", s));
         }
 
         [Fact]
         public void RootPatternMatchWithoutDirectory()
         {
-            Assert.Empty(GetRegexForGlobPattern(@"C:\*.*"));
+            Assert.Empty(GetGlobForPattern(@"C:\*.*"));
         }
 
         [Fact]
         public void LinuxRootWithDirectoryWildcard()
         {
-            Assert.Collection(GetRegexForGlobPattern(@"/**/*.sln"),
+            Assert.Collection(GetGlobForPattern(@"/**/*.sln"),
                 s => Assert.Equal(@"/mnt/e/code/csharp-glob/Glob.sln", s));
         }
 
         [Fact]
         public void WindowsRootWithDirectoryWildcard()
         {
-            Assert.Collection(GetRegexForGlobPattern(@"C:\**\*.txt"),
+            Assert.Collection(GetGlobForPattern(@"C:\**\*.txt"),
                 s => Assert.Equal(@"C:\Users\Kevin\Desktop\notes.txt", s));
         }
 
-        private IEnumerable<string> GetRegexForGlobPattern(string pattern)
+        private IEnumerable<string> GetGlobForPattern(string pattern)
         {
             var glob = new Glob(pattern, GlobOptions.Compiled);
 

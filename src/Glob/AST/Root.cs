@@ -9,5 +9,7 @@
         {
             Text = text;
         }
+
+        public override string ToString() => Text;
     }
 }
