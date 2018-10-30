@@ -68,7 +68,6 @@ namespace GlobExpressions
         }
 
         private static bool SubstringEquals(string segment, int segmentIndex, string search, bool caseSensitive) =>
-            string.Equals(segment.Substring(segmentIndex, search.Length), search,
-            caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+            string.Compare(segment, segmentIndex, search, 0, search.Length, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) == 0;
     }
 }

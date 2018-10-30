@@ -9,8 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 ### Changed
+- Reduce number of allocations for matching Identifiers
 
 ### Fixed
+
+## [1.0.4]
+### Changed
+- Reduce number of allocations for matching Identifiers (small perf boost)
 
 ## [1.0.3]
 ### Fixed
@@ -42,7 +47,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix issue that caused unnecessary directory traversal (#20)
 - Fix issue where Glob.Directories did not always match properly
 
-[Unreleased]: https://github.com/kthompson/glob/compare/1.0.3...HEAD
+[Unreleased]: https://github.com/kthompson/glob/compare/1.0.4...HEAD
+[1.0.4]: https://github.com/kthompson/glob/compare/1.0.3...1.0.4
 [1.0.3]: https://github.com/kthompson/glob/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/kthompson/glob/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/kthompson/glob/compare/1.0.0...1.0.1

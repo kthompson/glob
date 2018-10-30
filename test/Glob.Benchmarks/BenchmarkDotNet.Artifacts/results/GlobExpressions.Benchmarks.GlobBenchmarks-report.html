@@ -22,10 +22,16 @@ Intel Core i7-4790K CPU 4.00GHz (Haswell), 1 CPU, 8 logical and 4 physical cores
 <pre><code></code></pre>
 
 <table>
-<thead><tr><th>                 Method</th><th>    Mean</th><th>Error</th><th>StdDev</th>
+<thead><tr><th>                           Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th>
 </tr>
-</thead><tbody><tr><td>PathTraversalOldDirectoryInfo</td><td>1,305,079.3 ns</td><td>11,118.3 ns</td><td>10,400.1 ns</td>
-</tr><tr><td>PathTraversal</td><td>45,903.0 ns</td><td>258.9 ns</td><td>229.5 ns</td>
+</thead><tbody><tr><td>ParseGlob</td><td>1,962.7 ns</td><td>28.34 ns</td><td>26.50 ns</td><td>1,957.7 ns</td>
+</tr><tr><td>ParseAndCompileGlob</td><td>2,012.8 ns</td><td>39.59 ns</td><td>37.04 ns</td><td>2,015.1 ns</td>
+</tr><tr><td>MatchForUncompiledGlob</td><td>2,681.5 ns</td><td>20.05 ns</td><td>18.76 ns</td><td>2,676.7 ns</td>
+</tr><tr><td>MatchForCompiledGlob</td><td>661.3 ns</td><td>13.11 ns</td><td>27.94 ns</td><td>649.5 ns</td>
+</tr><tr><td>MatchForUncompiledGlobDirectoryWildcard</td><td>2,614.3 ns</td><td>51.72 ns</td><td>43.19 ns</td><td>2,610.4 ns</td>
+</tr><tr><td>MatchForCompiledGlobDirectoryWildcard</td><td>663.8 ns</td><td>16.19 ns</td><td>21.05 ns</td><td>658.0 ns</td>
+</tr><tr><td>BenchmarkParseToTree</td><td>2,032.0 ns</td><td>40.70 ns</td><td>64.56 ns</td><td>2,000.9 ns</td>
+</tr><tr><td>PathTraversal</td><td>48,384.5 ns</td><td>209.39 ns</td><td>195.86 ns</td><td>48,345.2 ns</td>
 </tr></tbody></table>
 </body>
 </html>
