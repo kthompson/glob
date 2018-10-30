@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <AssemblyTitle>A C# Glob pattern matcher for .NET</AssemblyTitle>
-    <VersionPrefix>1.0.2</VersionPrefix>
+    <VersionPrefix>1.0.3</VersionPrefix>
     <Authors>Kevin Thompson &lt;kevin@theautomaters.com&gt;</Authors>
     <TargetFrameworks>netstandard1.3;net40;net45;net46</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>Glob</AssemblyName>
     <PackageId>Glob</PackageId>
     <PackageTags>C#;glob;minimatch</PackageTags>
-    <PackageReleaseNotes>Fix issue where matching `a/**` against `a` would cause a stackoverflow (#39)</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix Glob for `a/**` to match `a/` but not `a`</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>

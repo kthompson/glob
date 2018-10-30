@@ -12,15 +12,18 @@ namespace GlobExpressions
                 if (segmentIndex == segments.Length)
                     return inputIndex == input.Length;
 
+                var consumedAllInput = inputIndex >= input.Length;
+                if (consumedAllInput)
+                    return false;
+
                 switch (segments[segmentIndex])
                 {
                     case DirectoryWildcard _:
-                        var consumedAllInput = inputIndex >= input.Length;
                         var isLastInput = inputIndex == input.Length - 1;
                         var isLastSegment = segmentIndex == segments.Length - 1;
 
                         // simple match last input and segment
-                        if (isLastSegment && (isLastInput || consumedAllInput))
+                        if (isLastSegment && isLastInput)
                             return true;
 
                         // match 0

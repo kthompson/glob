@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 ### Fixed
-
+- Fix Glob for `a/**` to match `a/` but not `a`
 
 ## [1.0.2]
 ### Fixed

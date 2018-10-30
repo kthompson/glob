@@ -55,7 +55,7 @@ namespace GlobExpressions.Tests
         [InlineData("**", "a")]
         [InlineData("**", "a/b")]
         [InlineData("a/**", "a/b/c")]
-        [InlineData("a/**", "a")]
+        [InlineData("a/**", "a/", "a")]
         [InlineData("/**/somefile", "/somefile")]
         public void TestGlobExpressions(string pattern, string positiveMatch, string negativeMatch = null)
         {
