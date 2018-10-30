@@ -29,6 +29,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="System.IO.Abstractions" Version="2.1.0.256" />
+    <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="2.1.0.256" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

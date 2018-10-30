@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,44 +22,7 @@ namespace GlobExpressions
 
         private static readonly FileSystemInfo[] emptyFileSystemInfoArray = new FileSystemInfo[0];
 
-        private class TraverseOptions
-        {
-            private readonly Dictionary<string, FileInfo[]> _fileCache = new Dictionary<string, FileInfo[]>();
-            private readonly Dictionary<string, DirectoryInfo[]> _dirCache = new Dictionary<string, DirectoryInfo[]>();
-
-            public TraverseOptions(bool caseSensitive, bool emitFiles, bool emitDirectories)
-            {
-                CaseSensitive = caseSensitive;
-                EmitFiles = emitFiles;
-                EmitDirectories = emitDirectories;
-            }
-
-            public bool CaseSensitive { get; }
-            public bool EmitFiles { get; }
-            public bool EmitDirectories { get; }
-
-            public FileInfo[] GetFiles(DirectoryInfo root)
-            {
-                if (_fileCache.TryGetValue(root.FullName, out var cachedFiles))
-                    return cachedFiles;
-
-                var files = root.GetFiles();
-                _fileCache.Add(root.FullName, files);
-                return files;
-            }
-
-            public DirectoryInfo[] GetDirectories(DirectoryInfo root)
-            {
-                if (_dirCache.TryGetValue(root.FullName, out var cachedFiles))
-                    return cachedFiles;
-
-                var files = root.GetDirectories();
-                _dirCache.Add(root.FullName, files);
-                return files;
-            }
-        }
-
-        private static IEnumerable<FileSystemInfo> Traverse(DirectoryInfo root, Segment[] segments, int segmentIndex,
+        internal static IEnumerable<FileSystemInfo> Traverse(DirectoryInfo root, Segment[] segments, int segmentIndex,
              TraverseOptions options)
         {
             if (segmentIndex == segments.Length)

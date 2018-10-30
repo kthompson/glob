@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Text;
 using GlobExpressions.AST;
@@ -211,6 +212,99 @@ namespace GlobExpressions.Tests
             results.ForEach(file => _printer.WriteLine(file.FullName));
 
             Assert.Equal(4, results.Count);
+        }
+
+        [Theory]
+        // Wildcard tests
+        [InlineData("*.txt", "file.txt", "file.zip")]
+        [InlineData("*.txt", "file.txt")]
+        [InlineData("some/dir/folder/foo.*", "/some/dir/folder/foo.txt")]
+        [InlineData("some/dir/folder/foo.*", "/some/dir/folder/foo.csv")]
+        [InlineData("a_*file.txt", "a_bigfile.txt", "another_file.txt")]
+        [InlineData("a_*file.txt", "a_file.txt")]
+        [InlineData("*file.txt", "bigfile.txt")]
+        [InlineData("*file.txt", "smallfile.txt")]
+
+        // Character Range tests
+        [InlineData("*fil[e-z].txt", "bigfile.txt", "smallfila.txt")]
+        [InlineData("*fil[e-z].txt", "smallfilf.txt", "smallfilez.txt")]
+        [InlineData("*file[1-9].txt", "bigfile1.txt", "smallfile0.txt")]
+        [InlineData("*file[1-9].txt", "smallfile8.txt", "smallfilea.txt")]
+
+        // CharacterList tests
+        [InlineData("*file[abc].txt", "bigfilea.txt", "smallfiled.txt")]
+        [InlineData("*file[abc].txt", "smallfileb.txt", "smallfileaa.txt")]
+        [InlineData("*file[!abc].txt", "smallfiled.txt", "bigfilea.txt")]
+        [InlineData("*file[!abc].txt", "smallfile-.txt", "smallfileaa.txt")]
+        [InlineData("*file[!abc].txt", null, "smallfileb.txt")]
+
+        // LiteralSet tests
+        [InlineData("a{b,c}d", "abd", "a")]
+        [InlineData("a{b,c}d", "acd")]
+
+        // Root tests
+        [InlineData("**/*.sln", "/mnt/e/code/csharp-glob/Glob.sln", "/mnt/e/code/csharp-glob/Glob.Tests/Glob.Tests.csproj")]
+        [InlineData(@"**\*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
+
+        // Double wildcard tests
+        [InlineData("a**/*.cs", "ab/c.cs", "a/b/c.cs")]
+        [InlineData("a**/*.cs", "a/c.cs")]
+        [InlineData("**a/*.cs", "a/c.cs", "b/a/a.cs")]
+        [InlineData("**a/*.cs", "ba/c.cs")]
+        [InlineData("**", "ba/c.cs")]
+        [InlineData("**", "a")]
+        [InlineData("**", "a/b")]
+        [InlineData("a/**", "a/b/c")]
+        [InlineData("**/somefile", "somefile")]
+        public void TestGlobExpressions(string pattern, string positiveMatch, string negativeMatch = null)
+        {
+            var parser = new Parser(pattern);
+            var segments = parser.ParseTree().Segments;
+
+            var mockFileDatas = new Dictionary<string, MockFileData>();
+            if (positiveMatch != null)
+            {
+                mockFileDatas[Path.Combine("C:", positiveMatch)] = MockFileData.NullObject;
+            }
+
+            if (negativeMatch != null)
+            {
+                mockFileDatas[Path.Combine("C:", negativeMatch)] = MockFileData.NullObject;
+            }
+
+            var cache = new MockTraverseOptions(true, true, false, new MockFileSystem(mockFileDatas));
+
+            var root = new DirectoryInfo("C:\\");
+            var results = PathTraverser.Traverse(root, segments, 0, cache).ToArray();
+
+            if (positiveMatch != null)
+                Assert.Single(results);
+
+            if (positiveMatch == null && negativeMatch != null)
+                Assert.Empty(results);
+        }
+
+        [Theory]
+        // Double wildcard tests
+        [InlineData("**/a", @"ab/a/a.cs a/taco.cs b/taco.cs b/ab/a/hat.taco", @"ab\a a b\ab\a")]
+        public void TestGlobExpressionsWithEmitDirectories(string pattern, string files, string matches)
+        {
+            var parser = new Parser(pattern);
+            var segments = parser.ParseTree().Segments;
+
+            var mockFileDatas = new Dictionary<string, MockFileData>();
+            foreach (var file in files.Split(' '))
+            {
+                mockFileDatas[Path.Combine("C:", file)] = MockFileData.NullObject;
+            }
+
+            var cache = new MockTraverseOptions(false, true, true, new MockFileSystem(mockFileDatas));
+
+            var root = new DirectoryInfo("C:\\");
+            var results = PathTraverser.Traverse(root, segments, 0, cache).Select(file => file.FullName.Substring("C:\\".Length)).OrderBy(x => x).ToArray();
+            var fileMatches = matches.Split(' ').OrderBy(x => x).ToArray();
+
+            Assert.Equal(fileMatches, results);
         }
     }
 }
