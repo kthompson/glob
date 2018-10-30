@@ -9,7 +9,10 @@
     <AssemblyName>Glob</AssemblyName>
     <PackageId>Glob</PackageId>
     <PackageTags>C#;glob;minimatch</PackageTags>
-    <PackageReleaseNotes>Fix Glob for `a/**` to match `a/` but not `a`</PackageReleaseNotes>
+    <PackageReleaseNotes>
+Fix Glob for `a/**` to match `a/` but not `a`
+Fix issue where roots (C:) would not obey the case sensitivity setting
+    </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>

@@ -11,7 +11,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 ### Fixed
+
+## [1.0.3]
+### Fixed
 - Fix Glob for `a/**` to match `a/` but not `a`
+- Fix issue where roots (C:) would not obey the case sensitivity setting
 
 ## [1.0.2]
 ### Fixed
@@ -38,7 +42,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix issue that caused unnecessary directory traversal (#20)
 - Fix issue where Glob.Directories did not always match properly
 
-[Unreleased]: https://github.com/kthompson/glob/compare/1.0.2...HEAD
+[Unreleased]: https://github.com/kthompson/glob/compare/1.0.3...HEAD
+[1.0.3]: https://github.com/kthompson/glob/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/kthompson/glob/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/kthompson/glob/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/kthompson/glob/compare/0.4.0...1.0.0

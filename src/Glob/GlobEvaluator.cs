@@ -1,4 +1,5 @@
-﻿using GlobExpressions.AST;
+﻿using System;
+using GlobExpressions.AST;
 
 namespace GlobExpressions
 {
@@ -37,7 +38,7 @@ namespace GlobExpressions
                         return skipInput;
 
                     case Root root:
-                        if (inputIndex < input.Length && input[inputIndex] == root.Text)
+                        if (inputIndex < input.Length && string.Equals(input[inputIndex], root.Text, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
                         {
                             segmentIndex++;
                             inputIndex++;

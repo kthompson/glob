@@ -128,37 +128,22 @@ namespace GlobExpressions.Tests
             Assert.False(glob.IsMatch("CD"));
         }
 
-        [Fact]
-        public void ShouldMatchCaseInsensitiveInCharacterSet()
+        [Theory]
+        // Character sets
+        [InlineData(@"[a-z]", "A B Z")]
+        // Segments
+        [InlineData(@"taco", "Taco tAco taCO")]
+        // LiteralSets
+        [InlineData(@"{ab,cd}", "Ab aB AB Cd cD CD")]
+        // Roots
+        [InlineData(@"C:\**\*.txt", @"c:\Users\Kevin\Desktop\notes.txt C:\Users\Kevin\Desktop\notes.txt")]
+        public void CaseInsensitiveTests(string pattern, string matches)
         {
-            const string globPattern = @"[a-z]";
-            var glob = new Glob(globPattern, GlobOptions.CaseInsensitive);
-            Assert.True(glob.IsMatch("A"));
-            Assert.True(glob.IsMatch("B"));
-            Assert.True(glob.IsMatch("Z"));
-        }
-
-        [Fact]
-        public void ShouldMatchCaseInsensitiveInSegment()
-        {
-            const string globPattern = @"taco";
-            var glob = new Glob(globPattern, GlobOptions.CaseInsensitive);
-            Assert.True(glob.IsMatch("Taco"));
-            Assert.True(glob.IsMatch("tAco"));
-            Assert.True(glob.IsMatch("taCO"));
-        }
-
-        [Fact]
-        public void ShouldMatchCaseInsensitiveInLiteralSet()
-        {
-            const string globPattern = @"{ab,cd}";
-            var glob = new Glob(globPattern, GlobOptions.CaseInsensitive);
-            Assert.True(glob.IsMatch("Ab"));
-            Assert.True(glob.IsMatch("aB"));
-            Assert.True(glob.IsMatch("AB"));
-            Assert.True(glob.IsMatch("Cd"));
-            Assert.True(glob.IsMatch("cD"));
-            Assert.True(glob.IsMatch("CD"));
+            var glob = new Glob(pattern, GlobOptions.CaseInsensitive);
+            foreach (var expectedMatch in matches.Split(' '))
+            {
+                Assert.True(glob.IsMatch(expectedMatch));
+            }
         }
 
         [Fact]
