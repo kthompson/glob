@@ -24,6 +24,7 @@ namespace GlobExpressions.Tests
         [InlineData("a_*file.txt", "a_file.txt")]
         [InlineData("*file.txt", "bigfile.txt")]
         [InlineData("*file.txt", "smallfile.txt")]
+        [InlineData("a/*", "a/", "a")]
 
         // Character Range tests
         [InlineData("*fil[e-z].txt", "bigfile.txt", "smallfila.txt")]
