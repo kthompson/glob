@@ -27,6 +27,17 @@ namespace GlobExpressions.Tests
         [InlineData("a/*", "a/", "a")]
 
         // Character Range tests
+        [InlineData("[]-]", "] -")]
+        [InlineData("[/]", null, "/ a b")]
+        [InlineData("[!]-]", "a b c", "] -")]
+        [InlineData("[a-]", "a -")]
+        [InlineData("[!a-]", "b", "a -")]
+        [InlineData("[-a]", "a -")]
+        [InlineData("[!-a]", "b", "a -")]
+        [InlineData("[--0]", "- . 0", "/")]
+        [InlineData("[!--0]", "a b c", "- . 0 /")]
+        [InlineData("[!]a-]", "b c d", "] a -")]
+        [InlineData(@"[[?*]", @"[ ? *", "a b c")]
         [InlineData("*fil[e-z].txt", "bigfile.txt", "smallfila.txt")]
         [InlineData("*fil[e-z].txt", "smallfilf.txt", "smallfilez.txt")]
         [InlineData("*file[1-9].txt", "bigfile1.txt", "smallfile0.txt")]
@@ -34,6 +45,7 @@ namespace GlobExpressions.Tests
 
         // CharacterList tests
         [InlineData("*file[abc].txt", "bigfilea.txt", "smallfiled.txt")]
+        [InlineData("file[]].txt", "file].txt")]
         [InlineData("*file[abc].txt", "smallfileb.txt", "smallfileaa.txt")]
         [InlineData("*file[!abc].txt", "smallfiled.txt", "bigfilea.txt")]
         [InlineData("*file[!abc].txt", "smallfile-.txt", "smallfileaa.txt")]
@@ -58,14 +70,31 @@ namespace GlobExpressions.Tests
         [InlineData("a/**", "a/b/c")]
         [InlineData("a/**", "a/", "a")]
         [InlineData("/**/somefile", "/somefile")]
+
+        // Escape sequences
+        //[InlineData(@"\[a-d\]", "[a-d]", @"b c \ [ ]")]
+        //[InlineData(@"\{ab,bc\}", "{ab,bc}", @"ab bc")]
+        //[InlineData(@"hat\?", "hat?", "hata hatb")]
+        //[InlineData(@"hat\*", "hat*", "hata hatb hat hat/taco hata/taco")]
         public void TestGlobExpressions(string pattern, string positiveMatch, string negativeMatch = null)
         {
             var glob = new Glob(pattern);
 
             if (positiveMatch != null)
-                Assert.True(glob.IsMatch(positiveMatch));
+            {
+                foreach (var match in positiveMatch.Split(' '))
+                {
+                    Assert.True(glob.IsMatch(match));
+                }
+            }
+
             if (negativeMatch != null)
-                Assert.False(glob.IsMatch(negativeMatch));
+            {
+                foreach (var match in negativeMatch.Split(' '))
+                {
+                    Assert.False(glob.IsMatch(match));
+                }
+            }
         }
 
         [Fact]

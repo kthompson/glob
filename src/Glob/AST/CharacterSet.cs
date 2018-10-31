@@ -7,15 +7,15 @@ namespace GlobExpressions.AST
     internal sealed class CharacterSet : SubSegment
     {
         public bool Inverted { get; }
-        public Identifier Characters { get; }
+        public string Characters { get; }
         public string ExpandedCharacters { get; }
 
-        public CharacterSet(Identifier characters, bool inverted)
+        public CharacterSet(string characters, bool inverted)
             : base(GlobNodeType.CharacterSet)
         {
             Characters = characters;
             Inverted = inverted;
-            this.ExpandedCharacters = CalculateExpandedForm(characters.Value);
+            this.ExpandedCharacters = CalculateExpandedForm(characters);
         }
 
         public bool Matches(char c, bool caseSensitive) => Contains(c, caseSensitive) != this.Inverted;
@@ -24,12 +24,17 @@ namespace GlobExpressions.AST
 
         private string CalculateExpandedForm(string chars)
         {
-            if (!chars.Contains("-"))
-                return chars;
-
             var sb = new StringBuilder();
             var i = 0;
             var len = chars.Length;
+
+            // if first character is special, add it
+            if (chars.StartsWith("-") || chars.StartsWith("[") || chars.StartsWith("]"))
+            {
+                sb.Append(chars[0]);
+                i++;
+            }
+
             while (true)
             {
                 if (i >= len)
@@ -39,6 +44,7 @@ namespace GlobExpressions.AST
                 {
                     if (i == len - 1)
                     {
+                        // - is last character so just add it
                         sb.Append('-');
                     }
                     else
@@ -49,6 +55,10 @@ namespace GlobExpressions.AST
                         }
                         i++; // skip trailing range
                     }
+                }
+                else if (chars[i] == '/')
+                {
+                    i++; // skip
                 }
                 else
                 {

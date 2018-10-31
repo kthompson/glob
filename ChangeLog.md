@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 ### Changed
-- Reduce number of allocations for matching Identifiers
+- Improved character range mechanics, to match ranges with `[`,`]`, `*`, and `?` in them
 
 ### Fixed
 

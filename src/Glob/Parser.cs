@@ -72,9 +72,50 @@ namespace GlobExpressions
                 this.AcceptIt();
                 inverted = true;
             }
-            var characterSet = this.ParseIdentifier();
+            var sb = new StringBuilder();
+            switch (_currentToken.Kind)
+            {
+                case TokenKind.CharacterWildcard:
+                case TokenKind.Wildcard:
+                case TokenKind.CharacterSetStart:
+                case TokenKind.CharacterSetEnd:
+                case TokenKind.Identifier:
+                case TokenKind.PathSeparator:
+                    sb.Append(_currentToken.Spelling);
+                    AcceptIt();
+                    break;
+
+                default:
+                    throw new GlobPatternException(
+                        "Unable to parse SubSegment. " +
+                        "   Expected one of CharacterWildcard | Wildcard | CharacterSetStart | CharacterSetEnd | Identifier. " +
+                        $"Found: {this._currentToken.Kind}"
+                    );
+            }
+
+            while (_currentToken.Kind != TokenKind.CharacterSetEnd)
+            {
+                switch (_currentToken.Kind)
+                {
+                    case TokenKind.CharacterWildcard:
+                    case TokenKind.Wildcard:
+                    case TokenKind.Identifier:
+                    case TokenKind.PathSeparator:
+                        sb.Append(_currentToken.Spelling);
+                        AcceptIt();
+                        break;
+
+                    default:
+                        throw new GlobPatternException(
+                            "Unable to parse SubSegment. " +
+                            "   Expected one of CharacterWildcard | Wildcard | CharacterSetStart | CharacterSetEnd | Identifier. " +
+                            $"Found: {this._currentToken.Kind}"
+                        );
+                }
+            }
+
             this.Accept(TokenKind.CharacterSetEnd);
-            return new CharacterSet(characterSet, inverted);
+            return new CharacterSet(sb.ToString(), inverted);
         }
 
         private StringWildcard ParseWildcard()

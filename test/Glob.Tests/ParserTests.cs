@@ -64,7 +64,7 @@ namespace GlobExpressions.Tests
         public void CanParseThis1()
         {
             var x = new CharacterSet("a-fG-L", false);
-            AssertIdentifier(x.Characters, "a-fG-L");
+            Assert.Equal("a-fG-L", x.Characters);
             Assert.Equal("abcdefGHIJKL", x.ExpandedCharacters);
         }
 
@@ -84,10 +84,90 @@ namespace GlobExpressions.Tests
                         {
                             var set = Assert.IsType<CharacterSet>(subSegment);
                             Assert.False(set.Inverted);
-                            AssertIdentifier(set.Characters, "e-z");
+                            Assert.Equal("e-z", set.Characters);
                             Assert.Equal("efghijklmnopqrstuvwxyz", set.ExpandedCharacters);
                         },
                         subSegment => AssertIdentifier(subSegment, ".txt"));
+                });
+        }
+
+        [Fact]
+        public void CanParseCharacterSetWithSpecials()
+        {
+            var glob = Parse("[\\*?]");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment =>
+                        {
+                            var set = Assert.IsType<CharacterSet>(subSegment);
+                            Assert.False(set.Inverted);
+                            Assert.Equal("\\*?", set.Characters);
+                            Assert.Equal("\\*?", set.ExpandedCharacters);
+                        });
+                });
+        }
+
+        [Fact]
+        public void CanParseCharacterSetWithStart()
+        {
+            var glob = Parse("[[]");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment =>
+                        {
+                            var set = Assert.IsType<CharacterSet>(subSegment);
+                            Assert.False(set.Inverted);
+                            Assert.Equal("[", set.Characters);
+                            Assert.Equal("[", set.ExpandedCharacters);
+                        });
+                });
+        }
+
+        [Fact]
+        public void CanParseCharacterSetWithEnd()
+        {
+            var glob = Parse("[]]");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment =>
+                        {
+                            var set = Assert.IsType<CharacterSet>(subSegment);
+                            Assert.False(set.Inverted);
+                            Assert.Equal("]", set.Characters);
+                            Assert.Equal("]", set.ExpandedCharacters);
+                        });
+                });
+        }
+
+        [Fact]
+        public void CanParseCharacterSetWithSeparator()
+        {
+            var glob = Parse("[-]");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment =>
+                        {
+                            var set = Assert.IsType<CharacterSet>(subSegment);
+                            Assert.False(set.Inverted);
+                            Assert.Equal("-", set.Characters);
+                            Assert.Equal("-", set.ExpandedCharacters);
+                        });
                 });
         }
 
