@@ -15,11 +15,13 @@ namespace GlobExpressions
         private Tree _root;
         private Segment[] _segments;
         private readonly bool _caseSensitive;
+        private readonly bool _matchFilenameOnly;
 
         public Glob(string pattern, GlobOptions options = GlobOptions.None)
         {
             this.Pattern = pattern;
             _caseSensitive = !options.HasFlag(GlobOptions.CaseInsensitive);
+            _matchFilenameOnly = !options.HasFlag(GlobOptions.MatchFullPath);
 
             if (options.HasFlag(GlobOptions.Compiled))
             {
@@ -46,7 +48,7 @@ namespace GlobExpressions
 
             var pathSegments = input.Split('/', '\\');
             // match filename only
-            if (_segments.Length == 1)
+            if (_matchFilenameOnly && _segments.Length == 1)
             {
                 var last = pathSegments.LastOrDefault();
                 var tail = (last == null) ? new string[0] : new[] { last };

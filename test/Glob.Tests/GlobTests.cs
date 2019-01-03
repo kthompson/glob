@@ -25,6 +25,8 @@ namespace GlobExpressions.Tests
         [InlineData("*file.txt", "bigfile.txt")]
         [InlineData("*file.txt", "smallfile.txt")]
         [InlineData("a/*", "a/", "a")]
+        [InlineData("*", "a")]
+        [InlineData("*", "folder1/a")]
 
         // Character Range tests
         [InlineData("[]-]", "] -")]
@@ -174,6 +176,27 @@ namespace GlobExpressions.Tests
                 Assert.True(glob.IsMatch(expectedMatch));
             }
         }
+
+        [Theory]
+        [InlineData(@"?", "a b c", "folder1/d folder2/e")]
+        [InlineData(@"*", "a b c", "folder1/d folder2/e")]
+        public void FullPathOptionTests(string pattern, string matches, string nonMatches = null)
+        {
+            var glob = new Glob(pattern, GlobOptions.MatchFullPath);
+            foreach (var expectedMatch in matches.Split(' '))
+            {
+                Assert.True(glob.IsMatch(expectedMatch));
+            }
+
+            if (nonMatches != null)
+            {
+                foreach (var expectedMatch in nonMatches.Split(' '))
+                {
+                    Assert.False(glob.IsMatch(expectedMatch));
+                }
+            }
+        }
+
 
         [Fact]
         public void ShouldNotMatchLiteralSet()

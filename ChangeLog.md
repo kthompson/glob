@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+### Changed
+### Fixed
+
+## [1.1.0]
+### Added
+- Added GlobOptions.MatchFullPath to require the full path to match for patterns like `*.txt`
 
 ### Changed
 - Improved character range mechanics, to match ranges with `[`,`]`, `*`, and `?` in them
-
-### Fixed
 
 ## [1.0.4]
 ### Changed
@@ -47,7 +51,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix issue that caused unnecessary directory traversal (#20)
 - Fix issue where Glob.Directories did not always match properly
 
-[Unreleased]: https://github.com/kthompson/glob/compare/1.0.4...HEAD
+[Unreleased]: https://github.com/kthompson/glob/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/kthompson/glob/compare/1.0.4...1.1.0
 [1.0.4]: https://github.com/kthompson/glob/compare/1.0.3...1.0.4
 [1.0.3]: https://github.com/kthompson/glob/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/kthompson/glob/compare/1.0.1...1.0.2

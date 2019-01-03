@@ -7,6 +7,7 @@ namespace GlobExpressions
     {
         None,
         Compiled,
+        MatchFullPath,
         CaseInsensitive
     }
 }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyTitle>A C# Glob pattern matcher for .NET</AssemblyTitle>
-    <VersionPrefix>1.0.4</VersionPrefix>
+    <VersionPrefix>1.1.0</VersionPrefix>
     <Authors>Kevin Thompson &lt;kevin@theautomaters.com&gt;</Authors>
     <TargetFrameworks>netstandard1.3;net40;net45;net46</TargetFrameworks>
     <DebugType>portable</DebugType>
@@ -10,7 +10,11 @@
     <PackageId>Glob</PackageId>
     <PackageTags>C#;glob;minimatch</PackageTags>
     <PackageReleaseNotes>
-      Reduce number of allocations for matching Identifiers
+### Added
+- Added GlobOptions.MatchFullPath to require the full path to match for patterns like `*.txt`
+
+### Changed
+- Improved character range mechanics, to match ranges with `[`,`]`, `*`, and `?` in them
     </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>
