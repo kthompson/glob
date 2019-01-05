@@ -76,7 +76,7 @@ namespace GlobExpressions
                 return TakeIdentifier();
             }
 
-            if (IsNumeric(current) || current == '_')
+            if (IsIdentifierCharacter(current))
             {
                 return TakeIdentifier();
             }
@@ -141,7 +141,7 @@ namespace GlobExpressions
             return TokenKind.Identifier;
         }
 
-        private static bool IsIdentifierCharacter(char c) => char.IsLetter(c) || IsNumeric(c) || c == '_';
+        private static bool IsIdentifierCharacter(char c) => char.IsLetter(c) || IsNumeric(c) || "~_$".Contains(c);
 
         private static bool IsNumeric(char c) => char.IsDigit(c) || c == '.' || c == '-';
     }

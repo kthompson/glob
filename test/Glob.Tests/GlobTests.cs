@@ -15,6 +15,10 @@ namespace GlobExpressions.Tests
         }
 
         [Theory]
+        // Identifier tests
+        [InlineData("$tf/", @"$tf/", "xtf")]
+        
+
         // Wildcard tests
         [InlineData("*.txt", @"c:\windows\file.txt", "file.zip")]
         [InlineData("*.txt", "file.txt")]
@@ -27,6 +31,7 @@ namespace GlobExpressions.Tests
         [InlineData("a/*", "a/", "a")]
         [InlineData("*", "a")]
         [InlineData("*", "folder1/a")]
+        [InlineData("~$*", "~$ ~$a ~$aa")]
 
         // Character Range tests
         [InlineData("[]-]", "] -")]
@@ -97,6 +102,16 @@ namespace GlobExpressions.Tests
                     Assert.False(glob.IsMatch(match));
                 }
             }
+        }
+
+
+        [Fact(Skip = "Not currently supported")]
+        public void TestEscapeSequenceWithSpaces()
+        {
+            var pattern = @"Generated\ Files/";
+            var expectedMatch = "Generated Files";
+
+            Assert.True(Glob.IsMatch(pattern, expectedMatch));
         }
 
         [Fact]
