@@ -37,22 +37,30 @@ See: http://en.wikipedia.org/wiki/Glob_(programming) for more info.
 
 ### Example
 
-	var glob = new Glob("**/bin");
-	var match = glob.IsMatch(@"C:\files\bin\");
+```csharp
+var glob = new Glob("**/bin");
+var match = glob.IsMatch(@"C:\files\bin\");
+```
 
 ### Static Usage
 
 #### Single file
 
-    var match = Glob.IsMatch(@"C:\files\bin\", "**/bin");	
+```csharp
+var match = Glob.IsMatch(@"C:\files\bin\", "**/bin");	
+```
 
 #### Files in a directory
 
-    string[] matchingFiles = Glob.Files(@"C:\files\bin\", "**/bin").ToArray();	
+```csharp
+string[] matchingFiles = Glob.Files(@"C:\files\bin\", "**/bin").ToArray();	
+```
 
 #### Directories in a directory
 
-    string[] matchingDirectories = Glob.Directories(@"C:\files\bin\", "**/bin").ToArray();	
+```csharp
+string[] matchingDirectories = Glob.Directories(@"C:\files\bin\", "**/bin").ToArray();	
+```
 
 ## Extension Methods
 
@@ -66,8 +74,10 @@ Enumerate through all matching directories recursively.
 
 #### Example
 
-    var root = new DirectoryInfo(@"C:\");
-	var allBinFolders = root.GlobDirectories("**/bin");
+```csharp
+var root = new DirectoryInfo(@"C:\");
+var allBinFolders = root.GlobDirectories("**/bin");
+```
 
 ### DirectoryInfo.GlobFiles
 
@@ -79,8 +89,10 @@ Enumerate through all matching files recursively.
 
 #### Example
 
-    var root = new DirectoryInfo(@"C:\");
-	var allDllFiles = root.GlobFiles("**/*.dll");
+```csharp
+var root = new DirectoryInfo(@"C:\");
+var allDllFiles = root.GlobFiles("**/*.dll");
+```
 
 ### DirectoryInfo.GlobFileSystemInfos
 
@@ -92,9 +104,10 @@ Enumerate through all matching files and folders recursively.
 
 #### Example
 
-    var root = new DirectoryInfo(@"C:\");
-	var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
-
+```csharp
+var root = new DirectoryInfo(@"C:\");
+var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
+```
 
 ## Performance
 
