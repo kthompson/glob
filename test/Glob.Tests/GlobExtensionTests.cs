@@ -53,7 +53,7 @@ namespace GlobExpressions.Tests
             var globPattern = @"*/*/*.csproj";
 
             var root = new DirectoryInfo(SourceRoot);
-            var result = root.GlobFiles(globPattern).OrderBy(x => x.Name).ToList();
+            var result = root.GlobFiles(globPattern).OrderBy(x => x.Name.ToLower()).ToList();
 
             Assert.Collection(
                 result,

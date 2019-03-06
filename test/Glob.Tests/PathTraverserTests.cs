@@ -264,17 +264,17 @@ namespace GlobExpressions.Tests
             var mockFileDatas = new Dictionary<string, MockFileData>();
             if (positiveMatch != null)
             {
-                mockFileDatas[Path.Combine("C:", positiveMatch)] = MockFileData.NullObject;
+                mockFileDatas[Path.Combine(FileSystemRoot, positiveMatch)] = MockFileData.NullObject;
             }
 
             if (negativeMatch != null)
             {
-                mockFileDatas[Path.Combine("C:", negativeMatch)] = MockFileData.NullObject;
+                mockFileDatas[Path.Combine(FileSystemRoot, negativeMatch)] = MockFileData.NullObject;
             }
 
             var cache = new MockTraverseOptions(true, true, false, new MockFileSystem(mockFileDatas));
 
-            var root = new DirectoryInfo("C:\\");
+            var root = new DirectoryInfo(FileSystemRoot);
             var results = PathTraverser.Traverse(root, segments, 0, cache).ToArray();
 
             if (positiveMatch != null)
@@ -295,14 +295,14 @@ namespace GlobExpressions.Tests
             var mockFileDatas = new Dictionary<string, MockFileData>();
             foreach (var file in files.Split(' '))
             {
-                mockFileDatas[Path.Combine("C:", file)] = MockFileData.NullObject;
+                mockFileDatas[Path.Combine(FileSystemRoot, file)] = MockFileData.NullObject;
             }
 
             var cache = new MockTraverseOptions(false, true, true, new MockFileSystem(mockFileDatas));
 
-            var root = new DirectoryInfo("C:\\");
-            var results = PathTraverser.Traverse(root, segments, 0, cache).Select(file => file.FullName.Substring("C:\\".Length)).OrderBy(x => x).ToArray();
-            var fileMatches = matches.Split(' ').OrderBy(x => x).ToArray();
+            var root = new DirectoryInfo(FileSystemRoot);
+            var results = PathTraverser.Traverse(root, segments, 0, cache).Select(file => file.FullName.Substring(FileSystemRoot.Length)).OrderBy(x => x).ToArray();
+            var fileMatches = matches.Split(' ').Select(x => x.Replace('\\', Path.DirectorySeparatorChar)).OrderBy(x => x).ToArray();
 
             Assert.Equal(fileMatches, results);
         }

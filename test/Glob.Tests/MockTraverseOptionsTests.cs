@@ -4,31 +4,38 @@ using System.IO;
 using System.IO.Abstractions.TestingHelpers;
 using System.Text;
 using Xunit;
+using static GlobExpressions.Tests.TestHelpers;
 
 namespace GlobExpressions.Tests
 {
     public class MockTraverseOptionsTests
     {
+        
         [Fact]
         public void CanAddPaths()
         {
-            var options = new MockTraverseOptions(false, false, false, new MockFileSystem(new Dictionary<string, MockFileData>
+            var windowsPath = Path.Combine(FileSystemRoot, "Windows");
+            var system32Path = Path.Combine(windowsPath, "System32");
+
+            var mockFiles = new Dictionary<string, MockFileData>
             {
-                ["c:/Windows/Notepad.exe"] = MockFileData.NullObject,
-                ["c:/Windows/explorer.exe"] = MockFileData.NullObject,
-                ["c:/Windows/System32/at.exe"] = MockFileData.NullObject,
-            }));
+                [Path.Combine(windowsPath, "Notepad.exe")] = MockFileData.NullObject,
+                [Path.Combine(windowsPath, "explorer.exe")] = MockFileData.NullObject,
+                [Path.Combine(system32Path, "at.exe")] = MockFileData.NullObject,
+            };
+            var mockFileSystem = new MockFileSystem(mockFiles);
+            var options = new MockTraverseOptions(false, false, false, mockFileSystem);
 
-            var directories = options.GetDirectories(new DirectoryInfo("C:\\"));
-            Assert.Collection(directories, info => Assert.Equal("c:\\Windows", info.FullName));
+            var directories = options.GetDirectories(new DirectoryInfo(FileSystemRoot));
+            Assert.Collection(directories, info => Assert.Equal(windowsPath, info.FullName));
 
-            var directories2 = options.GetDirectories(new DirectoryInfo("C:\\Windows"));
-            Assert.Collection(directories2, info => Assert.Equal("c:\\Windows\\System32", info.FullName));
+            var directories2 = options.GetDirectories(new DirectoryInfo(windowsPath));
+            Assert.Collection(directories2, info => Assert.Equal(system32Path, info.FullName));
 
-            var files = options.GetFiles(new DirectoryInfo("C:\\Windows"));
+            var files = options.GetFiles(new DirectoryInfo(windowsPath));
             Assert.Collection(files,
-                info => Assert.Equal("c:\\Windows\\Notepad.exe", info.FullName),
-                info => Assert.Equal("c:\\Windows\\explorer.exe", info.FullName)
+                info => Assert.Equal(Path.Combine(windowsPath, "Notepad.exe"), info.FullName),
+                info => Assert.Equal(Path.Combine(windowsPath, "explorer.exe"), info.FullName)
             );
         }
 
