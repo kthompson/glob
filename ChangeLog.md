@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Fixed
 - Issue #34: Updated scanner to support `~` and `$` in Glob patterns
+- Issue #44: Delete foreach Glob.Directories() fails
 
 ## [1.1.1]
 ### Fixed

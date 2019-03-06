@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Xunit;
 
@@ -212,13 +213,60 @@ namespace GlobExpressions.Tests
             }
         }
 
-
         [Fact]
         public void ShouldNotMatchLiteralSet()
         {
             const string globPattern = @"{ab,cd}";
             var glob = new Glob(globPattern, GlobOptions.CaseInsensitive);
             Assert.False(glob.IsMatch("dc"));
+        }
+
+        [Fact]
+        public void DeleteDirectoriesUnderPath()
+        {
+            var testRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", "DeleteDirectoriesUnderPath");
+            try
+            {
+                CreateFiles(testRoot, "ab/bin/a.cs ab/bin/sub/a.cs a/taco.cs b/taco.cs b/ab/a/hat.taco");
+
+                // Verify files exist before
+                Assert.True(File.Exists(Path.Combine(testRoot, "a/taco.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "b/taco.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "b/ab/a/hat.taco")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "ab/bin/a.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "ab/bin/sub/a.cs")));
+
+
+                foreach (var dir in Glob.Directories(testRoot, "**/bin"))
+                {
+                    var path = Path.Combine(testRoot, dir);
+                    Directory.Delete(path, true);
+                }
+
+                // Verify bin folder was deleted but nothing else
+                Assert.True(File.Exists(Path.Combine(testRoot, "a/taco.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "b/taco.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "b/ab/a/hat.taco")));
+                Assert.False(File.Exists(Path.Combine(testRoot, "ab/bin/a.cs")));
+                Assert.False(File.Exists(Path.Combine(testRoot, "ab/bin/sub/a.cs")));
+            }
+            finally
+            {
+                // Cleanup test
+                Directory.Delete(testRoot, true);
+            }
+        }
+
+        void CreateFiles(string testRoot, string files)
+        {
+            Directory.CreateDirectory(testRoot);
+
+            foreach (var file in files.Split(' '))
+            {
+                var filePath = Path.Combine(testRoot, file);
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                File.AppendAllText(filePath, "");
+            }
         }
     }
 }

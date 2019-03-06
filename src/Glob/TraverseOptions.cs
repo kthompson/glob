@@ -19,12 +19,16 @@ namespace GlobExpressions
         public bool EmitFiles { get; }
         public bool EmitDirectories { get; }
 
+        private readonly FileInfo[] _emptyFileInfos = new FileInfo[0];
+        private readonly DirectoryInfo[] _emptyDirectoryInfos = new DirectoryInfo[0];
+
         public virtual FileInfo[] GetFiles(DirectoryInfo root)
         {
             if (_fileCache.TryGetValue(root.FullName, out var cachedFiles))
                 return cachedFiles;
 
-            var files = root.GetFiles();
+            root.Refresh();
+            var files = root.Exists ? root.GetFiles() : _emptyFileInfos;
             _fileCache.Add(root.FullName, files);
             return files;
         }
@@ -34,7 +38,8 @@ namespace GlobExpressions
             if (_dirCache.TryGetValue(root.FullName, out var cachedFiles))
                 return cachedFiles;
 
-            var files = root.GetDirectories();
+            root.Refresh();
+            var files = root.Exists ? root.GetDirectories() : _emptyDirectoryInfos;
             _dirCache.Add(root.FullName, files);
             return files;
         }
