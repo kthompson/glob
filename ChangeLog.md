@@ -6,7 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.1.2]
 ### Fixed
+- Issue #47: Add NuGet package description
+- Issue #46: Add netstandard2.0 target
 - Issue #34: Updated scanner to support `~` and `$` in Glob patterns
 - Issue #44: Delete foreach Glob.Directories() fails
 
@@ -55,7 +58,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix issue that caused unnecessary directory traversal (#20)
 - Fix issue where Glob.Directories did not always match properly
 
-[Unreleased]: https://github.com/kthompson/glob/compare/1.1.1...HEAD
+[Unreleased]: https://github.com/kthompson/glob/compare/1.1.2...HEAD
+[1.1.2]: https://github.com/kthompson/glob/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/kthompson/glob/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/kthompson/glob/compare/1.0.4...1.1.0
 [1.0.4]: https://github.com/kthompson/glob/compare/1.0.3...1.0.4
