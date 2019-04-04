@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyTitle>A C# Glob pattern matcher for .NET</AssemblyTitle>
-    <VersionPrefix>1.1.2</VersionPrefix>
+    <VersionPrefix>1.1.3</VersionPrefix>
     <Authors>Kevin Thompson &lt;kevin@theautomaters.com&gt;</Authors>
     <TargetFrameworks>netstandard1.3;netstandard2.0;net40;net45;net46</TargetFrameworks>
     <DebugType>portable</DebugType>
@@ -12,10 +12,7 @@
     <Description>A C# Glob library for .NET and .NET Core.</Description>
     <PackageReleaseNotes>
       ### Fixed
-      - Issue #47: Add NuGet package description
-      - Issue #46: Add netstandard2.0 target
-      - Issue #34: Updated scanner to support `~` and `$` in Glob patterns
-      - Issue #44: Delete foreach Glob.Directories() fails
+      - Allow spaces as normal path characters
     </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>
