@@ -105,6 +105,14 @@ namespace GlobExpressions.Tests
             }
         }
 
+        [Fact]
+        public void TestInputWithSpace()
+        {
+            var pattern = "Microsoft Visual Studio/2017";
+            var expectedMatch = @"Microsoft Visual Studio\2017";
+
+            Assert.True(Glob.IsMatch(pattern, expectedMatch));
+        }
 
         [Fact(Skip = "Not currently supported")]
         public void TestEscapeSequenceWithSpaces()
