@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.1.3]
 ### Fixed
 - Allow spaces as normal path characters
+- Removed reference to System.ValueTuple
 
 ## [1.1.2]
 ### Fixed
