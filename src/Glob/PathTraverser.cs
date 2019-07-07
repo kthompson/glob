@@ -20,57 +20,110 @@ namespace GlobExpressions
             return segments.Length == 0 ? new FileSystemInfo[0] : Traverse(root, segments, 0, cache);
         }
 
-        private static readonly FileSystemInfo[] emptyFileSystemInfoArray = new FileSystemInfo[0];
+        private static readonly FileSystemInfo[] _emptyFileSystemInfoArray = new FileSystemInfo[0];
+        private static readonly DirectoryInfo[] _emptyPathJobArray = new DirectoryInfo[0];
 
         internal static IEnumerable<FileSystemInfo> Traverse(DirectoryInfo root, Segment[] segments, int segmentIndex,
-             TraverseOptions options)
+            TraverseOptions options) =>
+            Traverse(new List<DirectoryInfo> { root }, segments, options);
+
+        private static IEnumerable<FileSystemInfo> Traverse(List<DirectoryInfo> roots, Segment[] segments, TraverseOptions options)
         {
-            if (segmentIndex == segments.Length)
+            var segmentsLength = segments.Length;
+            var rootCache = new List<DirectoryInfo>();
+            var nextSegmentRoots = new List<DirectoryInfo>();
+            var segmentIndex = 0;
+            var emitDirectories = options.EmitDirectories;
+            var emitFiles = options.EmitFiles;
+
+            void Swap(ref List<DirectoryInfo> other)
             {
-                return options.EmitDirectories
-                    ? Enumerable.Repeat<FileSystemInfo>(root, 1)
-                    : emptyFileSystemInfoArray;
+                var swap = roots;
+                roots = other;
+                other = swap;
             }
 
-            var segment = segments[segmentIndex];
-
-            switch (segment)
+            IEnumerable<DirectoryInfo> JobsMatchingSegment(DirectoryInfo directoryInfo, Segment segment)
             {
-                case DirectorySegment directorySegment:
+                switch (segment)
+                {
+                    case DirectorySegment directorySegment:
+                        // consume DirectorySegment
+                        var pathJobs = (from directory in options.GetDirectories(directoryInfo)
+                                        where directorySegment.MatchesSegment(directory.Name, options.CaseSensitive)
+                                        select directory).ToArray();
+
+                        nextSegmentRoots.AddRange(pathJobs);
+
+                        return _emptyPathJobArray;
+
+                    case DirectoryWildcard _:
+                        {
+                            // match zero path segments, consuming DirectoryWildcard
+                            nextSegmentRoots.Add(directoryInfo);
+
+                            // match consume 1 path segment but not the Wildcard
+                            return options.GetDirectories(directoryInfo);
+                        }
+
+                    default:
+                        return _emptyPathJobArray;
+                }
+            }
+
+            while (true)
+            {
+                // no more segments. return all current roots
+                var noMoreSegments = segmentIndex == segmentsLength;
+                if (emitDirectories && noMoreSegments)
+                {
+                    foreach (var info in roots)
                     {
-                        var filesToEmit =
-                            (options.EmitFiles && segmentIndex == segments.Length - 1)
-                                ? options.GetFiles(root).Where(file => directorySegment.MatchesSegment(file.Name, options.CaseSensitive)).Cast<FileSystemInfo>()
-                                : emptyFileSystemInfoArray;
-
-                        var dirSegmentItems = from directory in options.GetDirectories(root)
-                                              where directorySegment.MatchesSegment(directory.Name, options.CaseSensitive)
-                                              from item in Traverse(directory, segments, segmentIndex + 1, options)
-                                              select item;
-
-                        return filesToEmit.Concat(dirSegmentItems);
+                        yield return info;
                     }
-                case DirectoryWildcard _:
+                }
+
+                // no more roots or no more segments, go to next segment
+                if (roots.Count == 0 || noMoreSegments)
+                {
+                    roots.Clear();
+                    if (nextSegmentRoots.Count > 0)
                     {
-                        var filesToEmit =
-                            (options.EmitFiles && segmentIndex == segments.Length - 1)
-                                ? options.GetFiles(root).Cast<FileSystemInfo>()
-                                : emptyFileSystemInfoArray;
-
-                        // match zero path segments, consuming DirectoryWildcard
-                        var zeroMatch = Traverse(root, segments, segmentIndex + 1, options);
-
-                        // match consume 1 path segment but not the Wildcard
-                        var files = from directory in options.GetDirectories(root)
-                                    from item in Traverse(directory, segments, segmentIndex, options)
-                                    select item;
-
-                        return filesToEmit.Concat(zeroMatch).Concat(files);
+                        Swap(ref nextSegmentRoots);
+                        segmentIndex++;
+                        continue;
                     }
 
-                default:
-                    return emptyFileSystemInfoArray;
+                    yield break;
+                }
+
+                var segment = segments[segmentIndex];
+                var onLastSegment = segmentIndex == segmentsLength - 1;
+                if (emitFiles && onLastSegment)
+                {
+                    var allFiles = from job in roots
+                                   let children = options.GetFiles(job)
+                                   from file in FilesMatchingSegment(children, segment, options.CaseSensitive)
+                                   select file;
+
+                    foreach (var info in allFiles)
+                    {
+                        yield return info;
+                    }
+                }
+                rootCache.Clear();
+                rootCache.AddRange(roots.SelectMany(job => JobsMatchingSegment(job, segment)));
+
+                Swap(ref rootCache);
             }
         }
+
+        private static IEnumerable<FileSystemInfo> FilesMatchingSegment(IEnumerable<FileInfo> fileInfos, Segment segment, bool caseSensitive) =>
+            segment switch
+            {
+                DirectorySegment directorySegment => (IEnumerable<FileSystemInfo>)fileInfos.Where(file => directorySegment.MatchesSegment(file.Name, caseSensitive)),
+                DirectoryWildcard _ => fileInfos,
+                _ => _emptyFileSystemInfoArray
+            };
     }
 }
