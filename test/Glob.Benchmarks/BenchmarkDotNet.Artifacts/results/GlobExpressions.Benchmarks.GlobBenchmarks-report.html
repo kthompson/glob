@@ -13,25 +13,25 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet=v0.11.1, OS=Windows 10.0.17134.345 (1803/April2018Update/Redstone4)
-Intel Core i7-4790K CPU 4.00GHz (Haswell), 1 CPU, 8 logical and 4 physical cores
-.NET Core SDK=2.1.403
-  [Host]     : .NET Core 2.1.5 (CoreCLR 4.6.26919.02, CoreFX 4.6.26919.02), 64bit RyuJIT
-  DefaultJob : .NET Core 2.1.5 (CoreCLR 4.6.26919.02, CoreFX 4.6.26919.02), 64bit RyuJIT
+BenchmarkDotNet=v0.11.1, OS=Windows 10.0.17763
+Intel Core i7-8700K CPU 3.70GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
+.NET Core SDK=2.2.203
+  [Host]     : .NET Core 2.1.11 (CoreCLR 4.6.27617.04, CoreFX 4.6.27617.02), 64bit RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 2.1.11 (CoreCLR 4.6.27617.04, CoreFX 4.6.27617.02), 64bit RyuJIT
 </code></pre>
 <pre><code></code></pre>
 
 <table>
-<thead><tr><th>                           Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th>
+<thead><tr><th>                           Method</th><th> Mean</th><th>Error</th><th>StdDev</th>
 </tr>
-</thead><tbody><tr><td>ParseGlob</td><td>1,962.7 ns</td><td>28.34 ns</td><td>26.50 ns</td><td>1,957.7 ns</td>
-</tr><tr><td>ParseAndCompileGlob</td><td>2,012.8 ns</td><td>39.59 ns</td><td>37.04 ns</td><td>2,015.1 ns</td>
-</tr><tr><td>MatchForUncompiledGlob</td><td>2,681.5 ns</td><td>20.05 ns</td><td>18.76 ns</td><td>2,676.7 ns</td>
-</tr><tr><td>MatchForCompiledGlob</td><td>661.3 ns</td><td>13.11 ns</td><td>27.94 ns</td><td>649.5 ns</td>
-</tr><tr><td>MatchForUncompiledGlobDirectoryWildcard</td><td>2,614.3 ns</td><td>51.72 ns</td><td>43.19 ns</td><td>2,610.4 ns</td>
-</tr><tr><td>MatchForCompiledGlobDirectoryWildcard</td><td>663.8 ns</td><td>16.19 ns</td><td>21.05 ns</td><td>658.0 ns</td>
-</tr><tr><td>BenchmarkParseToTree</td><td>2,032.0 ns</td><td>40.70 ns</td><td>64.56 ns</td><td>2,000.9 ns</td>
-</tr><tr><td>PathTraversal</td><td>48,384.5 ns</td><td>209.39 ns</td><td>195.86 ns</td><td>48,345.2 ns</td>
+</thead><tbody><tr><td>ParseGlob</td><td>4,716.5 ns</td><td>53.526 ns</td><td>50.068 ns</td>
+</tr><tr><td>ParseAndCompileGlob</td><td>4,714.3 ns</td><td>21.700 ns</td><td>19.237 ns</td>
+</tr><tr><td>MatchForUncompiledGlob</td><td>5,390.9 ns</td><td>102.690 ns</td><td>96.056 ns</td>
+</tr><tr><td>MatchForCompiledGlob</td><td>591.5 ns</td><td>2.657 ns</td><td>2.355 ns</td>
+</tr><tr><td>MatchForUncompiledGlobDirectoryWildcard</td><td>5,205.7 ns</td><td>58.186 ns</td><td>51.580 ns</td>
+</tr><tr><td>MatchForCompiledGlobDirectoryWildcard</td><td>592.9 ns</td><td>2.137 ns</td><td>1.895 ns</td>
+</tr><tr><td>BenchmarkParseToTree</td><td>4,742.0 ns</td><td>31.169 ns</td><td>24.334 ns</td>
+</tr><tr><td>PathTraversal</td><td>36,948.6 ns</td><td>661.293 ns</td><td>618.574 ns</td>
 </tr></tbody></table>
 </body>
 </html>
