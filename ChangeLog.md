@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Removed reference to System.ValueTuple
 
+### Fixed
+- Issue #53: Fix issue where matches against the root directory would attempt to truncate a prefix longer than desired
+
 ## [1.1.3]
 ### Fixed
 - Allow spaces as normal path characters

@@ -17,7 +17,7 @@ namespace GlobExpressions
 
             var truncateLength = GetTruncateLength(directoryInfo);
 
-            return Files(directoryInfo, pattern, options).Select(info => info.FullName.Remove(0, truncateLength));
+            return Files(directoryInfo, pattern, options).Select(RemovePrefix<FileInfo>(truncateLength));
         }
 
         public static IEnumerable<string> Files(string workingDirectory, string pattern) =>
@@ -39,7 +39,19 @@ namespace GlobExpressions
             var directoryInfo = new DirectoryInfo(workingDirectory);
             var truncateLength = GetTruncateLength(directoryInfo);
 
-            return Directories(directoryInfo, pattern, options).Select(info => info.FullName.Remove(0, truncateLength));
+            return Directories(directoryInfo, pattern, options).Select(RemovePrefix<DirectoryInfo>(truncateLength));
+        }
+
+        private static Func<T, string> RemovePrefix<T>(int truncateLength) where T : FileSystemInfo
+        {
+            return info =>
+            {
+                // For cases when the pattern matches the root entry, return an empty string
+                if (info.FullName.Length <= truncateLength)
+                    return "";
+
+                return info.FullName.Remove(0, truncateLength);
+            };
         }
 
         public static IEnumerable<DirectoryInfo> Directories(DirectoryInfo workingDirectory, string pattern) =>
@@ -58,7 +70,7 @@ namespace GlobExpressions
             var directoryInfo = new DirectoryInfo(workingDirectory);
             var truncateLength = GetTruncateLength(directoryInfo);
 
-            return FilesAndDirectories(directoryInfo, pattern, options).Select(info => info.FullName.Remove(0, truncateLength));
+            return FilesAndDirectories(directoryInfo, pattern, options).Select(RemovePrefix<FileSystemInfo>(truncateLength));
         }
 
         public static IEnumerable<FileSystemInfo> FilesAndDirectories(DirectoryInfo workingDirectory, string pattern) =>
@@ -67,9 +79,13 @@ namespace GlobExpressions
         public static IEnumerable<FileSystemInfo> FilesAndDirectories(DirectoryInfo workingDirectory, string pattern, GlobOptions options) =>
             workingDirectory.Traverse(pattern, !options.HasFlag(GlobOptions.CaseInsensitive), true, true);
 
-        private static int GetTruncateLength(FileSystemInfo directoryInfo) =>
-            directoryInfo.FullName.EndsWith(Path.DirectorySeparatorChar.ToString())
+        private static int GetTruncateLength(FileSystemInfo directoryInfo)
+        {
+            Console.WriteLine(Path.DirectorySeparatorChar);
+            Console.WriteLine(directoryInfo.FullName.EndsWith(Path.DirectorySeparatorChar.ToString()));
+            return directoryInfo.FullName.EndsWith(Path.DirectorySeparatorChar.ToString())
                 ? directoryInfo.FullName.Length
                 : directoryInfo.FullName.Length + 1;
+        }
     }
 }

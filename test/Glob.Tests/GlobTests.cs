@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -18,7 +19,6 @@ namespace GlobExpressions.Tests
         [Theory]
         // Identifier tests
         [InlineData("$tf/", @"$tf/", "xtf")]
-        
 
         // Wildcard tests
         [InlineData("*.txt", @"c:\windows\file.txt", "file.zip")]
@@ -244,7 +244,6 @@ namespace GlobExpressions.Tests
                 Assert.True(File.Exists(Path.Combine(testRoot, "ab/bin/a.cs")));
                 Assert.True(File.Exists(Path.Combine(testRoot, "ab/bin/sub/a.cs")));
 
-
                 foreach (var dir in Glob.Directories(testRoot, "**/bin"))
                 {
                     var path = Path.Combine(testRoot, dir);
@@ -265,7 +264,114 @@ namespace GlobExpressions.Tests
             }
         }
 
-        void CreateFiles(string testRoot, string files)
+        [Fact]
+        public void StarStarDirectories()
+        {
+            Action<string> AssertEqual(string expected) => actual => Assert.Equal(expected, actual);
+
+            var testRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", "StarStarDirectories");
+            try
+            {
+                CreateFiles(testRoot, "ab/bin/a.cs ab/bin/sub/a.cs a/taco.cs b/taco.cs b/ab/a/hat.taco");
+
+                // Verify files exist before
+                Assert.True(File.Exists(Path.Combine(testRoot, "a/taco.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "ab/bin/a.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "ab/bin/sub/a.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "b/ab/a/hat.taco")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "b/taco.cs")));
+
+                Assert.Collection(Glob.Directories(testRoot, "**").OrderBy(x => x),
+                    AssertEqual(""),
+                    AssertEqual("a"),
+                    AssertEqual("ab"),
+                    AssertEqual("ab\\bin"),
+                    AssertEqual("ab\\bin\\sub"),
+                    AssertEqual("b"),
+                    AssertEqual("b\\ab"),
+                    AssertEqual("b\\ab\\a")
+                );
+            }
+            finally
+            {
+                // Cleanup test
+                Directory.Delete(testRoot, true);
+            }
+        }
+
+        [Fact]
+        public void StarStarFilesAndDirectories()
+        {
+            Action<string> AssertEqual(string expected) => actual => Assert.Equal(expected, actual);
+
+            var testRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", "StarStarFilesAndDirectories");
+            try
+            {
+                CreateFiles(testRoot, "ab/bin/a.cs ab/bin/sub/a.cs a/taco.cs b/taco.cs b/ab/a/hat.taco");
+
+                // Verify files exist before
+                Assert.True(File.Exists(Path.Combine(testRoot, "a/taco.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "ab/bin/a.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "ab/bin/sub/a.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "b/ab/a/hat.taco")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "b/taco.cs")));
+
+                Assert.Collection(Glob.FilesAndDirectories(testRoot, "**").OrderBy(x => x),
+                    AssertEqual(""),
+                    AssertEqual("a"),
+                    AssertEqual("a\\taco.cs"),
+                    AssertEqual("ab"),
+                    AssertEqual("ab\\bin"),
+                    AssertEqual("ab\\bin\\a.cs"),
+                    AssertEqual("ab\\bin\\sub"),
+                    AssertEqual("ab\\bin\\sub\\a.cs"),
+                    AssertEqual("b"),
+                    AssertEqual("b\\ab"),
+                    AssertEqual("b\\ab\\a"),
+                    AssertEqual("b\\ab\\a\\hat.taco"),
+                    AssertEqual("b\\taco.cs")
+                );
+            }
+            finally
+            {
+                // Cleanup test
+                Directory.Delete(testRoot, true);
+            }
+        }
+
+        [Fact]
+        public void StarStarFiles()
+        {
+            Action<string> AssertEqual(string expected) => actual => Assert.Equal(expected, actual);
+
+            var testRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", "StarStarFiles");
+            try
+            {
+                CreateFiles(testRoot, "ab/bin/a.cs ab/bin/sub/a.cs a/taco.cs b/taco.cs b/ab/a/hat.taco");
+
+                // Verify files exist before
+                Assert.True(File.Exists(Path.Combine(testRoot, "a/taco.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "ab/bin/a.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "ab/bin/sub/a.cs")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "b/ab/a/hat.taco")));
+                Assert.True(File.Exists(Path.Combine(testRoot, "b/taco.cs")));
+
+                Assert.Collection(Glob.Files(testRoot, "**").OrderBy(x => x),
+                    AssertEqual("a\\taco.cs"),
+                    AssertEqual("ab\\bin\\a.cs"),
+                    AssertEqual("ab\\bin\\sub\\a.cs"),
+                    AssertEqual("b\\ab\\a\\hat.taco"),
+                    AssertEqual("b\\taco.cs")
+                );
+            }
+            finally
+            {
+                // Cleanup test
+                Directory.Delete(testRoot, true);
+            }
+        }
+
+        private void CreateFiles(string testRoot, string files)
         {
             Directory.CreateDirectory(testRoot);
 
