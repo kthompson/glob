@@ -285,11 +285,11 @@ namespace GlobExpressions.Tests
                     AssertEqual(""),
                     AssertEqual("a"),
                     AssertEqual("ab"),
-                    AssertEqual("ab\\bin"),
-                    AssertEqual("ab\\bin\\sub"),
+                    AssertEqual(Path.Combine("ab", "bin")),
+                    AssertEqual(Path.Combine("ab", "bin", "sub")),
                     AssertEqual("b"),
-                    AssertEqual("b\\ab"),
-                    AssertEqual("b\\ab\\a")
+                    AssertEqual(Path.Combine("b", "ab")),
+                    AssertEqual(Path.Combine("b", "ab", "a"))
                 );
             }
             finally
@@ -319,17 +319,17 @@ namespace GlobExpressions.Tests
                 Assert.Collection(Glob.FilesAndDirectories(testRoot, "**").OrderBy(x => x),
                     AssertEqual(""),
                     AssertEqual("a"),
-                    AssertEqual("a\\taco.cs"),
-                    AssertEqual("ab"),
-                    AssertEqual("ab\\bin"),
-                    AssertEqual("ab\\bin\\a.cs"),
-                    AssertEqual("ab\\bin\\sub"),
-                    AssertEqual("ab\\bin\\sub\\a.cs"),
+                    AssertEqual(Path.Combine("a", "taco.cs")),
+                    AssertEqual(Path.Combine("ab")),
+                    AssertEqual(Path.Combine("ab", "bin")),
+                    AssertEqual(Path.Combine("ab", "bin", "a.cs")),
+                    AssertEqual(Path.Combine("ab", "bin", "sub")),
+                    AssertEqual(Path.Combine("ab", "bin", "sub", "a.cs")),
                     AssertEqual("b"),
-                    AssertEqual("b\\ab"),
-                    AssertEqual("b\\ab\\a"),
-                    AssertEqual("b\\ab\\a\\hat.taco"),
-                    AssertEqual("b\\taco.cs")
+                    AssertEqual(Path.Combine("b", "ab")),
+                    AssertEqual(Path.Combine("b", "ab", "a")),
+                    AssertEqual(Path.Combine("b", "ab", "a", "hat.taco")),
+                    AssertEqual(Path.Combine("b", "taco.cs"))
                 );
             }
             finally
@@ -357,11 +357,11 @@ namespace GlobExpressions.Tests
                 Assert.True(File.Exists(Path.Combine(testRoot, "b/taco.cs")));
 
                 Assert.Collection(Glob.Files(testRoot, "**").OrderBy(x => x),
-                    AssertEqual("a\\taco.cs"),
-                    AssertEqual("ab\\bin\\a.cs"),
-                    AssertEqual("ab\\bin\\sub\\a.cs"),
-                    AssertEqual("b\\ab\\a\\hat.taco"),
-                    AssertEqual("b\\taco.cs")
+                    AssertEqual(Path.Combine("a", "taco.cs")),
+                    AssertEqual(Path.Combine("ab", "bin", "a.cs")),
+                    AssertEqual(Path.Combine("ab", "bin", "sub", "a.cs")),
+                    AssertEqual(Path.Combine("b", "ab", "a", "hat.taco")),
+                    AssertEqual(Path.Combine("b", "taco.cs"))
                 );
             }
             finally
