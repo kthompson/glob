@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyTitle>A C# Glob pattern matcher for .NET</AssemblyTitle>
-    <VersionPrefix>1.1.4</VersionPrefix>
+    <VersionPrefix>1.1.5</VersionPrefix>
     <Authors>Kevin Thompson &lt;kevin@theautomaters.com&gt;</Authors>
     <TargetFrameworks>netstandard1.3;netstandard2.0;net40;net45;net46</TargetFrameworks>
     <DebugType>portable</DebugType>
@@ -11,8 +11,6 @@
     <PackageTags>C#;glob;minimatch</PackageTags>
     <Description>A C# Glob library for .NET and .NET Core.</Description>
     <PackageReleaseNotes>
-      ### Fixed
-      - Allow spaces as normal path characters
     </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>
