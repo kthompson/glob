@@ -11,6 +11,8 @@
     <PackageTags>C#;glob;minimatch</PackageTags>
     <Description>A C# Glob library for .NET and .NET Core.</Description>
     <PackageReleaseNotes>
+### Fixed
+- Issue #55: Remove debug prints
     </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>

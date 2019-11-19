@@ -79,13 +79,9 @@ namespace GlobExpressions
         public static IEnumerable<FileSystemInfo> FilesAndDirectories(DirectoryInfo workingDirectory, string pattern, GlobOptions options) =>
             workingDirectory.Traverse(pattern, !options.HasFlag(GlobOptions.CaseInsensitive), true, true);
 
-        private static int GetTruncateLength(FileSystemInfo directoryInfo)
-        {
-            Console.WriteLine(Path.DirectorySeparatorChar);
-            Console.WriteLine(directoryInfo.FullName.EndsWith(Path.DirectorySeparatorChar.ToString()));
-            return directoryInfo.FullName.EndsWith(Path.DirectorySeparatorChar.ToString())
+        private static int GetTruncateLength(FileSystemInfo directoryInfo) =>
+            directoryInfo.FullName.EndsWith(Path.DirectorySeparatorChar.ToString())
                 ? directoryInfo.FullName.Length
                 : directoryInfo.FullName.Length + 1;
-        }
     }
 }
