@@ -133,7 +133,7 @@ namespace GlobExpressions
 
         private TokenKind TakeIdentifier()
         {
-            while (IsIdentifierCharacter((char)this._currentCharacter))
+            while (this._currentCharacter != -1 && IsIdentifierCharacter((char)this._currentCharacter))
             {
                 this.TakeIt();
             }
@@ -141,7 +141,9 @@ namespace GlobExpressions
             return TokenKind.Identifier;
         }
 
-        private static bool IsIdentifierCharacter(char c) => char.IsLetter(c) || IsNumeric(c) || "~_$ ".Contains(c);
+        private static bool IsSpecialCharacter(char c) => "*?![]{,}/\\".Contains(c);
+
+        private static bool IsIdentifierCharacter(char c) => char.IsLetter(c) || IsNumeric(c) || !IsSpecialCharacter(c);
 
         private static bool IsNumeric(char c) => char.IsDigit(c) || c == '.' || c == '-';
     }
