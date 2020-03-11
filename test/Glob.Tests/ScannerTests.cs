@@ -18,6 +18,17 @@ namespace GlobExpressions.Tests
         }
 
         [Fact]
+        public void CanParseParensAndEqual()
+        {
+            // Issue https://github.com/kthompson/glob/issues/57
+            var scanner = new Scanner(@"a\abc(v=ws.10).md");
+            AssertToken(TokenKind.Identifier, "a", scanner.Scan());
+            AssertToken(TokenKind.PathSeparator, @"\", scanner.Scan());
+            AssertToken(TokenKind.Identifier, "abc(v=ws.10).md", scanner.Scan());
+            AssertToken(TokenKind.EOT, "", scanner.Scan());
+        }
+
+        [Fact]
         public void CanParseSimpleFilename2()
         {
             var scanner = new Scanner("*.txt");

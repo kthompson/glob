@@ -124,6 +124,14 @@ namespace GlobExpressions.Tests
         }
 
         [Fact]
+        public void CanMatchParensAndEqual()
+        {
+            // Issue https://github.com/kthompson/glob/issues/57
+            var glob = new Glob(@"a\abc(v=ws.10).md", GlobOptions.CaseInsensitive);
+            Assert.True(glob.IsMatch(@"a\abc(v=ws.10).md"));
+        }
+
+        [Fact]
         public void CanMatchSingleFileOnExtension()
         {
             var glob = new Glob("folder/*.txt");
