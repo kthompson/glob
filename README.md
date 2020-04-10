@@ -1,7 +1,9 @@
 ﻿# Glob
 
 [![Join the chat at https://gitter.im/kthompson/glob](https://badges.gitter.im/kthompson/glob.svg)](https://gitter.im/kthompson/glob?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build status](https://automaters.visualstudio.com/Glob/_apis/build/status/Glob)](https://automaters.visualstudio.com/Glob/_build/latest?definitionId=4)
+[![Build status](https://img.shields.io/azure-devops/build/automaters/Glob/7)](https://automaters.visualstudio.com/Glob/_build?definitionId=7)
+[![Coverage](https://img.shields.io/azure-devops/coverage/automaters/Glob/7)](https://automaters.visualstudio.com/Glob/_build?definitionId=7)
+[![Tests](https://img.shields.io/azure-devops/tests/automaters/Glob/7)](https://automaters.visualstudio.com/Glob/_build?definitionId=7)
 [![Nuget](https://img.shields.io/nuget/v/glob.svg)](https://www.nuget.org/packages/Glob/)
 
 

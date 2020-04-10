@@ -91,7 +91,7 @@ namespace GlobExpressions.Tests
         [Fact]
         public void CanMatchFilesInDirectoriesWithTrailingSlash()
         {
-            var globPattern = @"**/*Gl*.Te*";
+            var globPattern = @"test/**/*Gl*.Te*";
             var root = new DirectoryInfo(SourceRoot + Path.DirectorySeparatorChar).FullName;
             var result = Glob.Files(root, globPattern).ToList();
 
@@ -103,7 +103,7 @@ namespace GlobExpressions.Tests
         [Fact]
         public void CanMatchFilesInDirectoriesWithoutTrailingSlash()
         {
-            var globPattern = @"**/*Gl*.Te*";
+            var globPattern = @"test/**/*Gl*.Te*";
             var root = new DirectoryInfo(SourceRoot).FullName;
             var result = Glob.Files(root, globPattern).ToList();
 
