@@ -379,6 +379,30 @@ namespace GlobExpressions.Tests
             }
         }
 
+        [Fact]
+        public void StarStarFilesIssue52()
+        {
+            Action<string> AssertEqual(string expected) => actual => Assert.Equal(expected, actual);
+
+            var testRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", "StarStarFilesIssue52");
+            try
+            {
+                CreateFiles(testRoot, "a/a/a/a/b.txt");
+
+                // Verify files exist before
+                Assert.True(File.Exists(Path.Combine(testRoot, "a/a/a/a/b.txt")));
+
+                Assert.Collection(Glob.Files(testRoot, "**/a/**/b.txt").OrderBy(x => x),
+                    AssertEqual(Path.Combine("a", "a", "a", "a", "b.txt"))
+                );
+            }
+            finally
+            {
+                // Cleanup test
+                Directory.Delete(testRoot, true);
+            }
+        }
+
         private void CreateFiles(string testRoot, string files)
         {
             Directory.CreateDirectory(testRoot);

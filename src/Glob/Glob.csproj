@@ -10,8 +10,7 @@
     <PackageId>Glob</PackageId>
     <PackageTags>C#;glob;minimatch</PackageTags>
     <Description>A C# Glob library for .NET and .NET Core.</Description>
-    <PackageReleaseNotes>Fixed
-- Issue #57: Support parentheses, equals, and other miscellaneous characters in file names</PackageReleaseNotes>
+    <PackageReleaseNotes>Files matching a pattern in multiple ways are only emitted once</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
@@ -26,7 +25,7 @@
     <GenerateAssemblyFileVersionAttribute>true</GenerateAssemblyFileVersionAttribute>
     <RootNamespace>GlobExpressions</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>1.1.6</Version>
+    <Version>1.1.7</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.3|AnyCPU'">

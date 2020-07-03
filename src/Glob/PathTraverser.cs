@@ -35,6 +35,7 @@ namespace GlobExpressions
             var segmentIndex = 0;
             var emitDirectories = options.EmitDirectories;
             var emitFiles = options.EmitFiles;
+            var cache = new HashSet<string>();
 
             void Swap(ref List<DirectoryInfo> other)
             {
@@ -77,8 +78,9 @@ namespace GlobExpressions
                 var noMoreSegments = segmentIndex == segmentsLength;
                 if (emitDirectories && noMoreSegments)
                 {
-                    foreach (var info in roots)
+                    foreach (var info in roots.Where(info => !cache.Contains(info.FullName)))
                     {
+                        cache.Add(info.FullName);
                         yield return info;
                     }
                 }
@@ -108,7 +110,11 @@ namespace GlobExpressions
 
                     foreach (var info in allFiles)
                     {
-                        yield return info;
+                        if (!cache.Contains(info.FullName))
+                        {
+                            cache.Add(info.FullName);
+                            yield return info;
+                        }
                     }
                 }
                 rootCache.Clear();

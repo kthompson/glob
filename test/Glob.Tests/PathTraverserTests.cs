@@ -287,6 +287,10 @@ namespace GlobExpressions.Tests
         [Theory]
         // Double wildcard tests
         [InlineData("**/a", @"ab/a/a.cs a/taco.cs b/taco.cs b/ab/a/hat.taco", @"ab\a a b\ab\a")]
+
+        // Issue 52
+        [InlineData("**/a/**/b", @"a/a/a/b", @"a\a\a\b")]
+        [InlineData("**/a/**/b", @"a/a/a/a/b", @"a\a\a\a\b")]
         public void TestGlobExpressionsWithEmitDirectories(string pattern, string files, string matches)
         {
             var parser = new Parser(pattern);
