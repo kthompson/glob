@@ -81,7 +81,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix issue that caused unnecessary directory traversal (#20)
 - Fix issue where Glob.Directories did not always match properly
 
-[Unreleased]: https://github.com/kthompson/glob/compare/1.1.6...HEAD
+[Unreleased]: https://github.com/kthompson/glob/compare/1.1.7...HEAD
 [1.1.7]: https://github.com/kthompson/glob/compare/1.1.6...1.1.7
 [1.1.6]: https://github.com/kthompson/glob/compare/1.1.5...1.1.6
 [1.1.5]: https://github.com/kthompson/glob/compare/1.1.4...1.1.5
