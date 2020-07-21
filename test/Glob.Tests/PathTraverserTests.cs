@@ -275,7 +275,7 @@ namespace GlobExpressions.Tests
             var cache = new MockTraverseOptions(true, true, false, new MockFileSystem(mockFileDatas));
 
             var root = new DirectoryInfo(FileSystemRoot);
-            var results = PathTraverser.Traverse(root, segments, 0, cache).ToArray();
+            var results = PathTraverser.Traverse(root, segments, cache).ToArray();
 
             if (positiveMatch != null)
                 Assert.Single(results);
@@ -305,7 +305,7 @@ namespace GlobExpressions.Tests
             var cache = new MockTraverseOptions(false, true, true, new MockFileSystem(mockFileDatas));
 
             var root = new DirectoryInfo(FileSystemRoot);
-            var results = PathTraverser.Traverse(root, segments, 0, cache).Select(file => file.FullName.Substring(FileSystemRoot.Length)).OrderBy(x => x).ToArray();
+            var results = PathTraverser.Traverse(root, segments, cache).Select(file => file.FullName.Substring(FileSystemRoot.Length)).OrderBy(x => x).ToArray();
             var fileMatches = matches.Split(' ').Select(x => x.Replace('\\', Path.DirectorySeparatorChar)).OrderBy(x => x).ToArray();
 
             Assert.Equal(fileMatches, results);

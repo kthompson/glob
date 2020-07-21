@@ -8,7 +8,7 @@
     <PackageId>Glob</PackageId>
     <PackageTags>C#;glob;minimatch</PackageTags>
     <Description>A C# Glob library for .NET and .NET Core.</Description>
-    <PackageReleaseNotes>Files matching a pattern in multiple ways are only emitted once</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix issue preventing multiple enumeration</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>

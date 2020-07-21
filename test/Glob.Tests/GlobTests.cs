@@ -403,6 +403,68 @@ namespace GlobExpressions.Tests
             }
         }
 
+        [Fact]
+        public void Issue59MultipleEnumerationsReturnSameResults()
+        {
+            var testRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", "Issue59MultipleEnumerationsReturnSameResults");
+            try
+            {
+                CreateFiles(testRoot, "b/a taco.txt a/b");
+
+                var allFiles = Glob.Files(testRoot, "**").OrderBy(x => x);
+                var enumerator1 = allFiles.GetEnumerator();
+
+                AssertEnumerator(enumerator1, Path.Combine("a", "b"));
+                AssertEnumerator(enumerator1, Path.Combine("b", "a"));
+                AssertEnumerator(enumerator1, "taco.txt");
+
+                Assert.False(enumerator1.MoveNext());
+
+                // second enumeration should emit same results
+                var enumerator2 = allFiles.GetEnumerator();
+
+                AssertEnumerator(enumerator2, Path.Combine("a", "b"));
+                AssertEnumerator(enumerator2, Path.Combine("b", "a"));
+                AssertEnumerator(enumerator2, "taco.txt");
+
+                Assert.False(enumerator2.MoveNext());
+            }
+            finally
+            {
+                // Cleanup test
+                Directory.Delete(testRoot, true);
+            }
+        }
+
+        [Fact]
+        public void Issue59MissingFiles()
+        {
+            Action<string> AssertEqual(string expected) => actual => Assert.Equal(expected, actual);
+            var testRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", "Issue59MissingFiles");
+            try
+            {
+                CreateFiles(testRoot, "test1.txt deep/test2.txt");
+
+                var allFiles = Glob.Files(testRoot, "**/*.txt").OrderBy(x => x).ToList();
+                Assert.Collection(allFiles,
+                    AssertEqual(Path.Combine("deep", "test2.txt")),
+                    AssertEqual("test1.txt")
+                );
+            }
+            finally
+            {
+                // Cleanup test
+                Directory.Delete(testRoot, true);
+            }
+        }
+
+        private static void AssertEnumerator(IEnumerator<string> enumerator, string expected)
+        {
+            Assert.True(enumerator.MoveNext());
+            Assert.NotNull(enumerator.Current);
+            Assert.Equal(expected, enumerator.Current);
+        }
+
         private void CreateFiles(string testRoot, string files)
         {
             Directory.CreateDirectory(testRoot);

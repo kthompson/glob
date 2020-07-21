@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.1.8]
+### Fixed
+- Issue #59: Cannot enumerate iterator multiple times
+
 ## [1.1.7]
 ### Fixed
 - Issue #52: Files matching a pattern in multiple ways are only emitted once
@@ -81,7 +85,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix issue that caused unnecessary directory traversal (#20)
 - Fix issue where Glob.Directories did not always match properly
 
-[Unreleased]: https://github.com/kthompson/glob/compare/1.1.7...HEAD
+[Unreleased]: https://github.com/kthompson/glob/compare/1.1.8...HEAD
+[1.1.8]: https://github.com/kthompson/glob/compare/1.1.7...1.1.8
 [1.1.7]: https://github.com/kthompson/glob/compare/1.1.6...1.1.7
 [1.1.6]: https://github.com/kthompson/glob/compare/1.1.5...1.1.6
 [1.1.5]: https://github.com/kthompson/glob/compare/1.1.4...1.1.5
