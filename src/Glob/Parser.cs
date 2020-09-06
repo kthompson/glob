@@ -191,6 +191,8 @@ namespace GlobExpressions
                 case '}':
                 case '[':
                 case ']':
+                case '(':
+                case ')':
                 case ' ':
                 case ',' when inLiteralSet:
                     this.Accept(); // escaped char
@@ -205,6 +207,20 @@ namespace GlobExpressions
         // SubSegment := Identifier | CharacterSet | LiteralSet | CharacterWildcard | Wildcard
         private SubSegment ParseSubSegment()
         {
+            // stub support for extended globs if we ever want to support it
+            if (PeekChar() == '(')
+            {
+                switch (this._currentCharacter)
+                {
+                    case '?':
+                    case '*':
+                    case '+':
+                    case '@':
+                    case '!':
+                        throw new GlobPatternException("Extended glob patterns are not currently supported");
+                }
+            }
+
             switch (this._currentCharacter)
             {
                 case '[':
