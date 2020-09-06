@@ -10,11 +10,11 @@ Intel Core i7-8700K CPU 3.70GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical 
 ```
 |                                  Method |        Mean |     Error |    StdDev |
 |---------------------------------------- |------------:|----------:|----------:|
-|                               ParseGlob |  3,454.9 ns |  57.56 ns |  53.84 ns |
-|                     ParseAndCompileGlob |  3,380.3 ns |  21.51 ns |  20.12 ns |
-|                  MatchForUncompiledGlob |  3,829.5 ns |  34.29 ns |  30.40 ns |
-|                    MatchForCompiledGlob |    450.7 ns |   1.79 ns |   1.67 ns |
-| MatchForUncompiledGlobDirectoryWildcard |  3,777.2 ns |  52.82 ns |  46.82 ns |
-|   MatchForCompiledGlobDirectoryWildcard |    452.0 ns |   2.17 ns |   2.03 ns |
-|                    BenchmarkParseToTree |  3,304.1 ns |  21.61 ns |  19.16 ns |
-|                           PathTraversal | 34,536.0 ns | 330.56 ns | 309.20 ns |
+|                               ParseGlob |  2,390.6 ns |  17.38 ns |  16.25 ns |
+|                     ParseAndCompileGlob |  2,361.8 ns |  23.76 ns |  22.23 ns |
+|                  MatchForUncompiledGlob |  2,870.3 ns |  30.13 ns |  28.18 ns |
+|                    MatchForCompiledGlob |    434.6 ns |   2.23 ns |   1.86 ns |
+| MatchForUncompiledGlobDirectoryWildcard |  2,805.2 ns |  28.22 ns |  26.39 ns |
+|   MatchForCompiledGlobDirectoryWildcard |    438.0 ns |   5.45 ns |   5.10 ns |
+|                    BenchmarkParseToTree |  2,349.2 ns |  27.50 ns |  24.37 ns |
+|                           PathTraversal | 34,314.2 ns | 358.98 ns | 335.79 ns |

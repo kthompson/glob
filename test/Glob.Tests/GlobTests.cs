@@ -65,7 +65,7 @@ namespace GlobExpressions.Tests
 
         // Root tests
         [InlineData("/**/*.sln", "/mnt/e/code/csharp-glob/Glob.sln", "/mnt/e/code/csharp-glob/Glob.Tests/Glob.Tests.csproj")]
-        [InlineData(@"C:\**\*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
+        [InlineData(@"C:/**/*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
 
         // Double wildcard tests
         [InlineData("a**/*.cs", "ab/c.cs", "a/b/c.cs")]
@@ -80,10 +80,10 @@ namespace GlobExpressions.Tests
         [InlineData("/**/somefile", "/somefile")]
 
         // Escape sequences
-        //[InlineData(@"\[a-d\]", "[a-d]", @"b c \ [ ]")]
-        //[InlineData(@"\{ab,bc\}", "{ab,bc}", @"ab bc")]
-        //[InlineData(@"hat\?", "hat?", "hata hatb")]
-        //[InlineData(@"hat\*", "hat*", "hata hatb hat hat/taco hata/taco")]
+        [InlineData(@"\[a-d\]", "[a-d]", @"b c \ [ ]")]
+        [InlineData(@"\{ab,bc\}", "{ab,bc}", @"ab bc")]
+        [InlineData(@"hat\?", "hat?", "hata hatb")]
+        [InlineData(@"hat\*", "hat*", "hata hatb hat hat/taco hata/taco")]
         public void TestGlobExpressions(string pattern, string positiveMatch, string negativeMatch = null)
         {
             var glob = new Glob(pattern, GlobOptions.MatchFilenameOnly);
@@ -111,23 +111,23 @@ namespace GlobExpressions.Tests
             var pattern = "Microsoft Visual Studio/2017";
             var expectedMatch = @"Microsoft Visual Studio\2017";
 
-            Assert.True(Glob.IsMatch(pattern, expectedMatch));
+            Assert.True(Glob.IsMatch(expectedMatch, pattern));
         }
 
-        [Fact(Skip = "Not currently supported")]
+        [Fact]
         public void TestEscapeSequenceWithSpaces()
         {
-            var pattern = @"Generated\ Files/";
+            var pattern = @"Generated\ Files";
             var expectedMatch = "Generated Files";
 
-            Assert.True(Glob.IsMatch(pattern, expectedMatch));
+            Assert.True(Glob.IsMatch(expectedMatch, pattern));
         }
 
         [Fact]
         public void CanMatchParensAndEqual()
         {
             // Issue https://github.com/kthompson/glob/issues/57
-            var glob = new Glob(@"a\abc(v=ws.10).md", GlobOptions.CaseInsensitive);
+            var glob = new Glob(@"a/abc(v=ws.10).md", GlobOptions.CaseInsensitive);
             Assert.True(glob.IsMatch(@"a\abc(v=ws.10).md"));
         }
 
@@ -199,7 +199,7 @@ namespace GlobExpressions.Tests
         // LiteralSets
         [InlineData(@"{ab,cd}", "Ab aB AB Cd cD CD")]
         // Roots
-        [InlineData(@"C:\**\*.txt", @"c:\Users\Kevin\Desktop\notes.txt C:\Users\Kevin\Desktop\notes.txt")]
+        [InlineData(@"C:/**/*.txt", @"c:\Users\Kevin\Desktop\notes.txt C:\Users\Kevin\Desktop\notes.txt")]
         public void CaseInsensitiveTests(string pattern, string matches)
         {
             var glob = new Glob(pattern, GlobOptions.CaseInsensitive);

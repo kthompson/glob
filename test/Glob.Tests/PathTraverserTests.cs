@@ -244,7 +244,7 @@ namespace GlobExpressions.Tests
 
         // Root tests
         [InlineData("**/*.sln", "/mnt/e/code/csharp-glob/Glob.sln", "/mnt/e/code/csharp-glob/Glob.Tests/Glob.Tests.csproj")]
-        [InlineData(@"**\*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
+        [InlineData(@"**/*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
 
         // Double wildcard tests
         [InlineData("a**/*.cs", "ab/c.cs", "a/b/c.cs")]

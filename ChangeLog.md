@@ -6,9 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Updated
+- Improved performance from parser internals rework
+ 
 ### Changed
 - Matching full path is now the default for Glob expressions, GlobOptions.MatchFilenameOnly
   can be used to work as before
+- BREAKING: Patterns may no longer include '\' as path separators.  Instead, '/' should always be used
+  and '\' is now available for escaping characters.
+
 ## [1.1.8]
 ### Fixed
 - Issue #59: Cannot enumerate iterator multiple times

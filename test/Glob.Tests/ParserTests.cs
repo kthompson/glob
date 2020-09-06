@@ -18,6 +18,26 @@ namespace GlobExpressions.Tests
         }
 
         [Fact]
+        public void CanParsePatternWithSpace()
+        {
+            var glob = Parse(@"Generated\ Files");
+            Assert.Equal(GlobNodeType.Tree, glob.Type);
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments, segment =>
+            {
+                Assert.Equal(GlobNodeType.DirectorySegment, segment.Type);
+                var directory = Assert.IsType<DirectorySegment>(segment);
+
+                Assert.Collection(directory.SubSegments, node =>
+                {
+                    Assert.Equal(GlobNodeType.Identifier, node.Type);
+                    var ident = Assert.IsType<Identifier>(node);
+                    Assert.Equal("Generated Files", ident.Value);
+                });
+            });
+        }
+
+        [Fact]
         public void CanParseSimpleFilename()
         {
             var glob = Parse("*.txt");
@@ -94,7 +114,7 @@ namespace GlobExpressions.Tests
         [Fact]
         public void CanParseCharacterSetWithSpecials()
         {
-            var glob = Parse("[\\*?]");
+            var glob = Parse(@"[\*?]");
             var tree = Assert.IsType<Tree>(glob);
             Assert.Collection(tree.Segments,
                 segment =>
@@ -105,8 +125,8 @@ namespace GlobExpressions.Tests
                         {
                             var set = Assert.IsType<CharacterSet>(subSegment);
                             Assert.False(set.Inverted);
-                            Assert.Equal("\\*?", set.Characters);
-                            Assert.Equal("\\*?", set.ExpandedCharacters);
+                            Assert.Equal(@"\*?", set.Characters);
+                            Assert.Equal(@"\*?", set.ExpandedCharacters);
                         });
                 });
         }
@@ -226,6 +246,70 @@ namespace GlobExpressions.Tests
                     );
                 }
                 );
+        }
+
+        [Fact]
+        public void CanParseEscapedBrackets()
+        {
+            var glob = Parse(@"\[a-d\]");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => AssertIdentifier(subSegment, "[a-d]")
+                    );
+                }
+            );
+        }
+
+        [Fact]
+        public void CanParseEscapedBraces()
+        {
+            var glob = Parse(@"\{ab,bc\}");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => AssertIdentifier(subSegment, "{ab,bc}")
+                    );
+                }
+            );
+        }
+
+        [Fact]
+        public void CanParseEscapedCharacterWildcard()
+        {
+            var glob = Parse(@"hat\?");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => AssertIdentifier(subSegment, "hat?")
+                    );
+                }
+            );
+        }
+
+        [Fact]
+        public void CanParseEscapedWildcard()
+        {
+            var glob = Parse(@"hat\*");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => AssertIdentifier(subSegment, "hat*")
+                    );
+                }
+            );
         }
 
         private static void AssertIdentifier(SubSegment subSegment, string expected)
