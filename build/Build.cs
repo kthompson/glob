@@ -32,7 +32,7 @@ using static Nuke.Common.Tools.ReportGenerator.ReportGeneratorTasks;
     AzurePipelinesImage.UbuntuLatest,
     AzurePipelinesImage.WindowsLatest,
     AzurePipelinesImage.MacOsLatest,
-    InvokedTargets = new[] { nameof(Test), nameof(Pack) },
+    InvokedTargets = new[] { nameof(Test), nameof(Publish) },
     NonEntryTargets = new[] { nameof(Restore) },
     ExcludedTargets = new[] { nameof(Clean) }
 )]
@@ -44,7 +44,7 @@ class Build : NukeBuild
     ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
     ///   - Microsoft VSCode           https://nuke.build/vscode
 
-    public static int Main () => Execute<Build>(x => x.Compile);
+    public static int Main () => Execute<Build>(x => x.Pack);
 
     [CI] private readonly AzurePipelines AzurePipelines;
 
@@ -65,6 +65,9 @@ class Build : NukeBuild
     AbsolutePath CoverageReportArchive => ArtifactsDirectory / "coverage-report.zip";
 
     const string MasterBranch = "master";
+    const string DevelopBranch = "develop";
+    const string ReleaseBranchPrefix = "release";
+    const string HotfixBranchPrefix = "hotfix";
 
     Target Clean => _ => _
         .Before(Restore)
@@ -180,10 +183,13 @@ class Build : NukeBuild
         .Requires(() => ApiKey)
         .Requires(() => GitHasCleanWorkingCopy())
         .Requires(() => Configuration.Equals(Configuration.Release))
-        .Requires(() => GitRepository.Branch.EqualsOrdinalIgnoreCase(MasterBranch))
+        .Requires(() => GitRepository.Branch.EqualsOrdinalIgnoreCase(MasterBranch) ||
+                        GitRepository.Branch.EqualsOrdinalIgnoreCase(DevelopBranch) ||
+                        GitRepository.Branch.StartsWithOrdinalIgnoreCase(ReleaseBranchPrefix) ||
+                        GitRepository.Branch.StartsWithOrdinalIgnoreCase(HotfixBranchPrefix))
         .Executes(() =>
         {
-            var packages = PackageDirectory.GlobFiles("*.nupkg");
+            var packages = PackageDirectory.GlobFiles("*.nupkg").Where(x => !x.ToString().Contains("Benchmarks"));
             DotNetNuGetPush(_ => _
                     .SetSource(Source)
                     .SetApiKey(ApiKey)

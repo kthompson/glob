@@ -57,17 +57,6 @@ stages:
             inputs:
               artifactName: coverage-report.zip
               pathtoPublish: 'artifacts/coverage-report.zip'
-      - job: Pack
-        displayName: 'Pack'
-        dependsOn: [ Compile ]
-        steps:
-          - task: CmdLine@2
-            inputs:
-              script: './build.cmd Pack --skip'
-          - task: PublishBuildArtifacts@1
-            inputs:
-              artifactName: packages
-              pathtoPublish: 'artifacts/packages'
   - stage: windows_latest
     displayName: 'windows-latest'
     dependsOn: [  ]
@@ -121,6 +110,27 @@ stages:
             inputs:
               artifactName: packages
               pathtoPublish: 'artifacts/packages'
+      - job: Publish
+        displayName: 'Publish'
+        dependsOn: [ Test, Pack ]
+        steps:
+          - task: DownloadBuildArtifacts@0
+            displayName: Download Artifacts
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: test-results
+              downloadPath: 'artifacts'
+          - task: DownloadBuildArtifacts@0
+            displayName: Download Artifacts
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: packages
+              downloadPath: 'artifacts'
+          - task: CmdLine@2
+            inputs:
+              script: './build.cmd Publish --skip --api-key $(ApiKey)'
   - stage: macOS_latest
     displayName: 'macOS-latest'
     dependsOn: [  ]
@@ -163,14 +173,3 @@ stages:
             inputs:
               artifactName: coverage-report.zip
               pathtoPublish: 'artifacts/coverage-report.zip'
-      - job: Pack
-        displayName: 'Pack'
-        dependsOn: [ Compile ]
-        steps:
-          - task: CmdLine@2
-            inputs:
-              script: './build.cmd Pack --skip'
-          - task: PublishBuildArtifacts@1
-            inputs:
-              artifactName: packages
-              pathtoPublish: 'artifacts/packages'
