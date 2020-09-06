@@ -67,7 +67,7 @@ namespace GlobExpressions.Tests
 
         private IEnumerable<string> GetGlobForPattern(string pattern)
         {
-            var glob = new Glob(pattern, GlobOptions.Compiled);
+            var glob = new Glob(pattern, GlobOptions.Compiled | GlobOptions.MatchFilenameOnly);
 
             return filenames.Where(filename => glob.IsMatch(filename));
         }

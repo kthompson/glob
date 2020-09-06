@@ -8,6 +8,6 @@ namespace GlobExpressions
         None = 0,
         Compiled = 1 << 1,
         CaseInsensitive = 1 << 2,
-        MatchFullPath = 1 << 3,
+        MatchFilenameOnly = 1 << 3,
     }
 }

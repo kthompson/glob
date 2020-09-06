@@ -8,7 +8,7 @@
     <PackageId>Glob</PackageId>
     <PackageTags>C#;glob;minimatch</PackageTags>
     <Description>A C# Glob library for .NET and .NET Core.</Description>
-    <PackageReleaseNotes>Fix issue preventing multiple enumeration</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/kthompson/glob/blob/master/ChangeLog.md</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kthompson/glob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>

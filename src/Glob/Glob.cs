@@ -21,7 +21,7 @@ namespace GlobExpressions
         {
             this.Pattern = pattern;
             _caseSensitive = !options.HasFlag(GlobOptions.CaseInsensitive);
-            _matchFilenameOnly = !options.HasFlag(GlobOptions.MatchFullPath);
+            _matchFilenameOnly = options.HasFlag(GlobOptions.MatchFilenameOnly);
 
             if (options.HasFlag(GlobOptions.Compiled))
             {
