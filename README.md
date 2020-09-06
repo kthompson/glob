@@ -9,7 +9,6 @@
 
 A C# Glob library for .NET and .NET Core.
 
-
 ## What is a glob?
 
 A glob is a pattern-matching syntax that shells use.  Like when you do
@@ -23,17 +22,36 @@ See: http://en.wikipedia.org/wiki/Glob_(programming) for more info.
 * Macintosh OS X (Darwin)
 * Linux
 
-## Supported Pattern expressions
+## Features
+
+### Common Expressions
 
 | Pattern   | Description                                                                    |
 |-----------|--------------------------------------------------------------------------------|
-| *         | matches any number of characters including none, excluding directory seperator |
+| taco*     | matches any string beginning with taco                                         |
+| \*taco\*  | matches any string containing taco                                             |
+| *taco     | matches any string ending in taco                                              |
+| *.[ch]    | matches any string ending in `.c` or `.h`                                      |
+| *.{gif,jpg} | match any string ending in `.gif` or `.jpg`                                  |
+
+### Expressions
+
+| Pattern   | Description                                                                    |
+|-----------|--------------------------------------------------------------------------------|
+| *         | matches any number of characters including none, excluding directory separator |
 | ?         | matches a single character                                                     |
 | [abc]     | matches one character in the brackets                                          |
 | [!abc]    | matches any character not in the brackets                                      |
 | **        | match zero or more directories                                                 |
 | {abc,123} | comma delimited set of literals, matched 'abc' or '123'                        |
 
+### Other Features
+
+* Escape patterns are supported using `\`
+* Pure C# implementation
+* No reliance on Regex
+* Simple text string matching support
+* File system matching APIs
 
 ## Usage
 
@@ -110,6 +128,12 @@ Enumerate through all matching files and folders recursively.
 var root = new DirectoryInfo(@"C:\");
 var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
 ```
+
+## Upgrading from 1.x
+
+In 2.x all Glob expressions no longer support `\` as path separators. Instead `/` should be used to separate paths in expressions. 
+The `/` path separator will still match on platform specific directory separators but `\` is reserved for escape sequences.
+
 
 ## Performance
 
