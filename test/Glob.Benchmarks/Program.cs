@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Horology;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.CsProj;
 
 namespace GlobExpressions.Benchmarks
 {
@@ -13,11 +13,7 @@ namespace GlobExpressions.Benchmarks
     {
         public static void Main(string[] args)
         {
-            var config = new ManualConfig();
-            config.Add(DefaultConfig.Instance);
-            config.Set(config.GetSummaryStyle().WithTimeUnit(TimeUnit.Nanosecond));
-
-            BenchmarkRunner.Run<GlobBenchmarks>(config);
+            BenchmarkRunner.Run<GlobBenchmarks>();
         }
     }
 }
