@@ -12,8 +12,8 @@ namespace GlobExpressions
     {
         public string Pattern { get; }
 
-        private Tree _root;
-        private Segment[] _segments;
+        private Tree? _root;
+        private Segment[]? _segments;
         private readonly bool _caseSensitive;
         private readonly bool _matchFilenameOnly;
 
@@ -48,7 +48,7 @@ namespace GlobExpressions
 
             var pathSegments = input.Split('/', '\\');
             // match filename only
-            if (_matchFilenameOnly && _segments.Length == 1)
+            if (_matchFilenameOnly && _segments!.Length == 1)
             {
                 var last = pathSegments.LastOrDefault();
                 var tail = (last == null) ? new string[0] : new[] { last };
@@ -57,7 +57,7 @@ namespace GlobExpressions
                     return true;
             }
 
-            return GlobEvaluator.Eval(_segments, 0, pathSegments, 0, _caseSensitive);
+            return GlobEvaluator.Eval(_segments!, 0, pathSegments, 0, _caseSensitive);
         }
     }
 }

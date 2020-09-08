@@ -15,6 +15,7 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <RootNamespace>GlobExpressions.Tests</RootNamespace>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

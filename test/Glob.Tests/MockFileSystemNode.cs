@@ -4,7 +4,7 @@ namespace GlobExpressions.Tests
 {
     internal class MockFileSystemNode
     {
-        public MockFileSystemNode Parent { get; }
+        public MockFileSystemNode? Parent { get; }
 
         public string Name { get; }
 
@@ -12,7 +12,7 @@ namespace GlobExpressions.Tests
 
         public Dictionary<string, MockFileSystemNode> Children { get; }
 
-        public MockFileSystemNode(string name, MockFileSystemNode parent)
+        public MockFileSystemNode(string name, MockFileSystemNode? parent)
         {
             this.Name = name;
             Parent = parent;
@@ -25,7 +25,7 @@ namespace GlobExpressions.Tests
             return Add(segments, 0);
         }
 
-        public MockFileSystemNode GetNodeAtPath(string fullPath)
+        public MockFileSystemNode? GetNodeAtPath(string fullPath)
         {
             var segments = fullPath.Split('/', '\\');
             return GetNodeAtPath(segments, 0);
@@ -35,7 +35,7 @@ namespace GlobExpressions.Tests
         {
             var names = new List<string>();
 
-            var node = this;
+            MockFileSystemNode? node = this;
             while (node != null)
             {
                 names.Add(node.Name);
@@ -69,7 +69,7 @@ namespace GlobExpressions.Tests
             return newNode;
         }
 
-        private MockFileSystemNode GetNodeAtPath(string[] fullPathSegments, int pathSegment)
+        private MockFileSystemNode? GetNodeAtPath(string[] fullPathSegments, int pathSegment)
         {
             var segment = fullPathSegments[pathSegment];
             if (!this.Children.TryGetValue(segment, out var node))

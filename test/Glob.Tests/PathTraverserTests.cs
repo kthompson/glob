@@ -256,7 +256,7 @@ namespace GlobExpressions.Tests
         [InlineData("**", "a/b")]
         [InlineData("a/**", "a/b/c")]
         [InlineData("**/somefile", "somefile")]
-        public void TestGlobExpressions(string pattern, string positiveMatch, string negativeMatch = null)
+        public void TestGlobExpressions(string pattern, string? positiveMatch, string? negativeMatch = null)
         {
             var parser = new Parser(pattern);
             var segments = parser.ParseTree().Segments;

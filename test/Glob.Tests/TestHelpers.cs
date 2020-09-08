@@ -7,7 +7,7 @@ namespace GlobExpressions.Tests
 {
     public static class TestHelpers
     {
-        private static readonly string NCrunchSourceRoot = Environment.GetEnvironmentVariable("NCrunch") == "1"
+        private static readonly string? NCrunchSourceRoot = Environment.GetEnvironmentVariable("NCrunch") == "1"
             ? Path.GetDirectoryName(Environment.GetEnvironmentVariable("NCrunch.OriginalSolutionPath"))
             : null;
 

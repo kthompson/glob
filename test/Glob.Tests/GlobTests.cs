@@ -84,7 +84,7 @@ namespace GlobExpressions.Tests
         [InlineData(@"\{ab,bc\}", "{ab,bc}", @"ab bc")]
         [InlineData(@"hat\?", "hat?", "hata hatb")]
         [InlineData(@"hat\*", "hat*", "hata hatb hat hat/taco hata/taco")]
-        public void TestGlobExpressions(string pattern, string positiveMatch, string negativeMatch = null)
+        public void TestGlobExpressions(string pattern, string? positiveMatch, string? negativeMatch = null)
         {
             var glob = new Glob(pattern, GlobOptions.MatchFilenameOnly);
 
@@ -212,7 +212,7 @@ namespace GlobExpressions.Tests
         [Theory]
         [InlineData(@"?", "a b c", "folder1/d folder2/e")]
         [InlineData(@"*", "a b c", "folder1/d folder2/e")]
-        public void FullPathOptionTests(string pattern, string matches, string nonMatches = null)
+        public void FullPathOptionTests(string pattern, string matches, string? nonMatches = null)
         {
             var glob = new Glob(pattern);
             foreach (var expectedMatch in matches.Split(' '))

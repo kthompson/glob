@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GlobExpressions.AST;
@@ -12,9 +13,9 @@ namespace GlobExpressions
         private int _currentCharacter;
         private readonly StringBuilder _spelling;
 
-        public Parser(string pattern = null)
+        public Parser(string? pattern = null)
         {
-            this._source = pattern;
+            this._source = pattern ?? string.Empty;
             this._sourceIndex = 0;
             _spelling = new StringBuilder();
             SetCurrentCharacter();
