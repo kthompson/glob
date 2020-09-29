@@ -312,6 +312,13 @@ namespace GlobExpressions.Tests
             );
         }
 
+        [Fact]
+        public void InvalidPatternThrows()
+        {
+            Assert.Throws<GlobPatternException>(() => Parse(@"]"));
+            Assert.Throws<GlobPatternException>(() => Parse(@"}"));
+        }
+
         private static void AssertIdentifier(SubSegment subSegment, string expected)
         {
             var identifier = Assert.IsType<Identifier>(subSegment);

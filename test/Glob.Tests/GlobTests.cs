@@ -229,6 +229,19 @@ namespace GlobExpressions.Tests
             }
         }
 
+
+        [Fact]
+        public void ShouldNotAllowEmptyLiteralSet()
+        {
+            const string globPattern = @"{}";
+
+            Assert.Throws<GlobPatternException>(() =>
+            {
+                var glob = new Glob(globPattern, GlobOptions.CaseInsensitive);
+                Assert.False(glob.IsMatch(""));
+            });
+        }
+
         [Fact]
         public void ShouldNotMatchLiteralSet()
         {
@@ -472,7 +485,9 @@ namespace GlobExpressions.Tests
             foreach (var file in files.Split(' '))
             {
                 var filePath = Path.Combine(testRoot, file);
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                var directoryName = Path.GetDirectoryName(filePath);
+                if (directoryName != null)
+                    Directory.CreateDirectory(directoryName);
                 File.AppendAllText(filePath, "");
             }
         }

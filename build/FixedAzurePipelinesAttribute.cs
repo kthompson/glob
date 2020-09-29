@@ -39,9 +39,9 @@ public class FixedAzurePipelinesAttribute : AzurePipelinesAttribute
         return stage;
     }
 
-    protected override AzurePipelinesJob GetJob(ExecutableTarget executableTarget, LookupTable<ExecutableTarget, AzurePipelinesJob> jobs)
+    protected override AzurePipelinesJob GetJob(ExecutableTarget executableTarget, LookupTable<ExecutableTarget, AzurePipelinesJob> jobs, IReadOnlyCollection<ExecutableTarget> relevantTargets)
     {
-        var job = base.GetJob(executableTarget, jobs);
+        var job = base.GetJob(executableTarget, jobs, relevantTargets);
 
         var downloads = (from dep in job.Dependencies
             from pub in dep.PublishArtifacts

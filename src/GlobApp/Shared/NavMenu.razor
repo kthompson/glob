@@ -1,0 +1,47 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Glob for .NET</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        @* <li class="nav-item px-3"> *@
+        @*     <NavLink class="nav-link" href="" Match="NavLinkMatch.All"> *@
+        @*         <span class="oi oi-home" aria-hidden="true"></span> Home *@
+        @*     </NavLink> *@
+        @* </li> *@
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="">
+                <span class="oi oi-magnifying-glass" aria-hidden="true"></span> Glob Tester
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="http://github.com/kthompson/glob">
+                <span class="oi oi-code" aria-hidden="true"></span> Source Code on GitHub
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="http://github.com/kthompson/glob/issues">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Report an issue
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="https://github.com/kthompson/glob/blob/main/LICENSE">
+                <span class="oi oi-copywriting" aria-hidden="true"></span> License
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

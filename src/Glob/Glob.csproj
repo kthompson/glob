@@ -8,12 +8,12 @@
     <PackageId>Glob</PackageId>
     <PackageTags>C#;glob;minimatch</PackageTags>
     <Description>A C# Glob library for .NET and .NET Core.</Description>
-    <PackageReleaseNotes>https://github.com/kthompson/glob/blob/master/ChangeLog.md</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/kthompson/glob/blob/main/ChangeLog.md</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicense>
       The MIT License (MIT)
 
-      Copyright (c) 2013-2020 Kevin Thompson
+      Copyright (c) 2013-2021 Kevin Thompson and Glob contributors
 
       Permission is hereby granted, free of charge, to any person obtaining a copy of
       this software and associated documentation files (the "Software"), to deal in
@@ -45,39 +45,15 @@
     <RootNamespace>GlobExpressions</RootNamespace>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(OS)' != 'Windows_NT'">
-    <TargetFrameworks>netstandard1.3;netstandard2.0;</TargetFrameworks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT'">
-    <TargetFrameworks>net40;net45;net46;netstandard1.3;netstandard2.0;netcoreapp3.0</TargetFrameworks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.3|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-    <PackageReference Include="System.Linq" Version="4.3.0" />
-    <PackageReference Include="System.Collections" Version="4.3.0" />
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
-  </ItemGroup>
 </Project>

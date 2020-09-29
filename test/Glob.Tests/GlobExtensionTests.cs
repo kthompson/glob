@@ -59,7 +59,8 @@ namespace GlobExpressions.Tests
                 result,
                 file => Assert.Equal("Glob.Benchmarks.csproj", file.Name),
                 file => Assert.Equal("Glob.csproj", file.Name),
-                file => Assert.Equal("Glob.Tests.csproj", file.Name)
+                file => Assert.Equal("Glob.Tests.csproj", file.Name),
+                file => Assert.Equal("GlobApp.csproj", file.Name)
             );
         }
 

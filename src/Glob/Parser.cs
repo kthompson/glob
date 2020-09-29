@@ -25,6 +25,11 @@ namespace GlobExpressions
         {
             try
             {
+                if (_spelling.Length == 0)
+                {
+                    // Did not consume a character
+                    throw new GlobPatternException($"Unexpected character {(char)_currentCharacter} at index {_sourceIndex}");
+                }
                 return _spelling.ToString();
             }
             finally
@@ -76,8 +81,13 @@ namespace GlobExpressions
         {
             var items = new List<Identifier>();
             this.SkipIt(); // {
-            items.Add(this.ParseIdentifier(true));
 
+            if (this._currentCharacter == '}')
+            {
+                throw new GlobPatternException($"Expected literal at index {_sourceIndex}. Literal sets cannot be empty.");
+            }
+
+            items.Add(this.ParseIdentifier(true));
             while (this._currentCharacter == ',')
             {
                 this.SkipIt(); // ,

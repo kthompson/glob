@@ -1,0 +1,169 @@
+﻿@page "/"
+@using GlobExpressions
+
+<h1>Glob tester</h1>
+
+<form>
+
+    <div class="form-group">
+        <label for="files">Files</label>
+        <textarea class="form-control" id="files" rows="10" @bind="Files" @bind:event="oninput"></textarea>
+        <small class="form-text text-muted">Enter a list of files to match against</small>
+    </div>
+
+
+    <div class="form-group">
+        <label for="globExpression">Glob Expression</label>
+        <input type="text" class="@(invalidExpression ? "form-control is-invalid" : "form-control")" id="globExpression" @bind="GlobExpression" @bind:event="oninput" />
+        <small class="form-text text-muted">Enter a glob expression</small>
+        @if (invalidExpression)
+        {
+            <div class="invalid-feedback">@_errorMessage</div>
+        }
+
+
+        <div class="form-check  form-check-inline">
+            <input  class="form-check-input" type="checkbox" id="caseSensitiveCheck" @bind="CaseSensitive">
+            <label class="form-check-label" for="caseSensitiveCheck">Case sensitive</label>
+        </div>
+
+        <div class="form-check  form-check-inline">
+            <input  class="form-check-input" type="checkbox" id="MatchFilenameOnlyCheck" @bind="MatchFilenameOnly">
+            <label class="form-check-label" for="MatchFilenameOnlyCheck">Match Filename Only</label>
+        </div>
+
+    </div>
+
+    <div class="form-group">
+        <label for="files">Matching Files</label>
+        <textarea class="form-control" id="matching" rows="10">@_output</textarea>
+    </div>
+</form>
+@code
+{
+    bool CaseSensitive
+    {
+        get => _caseSensitive;
+        set
+        {
+            _caseSensitive = value;
+            UpdateOutput();
+        }
+    }
+
+    bool MatchFilenameOnly
+    {
+        get => _matchFilenameOnly;
+        set
+        {
+            _matchFilenameOnly = value;
+            UpdateOutput();
+        }
+    }
+
+    string GlobExpression
+    {
+        get => _globExpression;
+        set
+        {
+            _globExpression = value;
+            UpdateOutput();
+        }
+    }
+
+    string _errorMessage = "";
+    bool invalidExpression => _errorMessage.Length > 0;
+
+
+    string Files
+    {
+        get => _files;
+        set
+        {
+            _files = value;
+            UpdateOutput();
+        }
+    }
+
+    string _output;
+    private string _globExpression = "**/*.cs";
+    private string _files = string.Join(Environment.NewLine,
+        new[]
+        {
+            "./README.md",
+            "./ReleaseSteps.md",
+            "./src",
+            "./src/Glob",
+            "./src/Glob/AST",
+            "./src/Glob/AST/CharacterSet.cs",
+            "./src/Glob/AST/CharacterWildcard.cs",
+            "./src/Glob/AST/DirectorySegment.cs",
+            "./src/Glob/AST/DirectoryWildcard.cs",
+            "./src/Glob/AST/GlobNode.cs",
+            "./src/Glob/AST/GlobNodeType.cs",
+            "./src/Glob/AST/Identifier.cs",
+            "./src/Glob/AST/LiteralSet.cs",
+            "./src/Glob/AST/Root.cs",
+            "./src/Glob/AST/Segment.cs",
+            "./src/Glob/AST/StringWildcard.cs",
+            "./src/Glob/AST/SubSegment.cs",
+            "./src/Glob/AST/Tree.cs",
+            "./src/Glob/Glob.cs",
+            "./src/Glob/Glob.csproj",
+            "./src/Glob/Glob.Statics.cs",
+            "./src/Glob/GlobEvaluator.cs",
+            "./src/Glob/GlobExtensions.cs",
+            "./src/Glob/GlobOptions.cs",
+            "./src/Glob/GlobPatternException.cs",
+            "./src/Glob/Matcher.cs",
+            "./src/Glob/Parser.cs",
+            "./src/Glob/PathTraverser.cs",
+            "./src/Glob/PathTraverserEnumerable.cs",
+            "./src/Glob/Properties",
+            "./src/Glob/Properties/AssemblyInfo.cs",
+            "./src/Glob/TraverseOptions.cs",
+            "./test/Glob.Tests",
+            "./test/Glob.Tests/Glob.Tests.csproj",
+            "./test/Glob.Tests/GlobExtensionTests.cs",
+            "./test/Glob.Tests/GlobTests.cs",
+            "./test/Glob.Tests/MockFileSystemNode.cs",
+            "./test/Glob.Tests/MockTraverseOptions.cs",
+            "./test/Glob.Tests/MockTraverseOptionsTests.cs",
+            "./test/Glob.Tests/ParserTests.cs",
+            "./test/Glob.Tests/PathTests.cs",
+            "./test/Glob.Tests/PathTraverserTests.cs",
+            "./test/Glob.Tests/Properties",
+            "./test/Glob.Tests/Properties/AssemblyInfo.cs",
+            "./test/Glob.Tests/TestHelpers.cs"
+        });
+
+    private bool _matchFilenameOnly;
+    private bool _caseSensitive = true;
+
+    private void UpdateOutput()
+    {
+        try
+        {
+            var options =
+                (CaseSensitive ? GlobOptions.None : GlobOptions.CaseInsensitive) |
+                (MatchFilenameOnly ? GlobOptions.MatchFilenameOnly : GlobOptions.None);
+
+            var glob = new Glob(_globExpression, options);
+
+            var files = Files.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            _output = string.Join(Environment.NewLine, files.Where(glob.IsMatch));
+            _errorMessage = string.Empty;
+        }
+        catch (GlobPatternException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        UpdateOutput();
+    }
+}

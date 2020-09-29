@@ -64,7 +64,7 @@ class Build : NukeBuild
     AbsolutePath CoverageReportDirectory => ArtifactsDirectory / "coverage-report";
     AbsolutePath CoverageReportArchive => ArtifactsDirectory / "coverage-report.zip";
 
-    const string MasterBranch = "master";
+    const string MainBranch = "main";
     const string DevelopBranch = "develop";
     const string ReleaseBranchPrefix = "release";
     const string HotfixBranchPrefix = "hotfix";
@@ -183,7 +183,7 @@ class Build : NukeBuild
         .Requires(() => ApiKey)
         .Requires(() => GitHasCleanWorkingCopy())
         .Requires(() => Configuration.Equals(Configuration.Release))
-        .Requires(() => GitRepository.Branch.EqualsOrdinalIgnoreCase(MasterBranch) ||
+        .Requires(() => GitRepository.Branch.EqualsOrdinalIgnoreCase(MainBranch) ||
                         GitRepository.Branch.EqualsOrdinalIgnoreCase(DevelopBranch) ||
                         GitRepository.Branch.StartsWithOrdinalIgnoreCase(ReleaseBranchPrefix) ||
                         GitRepository.Branch.StartsWithOrdinalIgnoreCase(HotfixBranchPrefix))

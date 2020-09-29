@@ -6,8 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- New Glob testing app using Blazor
+
+### Fixed
+- Fixed issue where invalid patterns can cause the parser to get stuck
+
 ### Updated
 - Improved performance from parser internals rework
+- Updated to .NET 5.0
  
 ### Changed
 - Matching full path is now the default for Glob expressions, GlobOptions.MatchFilenameOnly
