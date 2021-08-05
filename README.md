@@ -16,6 +16,11 @@ A glob is a pattern-matching syntax that shells use.  Like when you do
 
 See: http://en.wikipedia.org/wiki/Glob_(programming) for more info.
 
+## Try it out!
+
+You can test out Glob expressions using this library in your browser by visiting:
+https://kthompson.github.io/glob/
+
 ## Supported Environments
 
 * Windows
