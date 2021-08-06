@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nuke.Common" Version="0.24.11" />
-    <PackageDownload Include="GitVersion.Tool" Version="[5.1.1]" />
+    <PackageReference Include="Nuke.Common" Version="0.25.0" />
+    <PackageDownload Include="GitVersion.Tool" Version="[5.6.11]" />
     <PackageReference Include="OpenCover" Version="4.7.922" />
     <PackageReference Include="ReportGenerator" Version="4.5.4" />
   </ItemGroup>
@@ -18,6 +18,9 @@
   <ItemGroup>
     <Content Include="..\.github\workflows\web-app.yaml">
       <Link>ci\web-app.yaml</Link>
+    </Content>
+    <Content Include="..\GitVersion.yml">
+      <Link>config\GitVersion.yml</Link>
     </Content>
   </ItemGroup>
 
