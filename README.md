@@ -19,7 +19,11 @@ See: http://en.wikipedia.org/wiki/Glob_(programming) for more info.
 ## Try it out!
 
 You can test out Glob expressions using this library in your browser by visiting:
+
 https://kthompson.github.io/glob/
+
+
+[![image](https://user-images.githubusercontent.com/15068/129584238-9afa3196-e7a5-4a76-9c5e-0db0377d8ad9.png)](https://kthompson.github.io/glob/)
 
 ## Supported Environments
 
