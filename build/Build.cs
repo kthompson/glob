@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.CI.AzurePipelines;
@@ -53,7 +54,7 @@ class Build : NukeBuild
 
     [Solution] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
-    [GitVersion] readonly GitVersion GitVersion;
+    [GitVersion(DisableOnUnix = true)] [CanBeNull] readonly GitVersion GitVersion;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath TestsDirectory => RootDirectory / "test";
@@ -64,7 +65,7 @@ class Build : NukeBuild
     AbsolutePath CoverageReportDirectory => ArtifactsDirectory / "coverage-report";
     AbsolutePath CoverageReportArchive => ArtifactsDirectory / "coverage-report.zip";
 
-    const string MasterBranch = "master";
+    const string MainBranch = "main";
 
     Target Clean => _ => _
         .Before(Restore)
@@ -86,12 +87,17 @@ class Build : NukeBuild
         .DependsOn(Restore)
         .Executes(() =>
         {
-            DotNetBuild(s => s
-                .SetProjectFile(Solution)
-                .SetConfiguration(Configuration)
-                .SetAssemblyVersion(GitVersion.AssemblySemVer)
-                .SetFileVersion(GitVersion.AssemblySemFileVer)
-                .SetInformationalVersion(GitVersion.InformationalVersion)
+
+            DotNetBuildSettings WithGitVersion(DotNetBuildSettings settings) => GitVersion == null
+                ? settings
+                : settings
+                    .SetAssemblyVersion(GitVersion.AssemblySemVer)
+                    .SetFileVersion(GitVersion.AssemblySemFileVer)
+                    .SetInformationalVersion(GitVersion.InformationalVersion);
+
+            DotNetBuild(s => WithGitVersion(s
+                    .SetProjectFile(Solution)
+                    .SetConfiguration(Configuration))
                 .EnableNoRestore());
         });
 
@@ -161,13 +167,17 @@ class Build : NukeBuild
         .Produces(PackageDirectory / "*.nupkg")
         .Executes(() =>
         {
-            DotNetPack(_ => _
+            DotNetPackSettings WithGitVersion(DotNetPackSettings settings) => GitVersion == null
+                ? settings
+                : settings
+                    .SetVersion(GitVersion.NuGetVersionV2);
+
+            DotNetPack(_ => WithGitVersion(_
                 .SetProject(Solution)
                 .SetNoBuild(InvokedTargets.Contains(Compile))
                 .SetConfiguration(Configuration)
                 .SetOutputDirectory(PackageDirectory)
-                .SetVersion(GitVersion.NuGetVersionV2)
-                .SetPackageReleaseNotes(GetNuGetReleaseNotes(ChangelogFile, GitRepository)));
+                .SetPackageReleaseNotes(GetNuGetReleaseNotes(ChangelogFile, GitRepository))));
         });
 
 
@@ -180,7 +190,7 @@ class Build : NukeBuild
         .Requires(() => ApiKey)
         .Requires(() => GitHasCleanWorkingCopy())
         .Requires(() => Configuration.Equals(Configuration.Release))
-        .Requires(() => GitRepository.Branch.EqualsOrdinalIgnoreCase(MasterBranch))
+        .Requires(() => GitRepository.Branch.EqualsOrdinalIgnoreCase(MainBranch))
         .Executes(() =>
         {
             var packages = PackageDirectory.GlobFiles("*.nupkg");
