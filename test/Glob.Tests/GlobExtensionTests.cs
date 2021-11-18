@@ -18,10 +18,28 @@ namespace GlobExpressions.Tests
         }
 
         [Fact]
+        public void CanMatchBinFolderGlobCaseInsensitive()
+        {
+            var root = new DirectoryInfo(SourceRoot);
+            var allBinFolders = root.GlobDirectories("**/BIN", GlobOptions.CaseInsensitive);
+
+            Assert.True(allBinFolders.Any(), "There should be some BIN folders");
+        }
+
+        [Fact]
         public void CanMatchDllExtension()
         {
             var root = new DirectoryInfo(SourceRoot);
             var allDllFiles = root.GlobFiles("**/*.dll");
+
+            Assert.True(allDllFiles.Any(), "There should be some DLL files");
+        }
+
+        [Fact]
+        public void CanMatchDllExtensionCaseInsensitive()
+        {
+            var root = new DirectoryInfo(SourceRoot);
+            var allDllFiles = root.GlobFiles("**/*.DLL", GlobOptions.CaseInsensitive);
 
             Assert.True(allDllFiles.Any(), "There should be some DLL files");
         }
@@ -36,6 +54,15 @@ namespace GlobExpressions.Tests
         }
 
         [Fact]
+        public void CanMatchInfoInFileSystemInfoCaseInsensitive()
+        {
+            var root = new DirectoryInfo(SourceRoot);
+            var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*INFO", GlobOptions.CaseInsensitive);
+
+            Assert.True(allInfoFilesAndFolders.Any(), "There should be some 'allINFOFilesAndFolders'");
+        }
+
+                [Fact]
         public void CanMatchConfigFilesInMsDirectory()
         {
             var globPattern = @"**/*.sln";
