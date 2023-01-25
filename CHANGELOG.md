@@ -14,8 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Updated
 - Improved performance from parser internals rework
-- Updated to .NET 5.0
- 
+- Updated to .NET 6.0
+
 ### Changed
 - Matching full path is now the default for Glob expressions, GlobOptions.MatchFilenameOnly
   can be used to work as before

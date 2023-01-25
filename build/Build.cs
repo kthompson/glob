@@ -1,68 +1,68 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Nuke.Common;
+using System.Runtime.InteropServices;
+using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.CI;
-using Nuke.Common.CI.AzurePipelines;
-using Nuke.Common.Execution;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Coverlet;
-using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Tools.GitVersion;
-using Nuke.Common.Tools.ReportGenerator;
-using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.CompressionTasks;
+using Nuke.Common;
+using Nuke.Common.Tooling;
+using Nuke.Common.Tools.Codecov;
+using Nuke.Common.Tools.ReportGenerator;
+using Nuke.Components;
 using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
-using static Nuke.Common.ChangeLog.ChangelogTasks;
-using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static Nuke.Common.Tools.Git.GitTasks;
-using static Nuke.Common.Tools.ReportGenerator.ReportGeneratorTasks;
+using Config = Nuke.Components.Configuration;
 
-[CheckBuildProjectConfigurations]
-[UnsetVisualStudioEnvironmentVariables]
-[FixedAzurePipelines(
-    suffix: null,
-    AzurePipelinesImage.UbuntuLatest,
-    AzurePipelinesImage.WindowsLatest,
-    AzurePipelinesImage.MacOsLatest,
-    InvokedTargets = new[] { nameof(Test), nameof(Publish) },
-    NonEntryTargets = new[] { nameof(Restore) },
-    ExcludedTargets = new[] { nameof(Clean) }
-)]
-class Build : NukeBuild
+[GitHubActions(
+    "pr",
+    GitHubActionsImage.WindowsLatest,
+    GitHubActionsImage.UbuntuLatest,
+    GitHubActionsImage.MacOsLatest,
+    FetchDepth = 0,
+    OnPullRequestBranches = new[] { DevelopBranch },
+    PublishArtifacts = true,
+    InvokedTargets = new[] { nameof(ITest.Test), nameof(IReportCoverage.ReportCoverage), nameof(IPack.Pack) },
+    CacheKeyFiles = new[] { "global.json", "**/*.csproj" },
+    ImportSecrets = new [] { nameof(IReportCoverage.CodecovToken) },
+    EnableGitHubToken = true)]
+[GitHubActions(
+    "continuous",
+    GitHubActionsImage.UbuntuLatest,
+    FetchDepth = 0,
+    OnPushBranches = new[] { MainBranch, DevelopBranch },
+    PublishArtifacts = true,
+    InvokedTargets = new[] { nameof(IReportCoverage.ReportCoverage), nameof(IPublish.Publish) },
+    CacheKeyFiles = new[] { "global.json", "**/*.csproj" },
+    ImportSecrets = new [] { nameof(PublicNuGetApiKey) },
+    EnableGitHubToken = true)]
+class Build : NukeBuild,
+    IHazChangelog,
+    IHazGitRepository,
+    IHazNerdbankGitVersioning,
+    IHazSolution,
+    IRestore,
+    ICompile,
+    IPack,
+    ITest,
+    IReportCoverage,
+    IReportIssues,
+    IReportDuplicates,
+    IPublish
 {
     /// Support plugins are available for:
     ///   - JetBrains ReSharper        https://nuke.build/resharper
     ///   - JetBrains Rider            https://nuke.build/rider
     ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
     ///   - Microsoft VSCode           https://nuke.build/vscode
+    public static int Main() => Execute<Build>(x => ((IPack)x).Pack);
 
-    public static int Main () => Execute<Build>(x => x.Pack);
+    [CI] readonly GitHubActions GitHubActions;
 
-    [CI] readonly AzurePipelines AzurePipelines;
-
-    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
-
-    [Solution] readonly Solution Solution;
-    [GitRepository] readonly GitRepository GitRepository;
-    [GitVersion(Framework = "net5.0", NoFetch = true)] readonly GitVersion GitVersion;
-
+    GitRepository GitRepository => From<IHazGitRepository>().GitRepository;
+    public Config Configuration => IsLocalBuild ? Config.Debug : Config.Release;
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath TestsDirectory => RootDirectory / "test";
-    AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
-
-    AbsolutePath PackageDirectory => ArtifactsDirectory / "packages";
-    AbsolutePath TestResultDirectory => ArtifactsDirectory / "test-results";
-    AbsolutePath CoverageReportDirectory => ArtifactsDirectory / "coverage-report";
-    AbsolutePath CoverageReportArchive => ArtifactsDirectory / "coverage-report.zip";
 
     const string MainBranch = "main";
     const string DevelopBranch = "develop";
@@ -70,131 +70,44 @@ class Build : NukeBuild
     const string HotfixBranchPrefix = "hotfix";
 
     Target Clean => _ => _
-        .Before(Restore)
+        .Before<IRestore>()
         .Executes(() =>
         {
             SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
             TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            EnsureCleanDirectory(ArtifactsDirectory);
+            EnsureCleanDirectory(From<IHazArtifacts>().ArtifactsDirectory);
         });
 
-    Target Restore => _ => _
-        .Executes(() =>
-        {
-            DotNetRestore(s => s
-                .SetProjectFile(Solution));
-        });
+    public IEnumerable<Project> TestProjects => From<IHazSolution>().Solution.GetProjects("*.Tests");
 
-    Target Compile => _ => _
-        .DependsOn(Restore)
-        .Executes(() =>
-        {
-            DotNetBuild(s => s
-                .SetProjectFile(Solution)
-                .SetConfiguration(Configuration)
-                .SetAssemblyVersion(GitVersion.AssemblySemVer)
-                .SetFileVersion(GitVersion.AssemblySemFileVer)
-                .SetInformationalVersion(GitVersion.InformationalVersion)
-                .EnableNoRestore());
-        });
+    public bool CreateCoverageHtmlReport => true;
+    public bool ReportToCodecov => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-    [Partition(1)] private readonly Partition TestPartition;
-    IEnumerable<Project> TestProjects => TestPartition.GetCurrent(Solution.GetProjects("*.Tests"));
+    public Configure<ReportGeneratorSettings> ReportGeneratorSettings => _ => _.SetFramework("net6.0");
 
-    Target Test => _ => _
-        .DependsOn(Compile)
-        .Produces(TestResultDirectory / "*.trx")
-        .Produces(TestResultDirectory / "*.xml")
-        .Partition(() => TestPartition)
-        .Executes(() =>
-        {
-            DotNetTest(s => s
-                .SetProjectFile(Solution)
-                .SetConfiguration(Configuration)
-                .SetResultsDirectory(TestResultDirectory)
-                .SetProcessEnvironmentVariable("BUILD_SERVER", "true")
-                .When(InvokedTargets.Contains(Coverage) || IsServerBuild, _ => _
-                    .EnableCollectCoverage()
-                    .SetCoverletOutputFormat(CoverletOutputFormat.cobertura)
-                    .SetExcludeByFile("*.Generated.cs")
-                    .When(IsServerBuild, _ => _.EnableUseSourceLink()))
-                .CombineWith(TestProjects, (_, v) => _
-                    .SetProjectFile(v)
-                    .SetLogger($"trx;LogFileName={v.Name}.trx")
-                    .When(InvokedTargets.Contains(Coverage) || IsServerBuild, _ => _
-                        .SetCoverletOutput(TestResultDirectory / $"{v.Name}.xml"))));
+    string PublicNuGetSource => "https://api.nuget.org/v3/index.json";
 
-            TestResultDirectory.GlobFiles("*.trx").ForEach(x =>
-                AzurePipelines?.PublishTestResults(
-                    type: AzurePipelinesTestResultsType.VSTest,
-                    title: $"{Path.GetFileNameWithoutExtension(x)} ({AzurePipelines.StageDisplayName})",
-                    files: new string[] {x}));
-        });
+    string GitHubRegistrySource => GitHubActions != null
+        ? $"https://nuget.pkg.github.com/{GitHubActions.RepositoryOwner}/index.json"
+        : null;
 
 
-    Target Coverage => _ => _
-        .DependsOn(Test)
-        .TriggeredBy(Test)
-        .Consumes(Test)
-        .Produces(CoverageReportArchive)
-        .Executes(() =>
-        {
-            ReportGenerator(_ => _
-                .SetReports(TestResultDirectory / "*.xml")
-                .SetReportTypes(ReportTypes.HtmlInline)
-                .SetTargetDirectory(CoverageReportDirectory)
-                .SetFramework("netcoreapp2.1")
-                .SetVerbosity(ReportGeneratorVerbosity.Verbose));
+    [Parameter] [Secret] readonly string PublicNuGetApiKey;
 
-            TestResultDirectory.GlobFiles("*.xml").ForEach(x =>
-                AzurePipelines?.PublishCodeCoverage(
-                    AzurePipelinesCodeCoverageToolType.Cobertura,
-                    x,
-                    CoverageReportDirectory));
-
-            CompressZip(
-                directory: CoverageReportDirectory,
-                archiveFile: CoverageReportArchive,
-                fileMode: FileMode.Create);
-        });
-
-    string ChangelogFile => RootDirectory / "ChangeLog.md";
-    Target Pack => _ => _
-        .DependsOn(Compile)
-        .Produces(PackageDirectory / "*.nupkg")
-        .Executes(() =>
-        {
-            DotNetPack(_ => _
-                .SetProject(Solution)
-                .SetNoBuild(InvokedTargets.Contains(Compile))
-                .SetConfiguration(Configuration)
-                .SetOutputDirectory(PackageDirectory)
-                .SetVersion(GitVersion.NuGetVersionV2)
-                .SetPackageReleaseNotes(GetNuGetReleaseNotes(ChangelogFile, GitRepository)));
-        });
+    bool IsOriginalRepository => GitRepository.Identifier == "kthompson/glob";
+    string IPublish.NuGetApiKey => GitRepository.IsOnMainBranch() ? PublicNuGetApiKey : GitHubActions.Token;
+    string IPublish.NuGetSource => GitRepository.IsOnMainBranch() ? PublicNuGetSource : GitHubRegistrySource;
 
 
-    [Parameter("NuGet Api Key")] readonly string ApiKey;
-    [Parameter("NuGet Source for Packages")] readonly string Source = "https://api.nuget.org/v3/index.json";
+    Target IPublish.Publish => _ => _
+        .Inherit<IPublish>()
+        .Consumes(From<IPack>().Pack)
+        .Requires(() =>
+            IsOriginalRepository && GitHubActions != null &&
+            (GitRepository.IsOnMainBranch() || GitRepository.IsOnDevelopBranch()))
+        .WhenSkipped(DependencyBehavior.Execute);
 
-    Target Publish => _ => _
-        .DependsOn(Clean, Test, Pack)
-        .Consumes(Pack)
-        .Requires(() => ApiKey)
-        .Requires(() => GitHasCleanWorkingCopy())
-        .Requires(() => Configuration.Equals(Configuration.Release))
-        .Requires(() => GitRepository.Branch.EqualsOrdinalIgnoreCase(MainBranch) ||
-                        GitRepository.Branch.EqualsOrdinalIgnoreCase(DevelopBranch) ||
-                        GitRepository.Branch.StartsWithOrdinalIgnoreCase(ReleaseBranchPrefix) ||
-                        GitRepository.Branch.StartsWithOrdinalIgnoreCase(HotfixBranchPrefix))
-        .Executes(() =>
-        {
-            var packages = PackageDirectory.GlobFiles("*.nupkg").Where(x => !x.ToString().Contains("Benchmarks"));
-            DotNetNuGetPush(_ => _
-                    .SetSource(Source)
-                    .SetApiKey(ApiKey)
-                    .CombineWith(packages, (_, v) => _.SetTargetPath(v)),
-                completeOnFailure: true);
-        });
-
+    T From<T>()
+        where T : INukeBuild
+        => (T)(object)this;
 }
