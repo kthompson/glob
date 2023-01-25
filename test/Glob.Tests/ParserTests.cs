@@ -312,11 +312,14 @@ namespace GlobExpressions.Tests
             );
         }
 
-        [Fact]
-        public void InvalidPatternThrows()
+        [Theory]
+        [InlineData("]")]
+        [InlineData("[")]
+        [InlineData("}")]
+        [InlineData("{")]
+        public void InvalidPatternThrows(string pattern)
         {
-            Assert.Throws<GlobPatternException>(() => Parse(@"]"));
-            Assert.Throws<GlobPatternException>(() => Parse(@"}"));
+            Assert.Throws<GlobPatternException>(() => Parse(pattern));
         }
 
         private static void AssertIdentifier(SubSegment subSegment, string expected)

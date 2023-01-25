@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
-using GlobExpressions.AST;
 
 namespace GlobExpressions.Benchmarks
 {
@@ -67,10 +66,10 @@ namespace GlobExpressions.Benchmarks
         }
 
         [Benchmark]
-        public void PathTraversal()
+        public object PathTraversal()
         {
             var SourceRoot = Path.Combine("..", "..", "..", "..", "..");
-            var results = Glob.Files(SourceRoot, "test/*Tests/**/*.cs").ToList();
+            return Glob.Files(SourceRoot, "test/*Tests/**/*.cs").ToList();
         }
     }
 }
