@@ -35,13 +35,13 @@ https://kthompson.github.io/glob/
 
 ### Common Expressions
 
-| Pattern   | Description                                                                    |
-|-----------|--------------------------------------------------------------------------------|
-| taco*     | matches any string beginning with taco                                         |
-| \*taco\*  | matches any string containing taco                                             |
-| *taco     | matches any string ending in taco                                              |
-| *.[ch]    | matches any string ending in `.c` or `.h`                                      |
-| *.{gif,jpg} | match any string ending in `.gif` or `.jpg`                                  |
+| Pattern     | Description                                 |
+|-------------|---------------------------------------------|
+| taco*       | matches any string beginning with taco      |
+| \*taco\*    | matches any string containing taco          |
+| *taco       | matches any string ending in taco           |
+| *.[ch]      | matches any string ending in `.c` or `.h`   |
+| *.{gif,jpg} | match any string ending in `.gif` or `.jpg` |
 
 ### Expressions
 

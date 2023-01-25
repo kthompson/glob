@@ -54,4 +54,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Text" />
+  </ItemGroup>
+
 </Project>
