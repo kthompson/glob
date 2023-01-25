@@ -1,333 +1,244 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.Immutable;
 using GlobExpressions.AST;
 
 namespace GlobExpressions
 {
     internal class Parser
     {
-        private readonly string _source;
-        private int _sourceIndex;
-        private int _currentCharacter;
-        private readonly StringBuilder _spelling;
+        private readonly string _pattern;
+        private readonly ImmutableArray<Token> _tokens;
+        private int _tokenPosition;
 
-        public Parser(string? pattern = null)
+        public Parser(string pattern)
         {
-            this._source = pattern ?? string.Empty;
-            this._sourceIndex = 0;
-            _spelling = new StringBuilder();
-            SetCurrentCharacter();
+            _pattern = pattern;
+            var lexer = new Lexer(pattern);
+            var tokens = ImmutableArray.CreateBuilder<Token>();
+            while (true)
+            {
+                var token = lexer.ParseToken();
+                tokens.Add(token);
+                if (token.Kind == SyntaxKind.EndOfInputToken)
+                    break;
+            }
+
+            _tokens = tokens.ToImmutable();
         }
 
-        private string GetSpelling()
+        private Token CurrentToken => _tokenPosition > _tokens.Length - 1 ? _tokens[^1] : _tokens[_tokenPosition];
+        private SyntaxKind CurrentKind => CurrentToken.Kind;
+
+        private void NextToken() => _tokenPosition += 1;
+        private Token Accept()
         {
-            try
-            {
-                if (_spelling.Length == 0)
-                {
-                    // Did not consume a character
-                    throw new GlobPatternException($"Unexpected character {(char)_currentCharacter} at index {_sourceIndex}");
-                }
-                return _spelling.ToString();
-            }
-            finally
-            {
-                _spelling.Clear();
-            }
+            var token = CurrentToken;
+            NextToken();
+            return token;
         }
+
+        private string FromPattern(int start, int length) => _pattern.Substring(start, length);
+
+        private string FromPattern(TextSpan span) => FromPattern(span.Start, span.Length);
 
         private StringWildcard ParseStar()
         {
-            this.SkipIt();
+            Accept();
             return StringWildcard.Default;
         }
 
         private CharacterWildcard ParseCharacterWildcard()
         {
-            this.SkipIt();
+            Accept();
             return CharacterWildcard.Default;
         }
 
         private CharacterSet ParseCharacterSet()
         {
-            this.SkipIt();
+            var token = Accept();
+            var inverted = (bool)token.Value;
 
-            var inverted = false;
-            if(_currentCharacter == '!')
-            {
-                this.SkipIt();
-                inverted = true;
-            }
+            return new CharacterSet(_pattern.Substring(token.Span.Start, token.Span.Length), inverted);
+        }
 
-            // first token is special and we allow more things like ] or [ at the beginning
-            if(_currentCharacter == ']')
-            {
-                this.Accept();
-            }
+        private Token Accept(SyntaxKind kind)
+        {
+            var currentToken = CurrentToken;
+            if (currentToken.Kind == kind)
+                return Accept();
 
-            while (_currentCharacter != ']' && _currentCharacter != -1)
-            {
-                this.Accept();
-            }
+            return ThrowUnexpectedToken();
+        }
 
-            this.SkipIt(); // ]
-            var spelling = GetSpelling();
-            return new CharacterSet(spelling, inverted);
+        private Token ThrowUnexpectedToken()
+        {
+            throw new GlobPatternException($"Unexpected token {CurrentKind} at offset {CurrentToken.Span.Start}");
         }
 
         private LiteralSet ParseLiteralSet()
         {
             var items = new List<Identifier>();
-            this.SkipIt(); // {
+            Accept(); // {
+            var expected = SyntaxKind.LiteralToken;
 
-            if (this._currentCharacter == '}')
+
+            while (CurrentKind != SyntaxKind.CloseBraceToken && CurrentKind != SyntaxKind.EndOfInputToken)
             {
-                throw new GlobPatternException($"Expected literal at index {_sourceIndex}. Literal sets cannot be empty.");
+                if (expected == SyntaxKind.LiteralToken)
+                {
+                    switch (CurrentKind)
+                    {
+                        case SyntaxKind.LiteralToken:
+                            items.Add(ParseIdentifier());
+                            expected = SyntaxKind.CommaToken;
+                            break;
+                        case SyntaxKind.CommaToken:
+                            items.Add(new Identifier(string.Empty)); // add empty, accept comma, expect literal
+                            Accept();
+                            expected = SyntaxKind.LiteralToken;
+                            break;
+                        default:
+                            ThrowUnexpectedToken();
+                            break;
+                    }
+                }
+                else if (expected == SyntaxKind.CommaToken)
+                {
+                    switch (CurrentKind)
+                    {
+                        case SyntaxKind.CommaToken:
+                            Accept();
+                            expected = SyntaxKind.LiteralToken;
+                            break;
+                        default:
+                            ThrowUnexpectedToken();
+                            break;
+                    }
+                }
             }
 
-            items.Add(this.ParseIdentifier(true));
-            while (this._currentCharacter == ',')
+            if (expected == SyntaxKind.LiteralToken)
             {
-                this.SkipIt(); // ,
-                items.Add(this.ParseIdentifier(true));
+                items.Add(new Identifier(string.Empty)); // add empty
+                if (items.Count == 1)
+                {
+                    throw new GlobPatternException("Expected literal set with at least one value");
+                }
             }
-            this.SkipIt('}');
+
+            Accept(SyntaxKind.CloseBraceToken); // }
+            if (items.Count == 0)
+                throw new GlobPatternException("Empty literal set");
+
             return new LiteralSet(items);
         }
 
-        private void Accept()
+        private Identifier ParseIdentifier()
         {
-            _spelling.Append((char)_currentCharacter);
-
-            SkipIt();
+            var identifier = Accept();
+            return new Identifier((string)identifier.Value);
         }
 
-        private void Accept(int expected)
-        {
-            if (_currentCharacter != expected)
+        // SubSegment := Identifier | CharacterSet | LiteralSet | CharacterWildcard | Wildcard | DirectoryWildcard
+        private SubSegment ParseSubSegment() =>
+            CurrentKind switch
             {
-                if (expected == -1)
-                {
-                    throw new GlobPatternException($"Expected end of input at index {_sourceIndex}");
-                }
+                SyntaxKind.CharacterSet => this.ParseCharacterSet(),
+                SyntaxKind.OpenBraceToken => this.ParseLiteralSet(),
+                SyntaxKind.QuestionToken => this.ParseCharacterWildcard(),
+                SyntaxKind.StarToken => this.ParseStar(),
+                SyntaxKind.LiteralToken => this.ParseIdentifier(),
+                _ => throw new GlobPatternException(
+                    $"Unexpected token {CurrentKind} at offset {CurrentToken.Span.Start}")
+            };
 
-                throw new GlobPatternException($"Expected {(char)expected} at index {_sourceIndex}");
-            }
-
-            Accept();
+        // Segment := DirectorySegment | DirectoryWildcard
+        private Segment ParseSegment()
+        {
+            var directorySegment = ParseDirectorySegment();
+            return directorySegment == null ? DirectoryWildcard.Default : directorySegment;
         }
 
-        private void SkipIt(int expected)
+        /// <summary>
+        /// DirectorySegment := SubSegment*
+        /// </summary>
+        /// <returns>a DirectorySegment or null if a DirectoryWildcard is detected</returns>
+        private DirectorySegment? ParseDirectorySegment()
         {
-            if (_currentCharacter != expected)
-            {
-                if (expected == -1)
-                {
-                    throw new GlobPatternException($"Expected end of input at index {_sourceIndex}");
-                }
-
-                throw new GlobPatternException($"Expected {(char)expected} at index {_sourceIndex}");
-            }
-
-            SkipIt();
-        }
-
-        private void SkipIt()
-        {
-            this._sourceIndex++;
-
-            SetCurrentCharacter();
-        }
-
-        private void SetCurrentCharacter()
-        {
-            if (this._sourceIndex >= this._source.Length)
-                this._currentCharacter = -1;
-            else
-                this._currentCharacter = this._source[this._sourceIndex];
-        }
-
-        private int PeekChar()
-        {
-            var sourceIndex = this._sourceIndex + 1;
-            if (sourceIndex >= this._source.Length)
-                return -1;
-
-            return this._source[sourceIndex];
-        }
-
-        private Identifier ParseIdentifier(bool inLiteralSet)
-        {
-            // if we are in a literal set then we wont consume commas unless they are escaped
+            var subsegments = new List<SubSegment>();
             while (true)
             {
-                switch (_currentCharacter)
+                switch (CurrentKind)
                 {
-                    case -1:
-                    case '[':
-                    case ']':
-                    case '{':
-                    case '}':
-                    case '?':
-                    case '*':
-                    case '/':
-                    case ',' when inLiteralSet:
-                        // terminate
-                        break;
-                    case '\\':
-                        ParseEscapeSequence(inLiteralSet);
+                    case SyntaxKind.LiteralToken:
+                    case SyntaxKind.OpenBraceToken:
+                    case SyntaxKind.CharacterSet:
+                    case SyntaxKind.StarToken:
+                    case SyntaxKind.QuestionToken:
+                        subsegments.Add(ParseSubSegment());
                         continue;
 
-                    default:
+                    case SyntaxKind.StarStarToken when subsegments.Count > 0:
+                        // `**` grouped with literals, demote `**` to `*`
+                        subsegments.Add(ParseStar());
+                        continue;
+
+                    case SyntaxKind.StarStarToken:
                         Accept();
+                        if (CurrentKind == SyntaxKind.SlashToken || CurrentKind == SyntaxKind.EndOfInputToken)
+                        {
+                            // return null signifies a DirectoryWildcard
+                            return null;
+                        }
+                        // `**` preceding other literals, demote `**` to `*`
+                        subsegments.Add(StringWildcard.Default);
                         continue;
                 }
 
                 break;
             }
 
-            return new Identifier(GetSpelling());
-        }
+            return new DirectorySegment(subsegments);
 
-        private void ParseEscapeSequence(bool inLiteralSet)
-        {
-            this.SkipIt(); // dont append to our text
-            switch (this._currentCharacter)
-            {
-                case '*':
-                case '?':
-                case '{':
-                case '}':
-                case '[':
-                case ']':
-                case '(':
-                case ')':
-                case ' ':
-                case ',' when inLiteralSet:
-                    this.Accept(); // escaped char
-                    return;
-
-                default:
-                    throw new GlobPatternException(
-                        $"Expected escape sequence at index pattern `{_sourceIndex - 1}` but found `\\{(char)this._currentCharacter}`");
-            }
-        }
-
-        // SubSegment := Identifier | CharacterSet | LiteralSet | CharacterWildcard | Wildcard
-        private SubSegment ParseSubSegment()
-        {
-            // stub support for extended globs if we ever want to support it
-            if (PeekChar() == '(')
-            {
-                switch (this._currentCharacter)
-                {
-                    case '?':
-                    case '*':
-                    case '+':
-                    case '@':
-                    case '!':
-                        throw new GlobPatternException("Extended glob patterns are not currently supported");
-                }
-            }
-
-            switch (this._currentCharacter)
-            {
-                case '[':
-                    return this.ParseCharacterSet();
-
-                case '{':
-                    return this.ParseLiteralSet();
-
-                case '?':
-                    return this.ParseCharacterWildcard();
-
-                case '*':
-                    return this.ParseStar();
-
-                default:
-                    return this.ParseIdentifier(false);
-            }
-        }
-
-        // Segment := DirectoryWildcard | DirectorySegment
-        // DirectorySegment := SubSegment SubSegment*
-        private Segment ParseSegment()
-        {
-            var items = new List<SubSegment>();
-
-            var lastWasStar = false;
-            var prevWasStar = false;
-            while (_currentCharacter != '/' && _currentCharacter != -1)
-            {
-                var subSegment = this.ParseSubSegment();
-                var isStar = subSegment is StringWildcard;
-                // convert ** to *
-                if (!lastWasStar || !isStar)
-                {
-                    items.Add(subSegment);
-                }
-
-                prevWasStar = lastWasStar;
-                lastWasStar = isStar;
-            }
-
-
-            // if we had a ** return **
-            if(items.Count == 1 && lastWasStar && prevWasStar)
-                return DirectoryWildcard.Default;
-
-            return new DirectorySegment(items);
         }
 
         private Root ParseRoot()
         {
-            if (_currentCharacter == '/')
-            {
-                return new Root(); // don't consume it so we can leave it for the segments
-            }
-
-            // windows root
-            this.Accept();
-            this.Accept(':');
-
-            return new Root(GetSpelling());
+            var root = Accept();
+            var text = FromPattern(root.Span);
+            return new Root(text);
         }
 
-        // Tree := ( Root | Segment ) ( '/' Segment )*
+        // Tree := Root? (Segment ('/' Segment)*)?
         protected internal Tree ParseTree()
         {
             var items = new List<Segment>();
 
-            switch (this._currentCharacter)
+            if (CurrentKind == SyntaxKind.RootToken)
             {
-                case -1:
-                    break;
-
-                case '/':
-                    items.Add(this.ParseRoot());
-                    break;
-
-                default:
-                    // windows root
-                    if (char.IsLetter((char)_currentCharacter) && PeekChar() == ':')
-                    {
-                        items.Add(this.ParseRoot());
-                        break;
-                    }
-
-                    items.Add(this.ParseSegment());
-                    break;
+                items.Add(this.ParseRoot());
+                if (CurrentKind == SyntaxKind.SlashToken)
+                    Accept();
             }
 
-            while (this._currentCharacter == '/')
+            if (CurrentKind == SyntaxKind.EndOfInputToken)
             {
-                SkipIt();
+                return new Tree(items);
+            }
+
+            items.Add(this.ParseSegment());
+
+            while (CurrentKind == SyntaxKind.SlashToken)
+            {
+                Accept();
                 items.Add(this.ParseSegment());
             }
 
-            Accept(-1);
+            if (CurrentKind != SyntaxKind.EndOfInputToken)
+            {
+                ThrowUnexpectedToken();
+            }
 
             return new Tree(items);
         }

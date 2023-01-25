@@ -62,6 +62,84 @@ namespace GlobExpressions.Tests
         }
 
         [Fact]
+        public void CanParseLinuxRoot()
+        {
+            var glob = Parse("/bin");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment => Assert.IsType<Root>(segment),
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => AssertIdentifier(subSegment, "bin"));
+                });
+        }
+
+        [Fact]
+        public void CanParseWindowsRoot()
+        {
+            var glob = Parse("C:/bin");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment => Assert.Equal("C:", Assert.IsType<Root>(segment).Text),
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => AssertIdentifier(subSegment, "bin"));
+                });
+        }
+
+
+        [Fact]
+        public void CanParseLiteralSetWithEmpty1()
+        {
+            var glob = Parse("{,c}");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment =>
+                        {
+                            var literalSet = Assert.IsType<LiteralSet>(subSegment);
+                            Assert.Collection(literalSet.Literals,
+                                literal => AssertIdentifier(literal, ""),
+                                literal => AssertIdentifier(literal, "c"));
+                        });
+                });
+        }
+
+        [Fact]
+        public void CanParseLiteralSetWithEmpty2()
+        {
+            var glob = Parse("{c,}");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment =>
+                        {
+                            var literalSet = Assert.IsType<LiteralSet>(subSegment);
+                            Assert.Collection(literalSet.Literals,
+                                literal => AssertIdentifier(literal, "c"),
+                                literal => AssertIdentifier(literal, ""));
+                        });
+                });
+        }
+
+        [Fact]
+        public void ThrowsForEmptyLiteralSet()
+        {
+            var error = Assert.Throws<GlobPatternException>(() => Parse("{}"));
+            Assert.Equal("Expected literal set with at least one value", error.Message);
+        }
+
+        [Fact]
         public void CanParseStarStarBin()
         {
             var glob = Parse("**/bin");
@@ -278,6 +356,44 @@ namespace GlobExpressions.Tests
                     );
                 }
             );
+        }
+
+        [Fact]
+        public void CanParseCharacterWildcard()
+        {
+            var glob = Parse(@"?");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    Assert.Collection(Assert.IsType<DirectorySegment>(segment).SubSegments,
+                        subSegment => Assert.IsType<CharacterWildcard>(subSegment));
+                }
+            );
+        }
+
+        [Fact]
+        public void CanParseStringWildcard()
+        {
+            var glob = Parse(@"*");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment =>
+                {
+                    var dir = Assert.IsType<DirectorySegment>(segment);
+                    Assert.Collection(dir.SubSegments,
+                        subSegment => Assert.IsType<StringWildcard>(subSegment));
+                }
+            );
+        }
+
+        [Fact]
+        public void CanParseDirectoryWildcard()
+        {
+            var glob = Parse(@"**");
+            var tree = Assert.IsType<Tree>(glob);
+            Assert.Collection(tree.Segments,
+                segment => Assert.IsType<DirectoryWildcard>(segment));
         }
 
         [Fact]

@@ -62,6 +62,8 @@ namespace GlobExpressions.Tests
         // LiteralSet tests
         [InlineData("a{b,c}d", "abd", "a")]
         [InlineData("a{b,c}d", "acd")]
+        [InlineData("a{,c}d", "acd ad")]
+        [InlineData("a{b,}d", "abd ad")]
 
         // Root tests
         [InlineData("/**/*.sln", "/mnt/e/code/csharp-glob/Glob.sln", "/mnt/e/code/csharp-glob/Glob.Tests/Glob.Tests.csproj")]
@@ -72,6 +74,7 @@ namespace GlobExpressions.Tests
         [InlineData("a**/*.cs", "a/c.cs")]
         [InlineData("**a/*.cs", "a/c.cs", "b/a/a.cs")]
         [InlineData("**a/*.cs", "ba/c.cs")]
+        [InlineData("b**a/*.cs", "bccca/c.cs bda/a.cs")]
         [InlineData("**", "ba/c.cs")]
         [InlineData("**", "a")]
         [InlineData("**", "a/b")]
@@ -471,7 +474,7 @@ namespace GlobExpressions.Tests
             }
         }
 
-        [Fact(Skip = "See Issue#69")]
+        [Fact]
         public void Issue69LiteralSetWithEmpty()
         {
             // VbitResource_ById{,s}

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using GlobExpressions.AST;
 
 namespace GlobExpressions
@@ -51,7 +47,7 @@ namespace GlobExpressions
             if (_matchFilenameOnly && _segments!.Length == 1)
             {
                 var last = pathSegments.LastOrDefault();
-                var tail = (last == null) ? new string[0] : new[] { last };
+                var tail = last == null ? Array.Empty<string>() : new[] { last };
 
                 if (GlobEvaluator.Eval(_segments, 0, tail, 0, _caseSensitive))
                     return true;
