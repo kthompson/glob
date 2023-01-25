@@ -471,6 +471,30 @@ namespace GlobExpressions.Tests
             }
         }
 
+        [Fact(Skip = "See Issue#69")]
+        public void Issue69LiteralSetWithEmpty()
+        {
+            // VbitResource_ById{,s}
+
+            Action<string> AssertEqual(string expected) => actual => Assert.Equal(expected, actual);
+            var testRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", "Issue69EmptyLiteralSet");
+            try
+            {
+                CreateFiles(testRoot, "VbitResource_ById VbitResource_ByIds VbitResource_ByIda");
+
+                var allFiles = Glob.Files(testRoot, "VbitResource_ById{,s}").OrderBy(x => x).ToList();
+                Assert.Collection(allFiles,
+                    AssertEqual("VbitResource_ById"),
+                    AssertEqual("VbitResource_ByIds")
+                );
+            }
+            finally
+            {
+                // Cleanup test
+                Directory.Delete(testRoot, true);
+            }
+        }
+
         private static void AssertEnumerator(IEnumerator<string> enumerator, string expected)
         {
             Assert.True(enumerator.MoveNext());
