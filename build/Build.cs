@@ -8,11 +8,8 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Utilities.Collections;
 using Nuke.Common;
 using Nuke.Common.Tooling;
-using Nuke.Common.Tools.Codecov;
 using Nuke.Common.Tools.ReportGenerator;
 using Nuke.Components;
-using static Nuke.Common.IO.FileSystemTasks;
-using Config = Nuke.Components.Configuration;
 
 [GitHubActions(
     "pr",
@@ -60,7 +57,6 @@ class Build : NukeBuild,
     [CI] readonly GitHubActions GitHubActions;
 
     GitRepository GitRepository => From<IHazGitRepository>().GitRepository;
-    public Config Configuration => IsLocalBuild ? Config.Debug : Config.Release;
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath TestsDirectory => RootDirectory / "test";
 
@@ -73,12 +69,12 @@ class Build : NukeBuild,
         .Before<IRestore>()
         .Executes(() =>
         {
-            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            EnsureCleanDirectory(From<IHazArtifacts>().ArtifactsDirectory);
+            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(x => x.DeleteDirectory());
+            TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(x => x.DeleteDirectory());
+            From<IHazArtifacts>().ArtifactsDirectory.CreateOrCleanDirectory();
         });
 
-    public IEnumerable<Project> TestProjects => From<IHazSolution>().Solution.GetProjects("*.Tests");
+    public IEnumerable<Project> TestProjects => From<IHazSolution>().Solution.GetAllProjects("*.Tests");
 
     public bool CreateCoverageHtmlReport => true;
     public bool ReportToCodecov => false; // TODO: #74 RuntimeInformation.IsOSPlatform(OSPlatform.Windows);

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Build Schema",
   "$ref": "#/definitions/build",
+  "title": "Build Schema",
   "definitions": {
     "build": {
       "type": "object",
@@ -9,6 +9,13 @@
         "CodecovToken": {
           "type": "string",
           "default": "Secrets must be entered via 'nuke :secrets [profile]'"
+        },
+        "Configuration": {
+          "type": "string",
+          "enum": [
+            "Debug",
+            "Release"
+          ]
         },
         "Continue": {
           "type": "boolean",
