@@ -29,27 +29,30 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Cache .nuke/temp, ~/.nuget/packages
+      - name: 'Cache: .nuke/temp, ~/.nuget/packages'
         uses: actions/cache@v3
         with:
           path: |
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('global.json', '**/*.csproj') }}
-      - name: Run './build.cmd Test ReportCoverage Pack'
+      - name: 'Run: Test, ReportCoverage, Pack'
         run: ./build.cmd Test ReportCoverage Pack
         env:
           CodecovToken: ${{ secrets.CODECOV_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/upload-artifact@v3
+      - name: 'Publish: test-results'
+        uses: actions/upload-artifact@v3
         with:
           name: test-results
           path: artifacts/test-results
-      - uses: actions/upload-artifact@v3
+      - name: 'Publish: coverage-report.zip'
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-report.zip
           path: artifacts/reports/coverage-report.zip
-      - uses: actions/upload-artifact@v3
+      - name: 'Publish: packages'
+        uses: actions/upload-artifact@v3
         with:
           name: packages
           path: artifacts/packages
@@ -60,27 +63,30 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Cache .nuke/temp, ~/.nuget/packages
+      - name: 'Cache: .nuke/temp, ~/.nuget/packages'
         uses: actions/cache@v3
         with:
           path: |
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('global.json', '**/*.csproj') }}
-      - name: Run './build.cmd Test ReportCoverage Pack'
+      - name: 'Run: Test, ReportCoverage, Pack'
         run: ./build.cmd Test ReportCoverage Pack
         env:
           CodecovToken: ${{ secrets.CODECOV_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/upload-artifact@v3
+      - name: 'Publish: test-results'
+        uses: actions/upload-artifact@v3
         with:
           name: test-results
           path: artifacts/test-results
-      - uses: actions/upload-artifact@v3
+      - name: 'Publish: coverage-report.zip'
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-report.zip
           path: artifacts/reports/coverage-report.zip
-      - uses: actions/upload-artifact@v3
+      - name: 'Publish: packages'
+        uses: actions/upload-artifact@v3
         with:
           name: packages
           path: artifacts/packages
@@ -91,27 +97,30 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Cache .nuke/temp, ~/.nuget/packages
+      - name: 'Cache: .nuke/temp, ~/.nuget/packages'
         uses: actions/cache@v3
         with:
           path: |
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('global.json', '**/*.csproj') }}
-      - name: Run './build.cmd Test ReportCoverage Pack'
+      - name: 'Run: Test, ReportCoverage, Pack'
         run: ./build.cmd Test ReportCoverage Pack
         env:
           CodecovToken: ${{ secrets.CODECOV_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/upload-artifact@v3
+      - name: 'Publish: test-results'
+        uses: actions/upload-artifact@v3
         with:
           name: test-results
           path: artifacts/test-results
-      - uses: actions/upload-artifact@v3
+      - name: 'Publish: coverage-report.zip'
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-report.zip
           path: artifacts/reports/coverage-report.zip
-      - uses: actions/upload-artifact@v3
+      - name: 'Publish: packages'
+        uses: actions/upload-artifact@v3
         with:
           name: packages
           path: artifacts/packages
