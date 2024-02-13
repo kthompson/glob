@@ -81,9 +81,9 @@ class Build : NukeBuild,
     public IEnumerable<Project> TestProjects => From<IHazSolution>().Solution.GetProjects("*.Tests");
 
     public bool CreateCoverageHtmlReport => true;
-    public bool ReportToCodecov => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+    public bool ReportToCodecov => false; // TODO: #74 RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-    public Configure<ReportGeneratorSettings> ReportGeneratorSettings => _ => _.SetFramework("net6.0");
+    public Configure<ReportGeneratorSettings> ReportGeneratorSettings => x => x.SetFramework("net6.0");
 
     string PublicNuGetSource => "https://api.nuget.org/v3/index.json";
 
