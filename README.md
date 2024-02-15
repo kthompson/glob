@@ -7,7 +7,7 @@
 [![Nuget](https://img.shields.io/nuget/v/glob.svg)](https://www.nuget.org/packages/Glob/)
 
 
-A C# Glob library for .NET and .NET Core.
+A C# Glob library for .NET.
 
 ## What is a glob?
 
@@ -62,7 +62,21 @@ https://kthompson.github.io/glob/
 * Simple text string matching support
 * File system matching APIs
 
-## Usage
+## Getting Started
+
+### Installing from NuGet
+
+```bash
+dotnet add package Glob
+```
+
+### Setup
+
+To use Glob, you need to include the namespace:
+
+```csharp
+using GlobExpressions;
+```
 
 ### Example
 

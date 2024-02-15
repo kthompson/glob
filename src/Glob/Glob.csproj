@@ -7,14 +7,14 @@
     <AssemblyName>Glob</AssemblyName>
     <PackageId>Glob</PackageId>
     <PackageTags>C#;glob;minimatch</PackageTags>
-    <Description>A C# Glob library for .NET and .NET Core.</Description>
+    <Description>A C# Glob library for .NET.</Description>
     <PackageReleaseNotes>https://github.com/kthompson/glob/blob/main/ChangeLog.md</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/kthompson/glob/</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageLicense>
       The MIT License (MIT)
 
-      Copyright (c) 2013-2023 Kevin Thompson and Glob contributors
+      Copyright (c) 2013-2024 Kevin Thompson and Glob contributors
 
       Permission is hereby granted, free of charge, to any person obtaining a copy of
       this software and associated documentation files (the "Software"), to deal in
