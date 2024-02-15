@@ -20,6 +20,34 @@ namespace GlobExpressions
             return Files(directoryInfo, pattern, options).Select(RemovePrefix<FileInfo>(truncateLength));
         }
 
+        public static IEnumerable<string> Files(string pattern)
+        {
+            var workingDirectory = "";
+            var subpattern = "";
+            var openingNonLiterals = "*?[{";
+            for (var i = 0; i < pattern.Length; i++)
+            {
+                if (openingNonLiterals.Contains(pattern[i]) && (i > 0) && (pattern[i - 1] != '\\')) // find first non-escaped non-literal character
+                {
+                    workingDirectory = pattern.Substring(0, i);
+                    subpattern = pattern.Substring(i);
+                    break;
+                }
+            }
+
+            if (workingDirectory.EndsWith("/"))
+            {
+                return Files(workingDirectory, subpattern, GlobOptions.Compiled);
+            }
+            else
+            {
+                var lastId = workingDirectory.LastIndexOf('/') + 1;
+                subpattern = workingDirectory.Substring(lastId) + subpattern;
+                workingDirectory = workingDirectory.Substring(0, lastId);
+                return Files(workingDirectory, subpattern, GlobOptions.Compiled);
+            }
+        }
+            
         public static IEnumerable<string> Files(string workingDirectory, string pattern) =>
             Files(workingDirectory, pattern, GlobOptions.Compiled);
 
