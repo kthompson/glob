@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
@@ -31,7 +32,7 @@ namespace GlobExpressions.Tests
         // fake enumerator
         public IEnumerator GetEnumerator()
         {
-            return new int[0].GetEnumerator();
+            return Array.Empty<int>().GetEnumerator();
         }
 
         public void Add(string path)

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,8 +13,8 @@ namespace GlobExpressions
         private readonly Segment[] _segments;
         private readonly TraverseOptions _options;
 
-        private static readonly FileSystemInfo[] _emptyFileSystemInfoArray = new FileSystemInfo[0];
-        private static readonly DirectoryInfo[] _emptyPathJobArray = new DirectoryInfo[0];
+        private static readonly FileSystemInfo[] _emptyFileSystemInfoArray = Array.Empty<FileSystemInfo>();
+        private static readonly DirectoryInfo[] _emptyPathJobArray = Array.Empty<DirectoryInfo>();
         public PathTraverserEnumerable(List<DirectoryInfo> roots, Segment[] segments, TraverseOptions options)
         {
             this._originalRoots = roots;
