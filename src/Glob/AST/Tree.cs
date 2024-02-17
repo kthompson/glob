@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace GlobExpressions.AST
-{
-    internal sealed class Tree : GlobNode
-    {
-        public Segment[] Segments { get; }
+namespace GlobExpressions.AST;
 
-        public Tree(IEnumerable<Segment> segments)
-            : base(GlobNodeType.Tree)
-        {
+internal sealed class Tree : GlobNode
+{
+    public Segment[] Segments { get; }
+
+    public Tree(IEnumerable<Segment> segments)
+        : base(GlobNodeType.Tree)
+    {
             Segments = segments.ToArray();
         }
-    }
 }

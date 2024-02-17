@@ -4,40 +4,39 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace GlobExpressions
+namespace GlobExpressions;
+
+public static class GlobExtensions
 {
-    public static class GlobExtensions
+    public static IEnumerable<DirectoryInfo> GlobDirectories(this DirectoryInfo di, string pattern)
     {
-        public static IEnumerable<DirectoryInfo> GlobDirectories(this DirectoryInfo di, string pattern)
-        {
-            return Glob.Directories(di, pattern);
-        }
-
-        public static IEnumerable<DirectoryInfo> GlobDirectories(this DirectoryInfo di, string pattern, GlobOptions options)
-        {
-            return Glob.Directories(di, pattern, options);
-        }
-
-        public static IEnumerable<FileInfo> GlobFiles(this DirectoryInfo di, string pattern)
-        {
-            return Glob.Files(di, pattern);
-        }
-
-        public static IEnumerable<FileInfo> GlobFiles(this DirectoryInfo di, string pattern, GlobOptions options)
-        {
-            return Glob.Files(di, pattern, options);
-        }
-
-
-        public static IEnumerable<FileSystemInfo> GlobFileSystemInfos(this DirectoryInfo di, string pattern)
-        {
-            return Glob.FilesAndDirectories(di, pattern);
-        }
-
-        public static IEnumerable<FileSystemInfo> GlobFileSystemInfos(this DirectoryInfo di, string pattern, GlobOptions options)
-        {
-            return Glob.FilesAndDirectories(di, pattern, options);
-        }
-
+        return Glob.Directories(di, pattern);
     }
+
+    public static IEnumerable<DirectoryInfo> GlobDirectories(this DirectoryInfo di, string pattern, GlobOptions options)
+    {
+        return Glob.Directories(di, pattern, options);
+    }
+
+    public static IEnumerable<FileInfo> GlobFiles(this DirectoryInfo di, string pattern)
+    {
+        return Glob.Files(di, pattern);
+    }
+
+    public static IEnumerable<FileInfo> GlobFiles(this DirectoryInfo di, string pattern, GlobOptions options)
+    {
+        return Glob.Files(di, pattern, options);
+    }
+
+
+    public static IEnumerable<FileSystemInfo> GlobFileSystemInfos(this DirectoryInfo di, string pattern)
+    {
+        return Glob.FilesAndDirectories(di, pattern);
+    }
+
+    public static IEnumerable<FileSystemInfo> GlobFileSystemInfos(this DirectoryInfo di, string pattern, GlobOptions options)
+    {
+        return Glob.FilesAndDirectories(di, pattern, options);
+    }
+
 }

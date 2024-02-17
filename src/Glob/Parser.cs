@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using GlobExpressions.AST;
 
-namespace GlobExpressions
-{
-    internal class Parser
-    {
-        private readonly string _pattern;
-        private readonly ImmutableArray<Token> _tokens;
-        private int _tokenPosition;
+namespace GlobExpressions;
 
-        public Parser(string pattern)
-        {
+internal class Parser
+{
+    private readonly string _pattern;
+    private readonly ImmutableArray<Token> _tokens;
+    private int _tokenPosition;
+
+    public Parser(string pattern)
+    {
             _pattern = pattern;
             var lexer = new Lexer(pattern);
             var tokens = ImmutableArray.CreateBuilder<Token>();
@@ -27,43 +27,43 @@ namespace GlobExpressions
             _tokens = tokens.ToImmutable();
         }
 
-        private Token CurrentToken => _tokenPosition > _tokens.Length - 1 ? _tokens[^1] : _tokens[_tokenPosition];
-        private SyntaxKind CurrentKind => CurrentToken.Kind;
+    private Token CurrentToken => _tokenPosition > _tokens.Length - 1 ? _tokens[^1] : _tokens[_tokenPosition];
+    private SyntaxKind CurrentKind => CurrentToken.Kind;
 
-        private void NextToken() => _tokenPosition += 1;
-        private Token Accept()
-        {
+    private void NextToken() => _tokenPosition += 1;
+    private Token Accept()
+    {
             var token = CurrentToken;
             NextToken();
             return token;
         }
 
-        private string FromPattern(int start, int length) => _pattern.Substring(start, length);
+    private string FromPattern(int start, int length) => _pattern.Substring(start, length);
 
-        private string FromPattern(TextSpan span) => FromPattern(span.Start, span.Length);
+    private string FromPattern(TextSpan span) => FromPattern(span.Start, span.Length);
 
-        private StringWildcard ParseStar()
-        {
+    private StringWildcard ParseStar()
+    {
             Accept();
             return StringWildcard.Default;
         }
 
-        private CharacterWildcard ParseCharacterWildcard()
-        {
+    private CharacterWildcard ParseCharacterWildcard()
+    {
             Accept();
             return CharacterWildcard.Default;
         }
 
-        private CharacterSet ParseCharacterSet()
-        {
+    private CharacterSet ParseCharacterSet()
+    {
             var token = Accept();
             var inverted = (bool)token.Value;
 
             return new CharacterSet(_pattern.Substring(token.Span.Start, token.Span.Length), inverted);
         }
 
-        private Token Accept(SyntaxKind kind)
-        {
+    private Token Accept(SyntaxKind kind)
+    {
             var currentToken = CurrentToken;
             if (currentToken.Kind == kind)
                 return Accept();
@@ -71,13 +71,13 @@ namespace GlobExpressions
             return ThrowUnexpectedToken();
         }
 
-        private Token ThrowUnexpectedToken()
-        {
+    private Token ThrowUnexpectedToken()
+    {
             throw new GlobPatternException($"Unexpected token {CurrentKind} at offset {CurrentToken.Span.Start}");
         }
 
-        private LiteralSet ParseLiteralSet()
-        {
+    private LiteralSet ParseLiteralSet()
+    {
             var items = new List<Identifier>();
             Accept(); // {
             var expected = SyntaxKind.LiteralToken;
@@ -134,38 +134,38 @@ namespace GlobExpressions
             return new LiteralSet(items);
         }
 
-        private Identifier ParseIdentifier()
-        {
+    private Identifier ParseIdentifier()
+    {
             var identifier = Accept();
             return new Identifier((string)identifier.Value);
         }
 
-        // SubSegment := Identifier | CharacterSet | LiteralSet | CharacterWildcard | Wildcard | DirectoryWildcard
-        private SubSegment ParseSubSegment() =>
-            CurrentKind switch
-            {
-                SyntaxKind.CharacterSet => this.ParseCharacterSet(),
-                SyntaxKind.OpenBraceToken => this.ParseLiteralSet(),
-                SyntaxKind.QuestionToken => this.ParseCharacterWildcard(),
-                SyntaxKind.StarToken => this.ParseStar(),
-                SyntaxKind.LiteralToken => this.ParseIdentifier(),
-                _ => throw new GlobPatternException(
-                    $"Unexpected token {CurrentKind} at offset {CurrentToken.Span.Start}")
-            };
-
-        // Segment := DirectorySegment | DirectoryWildcard
-        private Segment ParseSegment()
+    // SubSegment := Identifier | CharacterSet | LiteralSet | CharacterWildcard | Wildcard | DirectoryWildcard
+    private SubSegment ParseSubSegment() =>
+        CurrentKind switch
         {
+            SyntaxKind.CharacterSet => this.ParseCharacterSet(),
+            SyntaxKind.OpenBraceToken => this.ParseLiteralSet(),
+            SyntaxKind.QuestionToken => this.ParseCharacterWildcard(),
+            SyntaxKind.StarToken => this.ParseStar(),
+            SyntaxKind.LiteralToken => this.ParseIdentifier(),
+            _ => throw new GlobPatternException(
+                $"Unexpected token {CurrentKind} at offset {CurrentToken.Span.Start}")
+        };
+
+    // Segment := DirectorySegment | DirectoryWildcard
+    private Segment ParseSegment()
+    {
             var directorySegment = ParseDirectorySegment();
             return directorySegment == null ? DirectoryWildcard.Default : directorySegment;
         }
 
-        /// <summary>
-        /// DirectorySegment := SubSegment*
-        /// </summary>
-        /// <returns>a DirectorySegment or null if a DirectoryWildcard is detected</returns>
-        private DirectorySegment? ParseDirectorySegment()
-        {
+    /// <summary>
+    /// DirectorySegment := SubSegment*
+    /// </summary>
+    /// <returns>a DirectorySegment or null if a DirectoryWildcard is detected</returns>
+    private DirectorySegment? ParseDirectorySegment()
+    {
             var subsegments = new List<SubSegment>();
             while (true)
             {
@@ -203,16 +203,16 @@ namespace GlobExpressions
 
         }
 
-        private Root ParseRoot()
-        {
+    private Root ParseRoot()
+    {
             var root = Accept();
             var text = FromPattern(root.Span);
             return new Root(text);
         }
 
-        // Tree := Root? (Segment ('/' Segment)*)?
-        protected internal Tree ParseTree()
-        {
+    // Tree := Root? (Segment ('/' Segment)*)?
+    protected internal Tree ParseTree()
+    {
             var items = new List<Segment>();
 
             if (CurrentKind == SyntaxKind.RootToken)
@@ -243,6 +243,5 @@ namespace GlobExpressions
             return new Tree(items);
         }
 
-        public GlobNode Parse() => this.ParseTree();
-    }
+    public GlobNode Parse() => this.ParseTree();
 }

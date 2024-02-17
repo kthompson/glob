@@ -1,12 +1,11 @@
-﻿namespace GlobExpressions.AST
+﻿namespace GlobExpressions.AST;
+
+internal abstract class GlobNode
 {
-    internal abstract class GlobNode
+    protected GlobNode(GlobNodeType type)
     {
-        protected GlobNode(GlobNodeType type)
-        {
             this.Type = type;
         }
 
-        public GlobNodeType Type { get; }
-    }
+    public GlobNodeType Type { get; }
 }

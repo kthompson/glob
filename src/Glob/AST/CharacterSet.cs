@@ -2,72 +2,71 @@
 using System.Linq;
 using System.Text;
 
-namespace GlobExpressions.AST
-{
-    internal sealed class CharacterSet : SubSegment
-    {
-        public bool Inverted { get; }
-        public string Characters { get; }
-        public string ExpandedCharacters { get; }
+namespace GlobExpressions.AST;
 
-        public CharacterSet(string characters, bool inverted)
-            : base(GlobNodeType.CharacterSet)
-        {
+internal sealed class CharacterSet : SubSegment
+{
+    public bool Inverted { get; }
+    public string Characters { get; }
+    public string ExpandedCharacters { get; }
+
+    public CharacterSet(string characters, bool inverted)
+        : base(GlobNodeType.CharacterSet)
+    {
             Characters = characters;
             Inverted = inverted;
             this.ExpandedCharacters = CalculateExpandedForm(characters);
         }
 
-        public bool Matches(char c, bool caseSensitive) => Contains(c, caseSensitive) != this.Inverted;
+    public bool Matches(char c, bool caseSensitive) => Contains(c, caseSensitive) != this.Inverted;
 
-        private bool Contains(char c, bool caseSensitive) => ExpandedCharacters.IndexOf(c.ToString(), caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) >= 0;
+    private bool Contains(char c, bool caseSensitive) => ExpandedCharacters.IndexOf(c.ToString(), caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) >= 0;
 
-        private string CalculateExpandedForm(string chars)
+    private string CalculateExpandedForm(string chars)
+    {
+        var sb = new StringBuilder();
+        var i = 0;
+        var len = chars.Length;
+
+        // if first character is special, add it
+        if (chars.StartsWith("-") || chars.StartsWith("[") || chars.StartsWith("]"))
         {
-            var sb = new StringBuilder();
-            var i = 0;
-            var len = chars.Length;
+            sb.Append(chars[0]);
+            i++;
+        }
 
-            // if first character is special, add it
-            if (chars.StartsWith("-") || chars.StartsWith("[") || chars.StartsWith("]"))
+        while (true)
+        {
+            if (i >= len)
+                break;
+
+            if (chars[i] == '-')
             {
-                sb.Append(chars[0]);
-                i++;
-            }
-
-            while (true)
-            {
-                if (i >= len)
-                    break;
-
-                if (chars[i] == '-')
+                if (i == len - 1)
                 {
-                    if (i == len - 1)
-                    {
-                        // - is last character so just add it
-                        sb.Append('-');
-                    }
-                    else
-                    {
-                        for (var c = chars[i - 1] + 1; c <= chars[i + 1]; c++)
-                        {
-                            sb.Append((char)c);
-                        }
-                        i++; // skip trailing range
-                    }
-                }
-                else if (chars[i] == '/')
-                {
-                    i++; // skip
+                    // - is last character so just add it
+                    sb.Append('-');
                 }
                 else
                 {
-                    sb.Append(chars[i]);
+                    for (var c = chars[i - 1] + 1; c <= chars[i + 1]; c++)
+                    {
+                        sb.Append((char)c);
+                    }
+                    i++; // skip trailing range
                 }
-                i++;
             }
-
-            return sb.ToString();
+            else if (chars[i] == '/')
+            {
+                i++; // skip
+            }
+            else
+            {
+                sb.Append(chars[i]);
+            }
+            i++;
         }
+
+        return sb.ToString();
     }
 }

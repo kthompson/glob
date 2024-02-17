@@ -1,21 +1,20 @@
-﻿namespace GlobExpressions.AST
+﻿namespace GlobExpressions.AST;
+
+internal enum GlobNodeType
 {
-    internal enum GlobNodeType
-    {
-        Tree,
+    Tree,
 
-        // Segments
-        Root,
+    // Segments
+    Root,
 
-        DirectoryWildcard,
-        DirectorySegment,
+    DirectoryWildcard,
+    DirectorySegment,
 
-        // SubSegments
-        CharacterSet,
+    // SubSegments
+    CharacterSet,
 
-        Identifier,
-        LiteralSet,
-        StringWildcard,
-        CharacterWildcard
-    }
+    Identifier,
+    LiteralSet,
+    StringWildcard,
+    CharacterWildcard
 }

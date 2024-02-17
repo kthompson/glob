@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.Text;
 using GlobExpressions.AST;
 
-namespace GlobExpressions
-{
-    internal static class Matcher
-    {
-        public static bool MatchesSegment(this DirectorySegment segment, string pathSegment, bool caseSensitive) =>
-            MatchesSubSegment(segment.SubSegments, 0, -1, pathSegment, 0, caseSensitive);
+namespace GlobExpressions;
 
-        private static bool MatchesSubSegment(SubSegment[] segments, int segmentIndex, int literalSetIndex, string pathSegment, int pathIndex, bool caseSensitive)
-        {
+internal static class Matcher
+{
+    public static bool MatchesSegment(this DirectorySegment segment, string pathSegment, bool caseSensitive) =>
+        MatchesSubSegment(segment.SubSegments, 0, -1, pathSegment, 0, caseSensitive);
+
+    private static bool MatchesSubSegment(SubSegment[] segments, int segmentIndex, int literalSetIndex, string pathSegment, int pathIndex, bool caseSensitive)
+    {
             var nextSegment = segmentIndex + 1;
             if (nextSegment > segments.Length)
                 return pathIndex == pathSegment.Length;
@@ -67,7 +67,6 @@ namespace GlobExpressions
             }
         }
 
-        private static bool SubstringEquals(string segment, int segmentIndex, string search, bool caseSensitive) =>
-            string.Compare(segment, segmentIndex, search, 0, search.Length, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) == 0;
-    }
+    private static bool SubstringEquals(string segment, int segmentIndex, string search, bool caseSensitive) =>
+        string.Compare(segment, segmentIndex, search, 0, search.Length, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) == 0;
 }

@@ -1,14 +1,13 @@
-﻿namespace GlobExpressions.AST
-{
-    internal sealed class StringWildcard : SubSegment
-    {
-        public static readonly StringWildcard Default = new StringWildcard();
+﻿namespace GlobExpressions.AST;
 
-        private StringWildcard()
-            : base(GlobNodeType.StringWildcard)
-        {
+internal sealed class StringWildcard : SubSegment
+{
+    public static readonly StringWildcard Default = new StringWildcard();
+
+    private StringWildcard()
+        : base(GlobNodeType.StringWildcard)
+    {
         }
 
-        public override string ToString() => "*";
-    }
+    public override string ToString() => "*";
 }

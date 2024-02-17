@@ -1,15 +1,14 @@
-﻿namespace GlobExpressions.AST
-{
-    internal sealed class Root : Segment
-    {
-        public string Text { get; }
+﻿namespace GlobExpressions.AST;
 
-        public Root(string text = "")
-            : base(GlobNodeType.Root)
-        {
+internal sealed class Root : Segment
+{
+    public string Text { get; }
+
+    public Root(string text = "")
+        : base(GlobNodeType.Root)
+    {
             Text = text;
         }
 
-        public override string ToString() => Text;
-    }
+    public override string ToString() => Text;
 }
