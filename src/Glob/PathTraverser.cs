@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -15,7 +16,7 @@ namespace GlobExpressions
 
             var cache = new TraverseOptions(caseSensitive, emitFiles, emitDirectories);
 
-            return segments.Length == 0 ? new FileSystemInfo[0] : Traverse(root, segments, cache);
+            return segments.Length == 0 ? Array.Empty<FileSystemInfo>() : Traverse(root, segments, cache);
         }
 
         internal static IEnumerable<FileSystemInfo> Traverse(DirectoryInfo root, Segment[] segments, TraverseOptions options) =>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace GlobExpressions
@@ -19,8 +20,8 @@ namespace GlobExpressions
         public bool EmitFiles { get; }
         public bool EmitDirectories { get; }
 
-        private static readonly FileInfo[] _emptyFileInfos = new FileInfo[0];
-        private static readonly DirectoryInfo[] _emptyDirectoryInfos = new DirectoryInfo[0];
+        private static readonly FileInfo[] _emptyFileInfos = Array.Empty<FileInfo>();
+        private static readonly DirectoryInfo[] _emptyDirectoryInfos = Array.Empty<DirectoryInfo>();
 
         public virtual FileInfo[] GetFiles(DirectoryInfo root)
         {
