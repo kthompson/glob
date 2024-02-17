@@ -5,25 +5,25 @@ using System.IO;
 using System.Linq;
 using GlobExpressions.AST;
 
-namespace GlobExpressions
-{
-    internal class PathTraverserEnumerable : IEnumerable<FileSystemInfo>
-    {
-        private readonly List<DirectoryInfo> _originalRoots;
-        private readonly Segment[] _segments;
-        private readonly TraverseOptions _options;
+namespace GlobExpressions;
 
-        private static readonly FileSystemInfo[] _emptyFileSystemInfoArray = Array.Empty<FileSystemInfo>();
-        private static readonly DirectoryInfo[] _emptyPathJobArray = Array.Empty<DirectoryInfo>();
-        public PathTraverserEnumerable(List<DirectoryInfo> roots, Segment[] segments, TraverseOptions options)
-        {
+internal class PathTraverserEnumerable : IEnumerable<FileSystemInfo>
+{
+    private readonly List<DirectoryInfo> _originalRoots;
+    private readonly Segment[] _segments;
+    private readonly TraverseOptions _options;
+
+    private static readonly FileSystemInfo[] _emptyFileSystemInfoArray = Array.Empty<FileSystemInfo>();
+    private static readonly DirectoryInfo[] _emptyPathJobArray = Array.Empty<DirectoryInfo>();
+    public PathTraverserEnumerable(List<DirectoryInfo> roots, Segment[] segments, TraverseOptions options)
+    {
             this._originalRoots = roots;
             this._segments = segments;
             this._options = options;
         }
 
-        public IEnumerator<FileSystemInfo> GetEnumerator()
-        {
+    public IEnumerator<FileSystemInfo> GetEnumerator()
+    {
             var roots = new List<DirectoryInfo>();
             var rootCache = new List<DirectoryInfo>();
             roots.AddRange(_originalRoots);
@@ -94,10 +94,10 @@ namespace GlobExpressions
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        private IEnumerable<DirectoryInfo> JobsMatchingSegment(List<DirectoryInfo> nextSegmentRoots, DirectoryInfo directoryInfo, Segment segment)
-        {
+    private IEnumerable<DirectoryInfo> JobsMatchingSegment(List<DirectoryInfo> nextSegmentRoots, DirectoryInfo directoryInfo, Segment segment)
+    {
             switch (segment)
             {
                 case DirectorySegment directorySegment:
@@ -126,12 +126,11 @@ namespace GlobExpressions
 
 
 
-        private static IEnumerable<FileSystemInfo> FilesMatchingSegment(IEnumerable<FileInfo> fileInfos, Segment segment, bool caseSensitive) =>
-            segment switch
-            {
-                DirectorySegment directorySegment => (IEnumerable<FileSystemInfo>)fileInfos.Where(file => directorySegment.MatchesSegment(file.Name, caseSensitive)),
-                DirectoryWildcard _ => fileInfos,
-                _ => _emptyFileSystemInfoArray
-            };
-    }
+    private static IEnumerable<FileSystemInfo> FilesMatchingSegment(IEnumerable<FileInfo> fileInfos, Segment segment, bool caseSensitive) =>
+        segment switch
+        {
+            DirectorySegment directorySegment => (IEnumerable<FileSystemInfo>)fileInfos.Where(file => directorySegment.MatchesSegment(file.Name, caseSensitive)),
+            DirectoryWildcard _ => fileInfos,
+            _ => _emptyFileSystemInfoArray
+        };
 }

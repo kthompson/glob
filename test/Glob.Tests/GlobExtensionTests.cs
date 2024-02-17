@@ -4,67 +4,67 @@ using System.Linq;
 using Xunit;
 using static GlobExpressions.Tests.TestHelpers;
 
-namespace GlobExpressions.Tests
+namespace GlobExpressions.Tests;
+
+public class GlobExtensionTests
 {
-    public class GlobExtensionTests
+    [Fact]
+    public void CanMatchBinFolderGlob()
     {
-        [Fact]
-        public void CanMatchBinFolderGlob()
-        {
             var root = new DirectoryInfo(SourceRoot);
             var allBinFolders = root.GlobDirectories("**/bin");
 
             Assert.True(allBinFolders.Any(), "There should be some bin folders");
         }
 
-        [Fact]
-        public void CanMatchBinFolderGlobCaseInsensitive()
-        {
+    [Fact]
+    public void CanMatchBinFolderGlobCaseInsensitive()
+    {
             var root = new DirectoryInfo(SourceRoot);
             var allBinFolders = root.GlobDirectories("**/BIN", GlobOptions.CaseInsensitive);
 
             Assert.True(allBinFolders.Any(), "There should be some BIN folders");
         }
 
-        [Fact]
-        public void CanMatchDllExtension()
-        {
+    [Fact]
+    public void CanMatchDllExtension()
+    {
             var root = new DirectoryInfo(SourceRoot);
             var allDllFiles = root.GlobFiles("**/*.dll");
 
             Assert.True(allDllFiles.Any(), "There should be some DLL files");
         }
 
-        [Fact]
-        public void CanMatchDllExtensionCaseInsensitive()
-        {
+    [Fact]
+    public void CanMatchDllExtensionCaseInsensitive()
+    {
             var root = new DirectoryInfo(SourceRoot);
             var allDllFiles = root.GlobFiles("**/*.DLL", GlobOptions.CaseInsensitive);
 
             Assert.True(allDllFiles.Any(), "There should be some DLL files");
         }
 
-        [Fact]
-        public void CanMatchInfoInFileSystemInfo()
-        {
+    [Fact]
+    public void CanMatchInfoInFileSystemInfo()
+    {
             var root = new DirectoryInfo(SourceRoot);
             var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
 
             Assert.True(allInfoFilesAndFolders.Any(), "There should be some 'allInfoFilesAndFolders'");
         }
 
-        [Fact]
-        public void CanMatchInfoInFileSystemInfoCaseInsensitive()
-        {
+    [Fact]
+    public void CanMatchInfoInFileSystemInfoCaseInsensitive()
+    {
             var root = new DirectoryInfo(SourceRoot);
             var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*INFO", GlobOptions.CaseInsensitive);
 
             Assert.True(allInfoFilesAndFolders.Any(), "There should be some 'allINFOFilesAndFolders'");
         }
 
-                [Fact]
-        public void CanMatchConfigFilesInMsDirectory()
-        {
+    [Fact]
+    public void CanMatchConfigFilesInMsDirectory()
+    {
             var globPattern = @"**/*.sln";
 
             var root = new DirectoryInfo(SourceRoot);
@@ -74,9 +74,9 @@ namespace GlobExpressions.Tests
             Assert.True(result.Any(x => x.Name == "Glob.sln"), $"There should be some Glob.sln files in '{root.FullName}'");
         }
 
-        [Fact]
-        public void CanMatchStarThenPath()
-        {
+    [Fact]
+    public void CanMatchStarThenPath()
+    {
             var globPattern = @"*/*/*.csproj";
 
             var root = new DirectoryInfo(SourceRoot);
@@ -91,9 +91,9 @@ namespace GlobExpressions.Tests
             );
         }
 
-        [Fact]
-        public void CanMatchConfigFilesOrFoldersInMsDirectory()
-        {
+    [Fact]
+    public void CanMatchConfigFilesOrFoldersInMsDirectory()
+    {
             var globPattern = @"**/*[Tt]est*";
 
             var root = new DirectoryInfo(SourceRoot);
@@ -104,9 +104,9 @@ namespace GlobExpressions.Tests
             Assert.True(result.Any(x => x.Name == "test"), $"There should some folder with 'test' in '{root.FullName}'");
         }
 
-        [Fact]
-        public void CanMatchDirectoriesInMsDirectory()
-        {
+    [Fact]
+    public void CanMatchDirectoriesInMsDirectory()
+    {
             var globPattern = @"**/*Gl*.Te*";
 
             var root = new DirectoryInfo(SourceRoot);
@@ -116,9 +116,9 @@ namespace GlobExpressions.Tests
             Assert.True(result.Any(), $"There should be some directories that match glob: {globPattern} in '{root.FullName}'");
         }
 
-        [Fact]
-        public void CanMatchFilesInDirectoriesWithTrailingSlash()
-        {
+    [Fact]
+    public void CanMatchFilesInDirectoriesWithTrailingSlash()
+    {
             var globPattern = @"test/**/*Gl*.Te*";
             var root = new DirectoryInfo(SourceRoot + Path.DirectorySeparatorChar).FullName;
             var result = Glob.Files(root, globPattern).ToList();
@@ -128,9 +128,9 @@ namespace GlobExpressions.Tests
             Assert.True(result.Any(), $"There should be some directories that match glob: {globPattern} in '{root}'");
         }
 
-        [Fact]
-        public void CanMatchFilesInDirectoriesWithoutTrailingSlash()
-        {
+    [Fact]
+    public void CanMatchFilesInDirectoriesWithoutTrailingSlash()
+    {
             var globPattern = @"test/**/*Gl*.Te*";
             var root = new DirectoryInfo(SourceRoot).FullName;
             var result = Glob.Files(root, globPattern).ToList();
@@ -139,5 +139,4 @@ namespace GlobExpressions.Tests
             Assert.All(result, path => Assert.StartsWith("test", path));
             Assert.True(result.Any(), $"There should be some directories that match glob: {globPattern} in '{root}'");
         }
-    }
 }

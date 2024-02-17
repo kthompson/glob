@@ -1,20 +1,19 @@
-﻿namespace GlobExpressions.AST
+﻿namespace GlobExpressions.AST;
+
+internal sealed class Identifier : SubSegment
 {
-    internal sealed class Identifier : SubSegment
+    public string Value { get; }
+
+    public Identifier(string value)
+        : base(GlobNodeType.Identifier)
     {
-        public string Value { get; }
+        Value = value;
+    }
 
-        public Identifier(string value)
-            : base(GlobNodeType.Identifier)
-        {
-            Value = value;
-        }
+    public override string ToString() => Value;
 
-        public override string ToString() => Value;
-
-        public static implicit operator Identifier(string value)
-        {
-            return new Identifier(value);
-        }
+    public static implicit operator Identifier(string value)
+    {
+        return new Identifier(value);
     }
 }

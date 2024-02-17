@@ -1,10 +1,9 @@
-﻿namespace GlobExpressions.AST
+﻿namespace GlobExpressions.AST;
+
+internal abstract class Segment : GlobNode
 {
-    internal abstract class Segment : GlobNode
+    protected Segment(GlobNodeType type)
+        : base(type)
     {
-        protected Segment(GlobNodeType type)
-            : base(type)
-        {
         }
-    }
 }

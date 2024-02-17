@@ -9,20 +9,20 @@ using Xunit;
 using Xunit.Abstractions;
 using static GlobExpressions.Tests.TestHelpers;
 
-namespace GlobExpressions.Tests
-{
-    public class PathTraverserTests
-    {
-        private readonly ITestOutputHelper _printer;
+namespace GlobExpressions.Tests;
 
-        public PathTraverserTests(ITestOutputHelper printer)
-        {
+public class PathTraverserTests
+{
+    private readonly ITestOutputHelper _printer;
+
+    public PathTraverserTests(ITestOutputHelper printer)
+    {
             _printer = printer;
         }
 
-        [Fact]
-        public void ShouldMatchStringWildcard()
-        {
+    [Fact]
+    public void ShouldMatchStringWildcard()
+    {
             // *
             var list = new DirectorySegment(new SubSegment[]
             {
@@ -34,9 +34,9 @@ namespace GlobExpressions.Tests
             Assert.True(list.MatchesSegment("abc", false));
         }
 
-        [Fact]
-        public void ShouldMatchIdentWildcard()
-        {
+    [Fact]
+    public void ShouldMatchIdentWildcard()
+    {
             // ab*cd
             var list = new DirectorySegment(new SubSegment[]
             {
@@ -55,9 +55,9 @@ namespace GlobExpressions.Tests
             Assert.False(list.MatchesSegment("ab123456cd1", false));
         }
 
-        [Fact]
-        public void ShouldMatchLiteralSet()
-        {
+    [Fact]
+    public void ShouldMatchLiteralSet()
+    {
             // ab*{cd,ef}
             var list = new DirectorySegment(new SubSegment[]
             {
@@ -80,9 +80,9 @@ namespace GlobExpressions.Tests
             Assert.False(list.MatchesSegment("ab123456cd1", false));
         }
 
-        [Fact]
-        public void ShouldMatchCharacterWildcard()
-        {
+    [Fact]
+    public void ShouldMatchCharacterWildcard()
+    {
             // ab?
             var list = new DirectorySegment(new SubSegment[]
             {
@@ -102,9 +102,9 @@ namespace GlobExpressions.Tests
             Assert.False(list.MatchesSegment("ab123456cd1", false));
         }
 
-        [Fact]
-        public void ShouldMatchCharacterSet()
-        {
+    [Fact]
+    public void ShouldMatchCharacterSet()
+    {
             // ab?[abc]
             var list = new DirectorySegment(new SubSegment[]
             {
@@ -126,9 +126,9 @@ namespace GlobExpressions.Tests
             Assert.True(list.MatchesSegment("ab1c", false));
         }
 
-        [Fact]
-        public void ShouldMatchCharacterSetRange()
-        {
+    [Fact]
+    public void ShouldMatchCharacterSetRange()
+    {
             // ab?[a-c]
             var list = new DirectorySegment(new SubSegment[]
             {
@@ -150,9 +150,9 @@ namespace GlobExpressions.Tests
             Assert.True(list.MatchesSegment("ab1c", false));
         }
 
-        [Fact]
-        public void ShouldMatchCharacterSetInverted()
-        {
+    [Fact]
+    public void ShouldMatchCharacterSetInverted()
+    {
             // ab?[!abc]
             var list = new DirectorySegment(new SubSegment[]
             {
@@ -184,9 +184,9 @@ namespace GlobExpressions.Tests
             Assert.False(list.MatchesSegment("ab1c", false));
         }
 
-        [Fact]
-        public void TraverseFiles()
-        {
+    [Fact]
+    public void TraverseFiles()
+    {
             var results = new DirectoryInfo(SourceRoot).Traverse("**/*Tests/**/P*", true, true, false).ToList();
 
             results.ForEach(file => _printer.WriteLine(file.FullName));
@@ -194,9 +194,9 @@ namespace GlobExpressions.Tests
             Assert.Equal(3, results.Count);
         }
 
-        [Fact]
-        public void TraverseDirectories()
-        {
+    [Fact]
+    public void TraverseDirectories()
+    {
             var results = new DirectoryInfo(SourceRoot).Traverse("**/*Tests/**/P*", true, false, true).ToList();
 
             results.ForEach(file => _printer.WriteLine(file.FullName));
@@ -204,9 +204,9 @@ namespace GlobExpressions.Tests
             Assert.Single(results);
         }
 
-        [Fact]
-        public void TraverseFilesAndDirectories()
-        {
+    [Fact]
+    public void TraverseFilesAndDirectories()
+    {
             var results = new DirectoryInfo(Path.Combine(SourceRoot, "test")).Traverse("**/*Tests/**/P*", true, true, true).ToList();
 
             results.ForEach(file => _printer.WriteLine(file.FullName));
@@ -214,50 +214,50 @@ namespace GlobExpressions.Tests
             Assert.Equal(4, results.Count);
         }
 
-        [Theory]
-        // Wildcard tests
-        [InlineData("*.txt", "file.txt", "file.zip")]
-        [InlineData("*.txt", "file.txt")]
-        [InlineData("some/dir/folder/foo.*", "/some/dir/folder/foo.txt")]
-        [InlineData("some/dir/folder/foo.*", "/some/dir/folder/foo.csv")]
-        [InlineData("a_*file.txt", "a_bigfile.txt", "another_file.txt")]
-        [InlineData("a_*file.txt", "a_file.txt")]
-        [InlineData("*file.txt", "bigfile.txt")]
-        [InlineData("*file.txt", "smallfile.txt")]
+    [Theory]
+    // Wildcard tests
+    [InlineData("*.txt", "file.txt", "file.zip")]
+    [InlineData("*.txt", "file.txt")]
+    [InlineData("some/dir/folder/foo.*", "/some/dir/folder/foo.txt")]
+    [InlineData("some/dir/folder/foo.*", "/some/dir/folder/foo.csv")]
+    [InlineData("a_*file.txt", "a_bigfile.txt", "another_file.txt")]
+    [InlineData("a_*file.txt", "a_file.txt")]
+    [InlineData("*file.txt", "bigfile.txt")]
+    [InlineData("*file.txt", "smallfile.txt")]
 
-        // Character Range tests
-        [InlineData("*fil[e-z].txt", "bigfile.txt", "smallfila.txt")]
-        [InlineData("*fil[e-z].txt", "smallfilf.txt", "smallfilez.txt")]
-        [InlineData("*file[1-9].txt", "bigfile1.txt", "smallfile0.txt")]
-        [InlineData("*file[1-9].txt", "smallfile8.txt", "smallfilea.txt")]
+    // Character Range tests
+    [InlineData("*fil[e-z].txt", "bigfile.txt", "smallfila.txt")]
+    [InlineData("*fil[e-z].txt", "smallfilf.txt", "smallfilez.txt")]
+    [InlineData("*file[1-9].txt", "bigfile1.txt", "smallfile0.txt")]
+    [InlineData("*file[1-9].txt", "smallfile8.txt", "smallfilea.txt")]
 
-        // CharacterList tests
-        [InlineData("*file[abc].txt", "bigfilea.txt", "smallfiled.txt")]
-        [InlineData("*file[abc].txt", "smallfileb.txt", "smallfileaa.txt")]
-        [InlineData("*file[!abc].txt", "smallfiled.txt", "bigfilea.txt")]
-        [InlineData("*file[!abc].txt", "smallfile-.txt", "smallfileaa.txt")]
-        [InlineData("*file[!abc].txt", null, "smallfileb.txt")]
+    // CharacterList tests
+    [InlineData("*file[abc].txt", "bigfilea.txt", "smallfiled.txt")]
+    [InlineData("*file[abc].txt", "smallfileb.txt", "smallfileaa.txt")]
+    [InlineData("*file[!abc].txt", "smallfiled.txt", "bigfilea.txt")]
+    [InlineData("*file[!abc].txt", "smallfile-.txt", "smallfileaa.txt")]
+    [InlineData("*file[!abc].txt", null, "smallfileb.txt")]
 
-        // LiteralSet tests
-        [InlineData("a{b,c}d", "abd", "a")]
-        [InlineData("a{b,c}d", "acd")]
+    // LiteralSet tests
+    [InlineData("a{b,c}d", "abd", "a")]
+    [InlineData("a{b,c}d", "acd")]
 
-        // Root tests
-        [InlineData("**/*.sln", "/mnt/e/code/csharp-glob/Glob.sln", "/mnt/e/code/csharp-glob/Glob.Tests/Glob.Tests.csproj")]
-        [InlineData(@"**/*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
+    // Root tests
+    [InlineData("**/*.sln", "/mnt/e/code/csharp-glob/Glob.sln", "/mnt/e/code/csharp-glob/Glob.Tests/Glob.Tests.csproj")]
+    [InlineData(@"**/*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
 
-        // Double wildcard tests
-        [InlineData("a**/*.cs", "ab/c.cs", "a/b/c.cs")]
-        [InlineData("a**/*.cs", "a/c.cs")]
-        [InlineData("**a/*.cs", "a/c.cs", "b/a/a.cs")]
-        [InlineData("**a/*.cs", "ba/c.cs")]
-        [InlineData("**", "ba/c.cs")]
-        [InlineData("**", "a")]
-        [InlineData("**", "a/b")]
-        [InlineData("a/**", "a/b/c")]
-        [InlineData("**/somefile", "somefile")]
-        public void TestGlobExpressions(string pattern, string? positiveMatch, string? negativeMatch = null)
-        {
+    // Double wildcard tests
+    [InlineData("a**/*.cs", "ab/c.cs", "a/b/c.cs")]
+    [InlineData("a**/*.cs", "a/c.cs")]
+    [InlineData("**a/*.cs", "a/c.cs", "b/a/a.cs")]
+    [InlineData("**a/*.cs", "ba/c.cs")]
+    [InlineData("**", "ba/c.cs")]
+    [InlineData("**", "a")]
+    [InlineData("**", "a/b")]
+    [InlineData("a/**", "a/b/c")]
+    [InlineData("**/somefile", "somefile")]
+    public void TestGlobExpressions(string pattern, string? positiveMatch, string? negativeMatch = null)
+    {
             var parser = new Parser(pattern);
             var segments = parser.ParseTree().Segments;
 
@@ -284,15 +284,15 @@ namespace GlobExpressions.Tests
                 Assert.Empty(results);
         }
 
-        [Theory]
-        // Double wildcard tests
-        [InlineData("**/a", @"ab/a/a.cs a/taco.cs b/taco.cs b/ab/a/hat.taco", @"ab\a a b\ab\a")]
+    [Theory]
+    // Double wildcard tests
+    [InlineData("**/a", @"ab/a/a.cs a/taco.cs b/taco.cs b/ab/a/hat.taco", @"ab\a a b\ab\a")]
 
-        // Issue 52
-        [InlineData("**/a/**/b", @"a/a/a/b", @"a\a\a\b")]
-        [InlineData("**/a/**/b", @"a/a/a/a/b", @"a\a\a\a\b")]
-        public void TestGlobExpressionsWithEmitDirectories(string pattern, string files, string matches)
-        {
+    // Issue 52
+    [InlineData("**/a/**/b", @"a/a/a/b", @"a\a\a\b")]
+    [InlineData("**/a/**/b", @"a/a/a/a/b", @"a\a\a\a\b")]
+    public void TestGlobExpressionsWithEmitDirectories(string pattern, string files, string matches)
+    {
             var parser = new Parser(pattern);
             var segments = parser.ParseTree().Segments;
 
@@ -310,5 +310,4 @@ namespace GlobExpressions.Tests
 
             Assert.Equal(fileMatches, results);
         }
-    }
 }

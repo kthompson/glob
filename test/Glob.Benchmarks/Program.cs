@@ -7,13 +7,12 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Toolchains.CsProj;
 
-namespace GlobExpressions.Benchmarks
+namespace GlobExpressions.Benchmarks;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
             BenchmarkRunner.Run<GlobBenchmarks>();
         }
-    }
 }
