@@ -1,14 +1,13 @@
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Nuke.Common.CI.GitHubActions;
+using Nuke.Common;
 using Nuke.Common.CI;
+using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
-using Nuke.Common.Utilities.Collections;
-using Nuke.Common;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.ReportGenerator;
+using Nuke.Common.Utilities.Collections;
 using Nuke.Components;
 
 [GitHubActions(
@@ -21,7 +20,7 @@ using Nuke.Components;
     PublishArtifacts = true,
     InvokedTargets = new[] { nameof(ITest.Test), nameof(IReportCoverage.ReportCoverage), nameof(IPack.Pack) },
     CacheKeyFiles = new[] { "global.json", "**/*.csproj" },
-    ImportSecrets = new [] { nameof(IReportCoverage.CodecovToken) },
+    ImportSecrets = new[] { nameof(IReportCoverage.CodecovToken) },
     EnableGitHubToken = true)]
 [GitHubActions(
     "continuous",
@@ -31,7 +30,7 @@ using Nuke.Components;
     PublishArtifacts = true,
     InvokedTargets = new[] { nameof(IReportCoverage.ReportCoverage), nameof(IPublish.Publish) },
     CacheKeyFiles = new[] { "global.json", "**/*.csproj" },
-    ImportSecrets = new [] { nameof(PublicNuGetApiKey) },
+    ImportSecrets = new[] { nameof(PublicNuGetApiKey) },
     EnableGitHubToken = true)]
 class Build : NukeBuild,
     IHazChangelog,
@@ -79,7 +78,7 @@ class Build : NukeBuild,
     public bool CreateCoverageHtmlReport => true;
     public bool ReportToCodecov => false; // TODO: #74 RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-    public Configure<ReportGeneratorSettings> ReportGeneratorSettings => x => x.SetFramework("net6.0");
+    public Configure<ReportGeneratorSettings> ReportGeneratorSettings => x => x.SetFramework("net8.0");
 
     string PublicNuGetSource => "https://api.nuget.org/v3/index.json";
 
@@ -88,7 +87,7 @@ class Build : NukeBuild,
         : null;
 
 
-    [Parameter] [Secret] readonly string PublicNuGetApiKey;
+    [Parameter][Secret] readonly string PublicNuGetApiKey;
 
     bool IsOriginalRepository => GitRepository.Identifier == "kthompson/glob";
     string IPublish.NuGetApiKey => GitRepository.IsOnMainBranch() ? PublicNuGetApiKey : GitHubActions.Token;

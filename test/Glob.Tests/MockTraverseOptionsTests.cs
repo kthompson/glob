@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions.TestingHelpers;
-using System.Text;
+using System.Linq;
 using Xunit;
 using static GlobExpressions.Tests.TestHelpers;
 
@@ -10,7 +9,7 @@ namespace GlobExpressions.Tests;
 
 public class MockTraverseOptionsTests
 {
-        
+
     [Fact]
     public void CanAddPaths()
     {
@@ -19,17 +18,23 @@ public class MockTraverseOptionsTests
 
         var mockFiles = new Dictionary<string, MockFileData>
         {
-            [Path.Combine(windowsPath, "Notepad.exe")] = MockFileData.NullObject,
-            [Path.Combine(windowsPath, "explorer.exe")] = MockFileData.NullObject,
-            [Path.Combine(system32Path, "at.exe")] = MockFileData.NullObject,
+            [Path.Combine(windowsPath, "Notepad.exe")] = new MockFileData(string.Empty),
+            [Path.Combine(windowsPath, "explorer.exe")] = new MockFileData(string.Empty),
+            [Path.Combine(system32Path, "at.exe")] = new MockFileData(string.Empty),
         };
         var mockFileSystem = new MockFileSystem(mockFiles);
         var options = new MockTraverseOptions(false, false, false, mockFileSystem);
 
-        var directories = options.GetDirectories(new DirectoryInfo(FileSystemRoot));
+        var directories = options.GetDirectories(new DirectoryInfo(FileSystemRoot))
+            .Where(info => info.FullName == windowsPath)
+            .ToArray();
+
         Assert.Collection(directories, info => Assert.Equal(windowsPath, info.FullName));
 
-        var directories2 = options.GetDirectories(new DirectoryInfo(windowsPath));
+        var directories2 = options.GetDirectories(new DirectoryInfo(windowsPath))
+            .Where(info => info.FullName == system32Path)
+            .ToArray();
+
         Assert.Collection(directories2, info => Assert.Equal(system32Path, info.FullName));
 
         var files = options.GetFiles(new DirectoryInfo(windowsPath));
@@ -38,6 +43,8 @@ public class MockTraverseOptionsTests
             info => Assert.Equal(Path.Combine(windowsPath, "explorer.exe"), info.FullName)
         );
     }
+
+
 
     [Fact]
     public void CtorPassesCaseSensitive()

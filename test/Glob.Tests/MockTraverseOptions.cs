@@ -2,7 +2,6 @@
 using System.Collections;
 using System.IO;
 using System.IO.Abstractions;
-using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 
 namespace GlobExpressions.Tests;
@@ -21,13 +20,24 @@ internal class MockTraverseOptions : TraverseOptions, IEnumerable
 
     public override FileInfo[] GetFiles(DirectoryInfo root)
     {
-        return fileSystem.DirectoryInfo.FromDirectoryName(root.FullName).GetFiles().Select(x => new FileInfo(x.FullName)).ToArray();
+        var directoryInfo = fileSystem.DirectoryInfo.New(root.FullName);
+
+        return directoryInfo
+            .GetFiles()
+            .Select(file => new FileInfo(file.FullName))
+            .ToArray();
     }
 
     public override DirectoryInfo[] GetDirectories(DirectoryInfo root)
     {
-        return fileSystem.DirectoryInfo.FromDirectoryName(root.FullName).GetDirectories().Select(x => new DirectoryInfo(x.FullName)).ToArray();
+        var directoryInfo = fileSystem.DirectoryInfo.New(root.FullName);
+
+        return directoryInfo
+            .GetDirectories()
+            .Select(dir => new DirectoryInfo(dir.FullName))
+            .ToArray();
     }
+
 
     // fake enumerator
     public IEnumerator GetEnumerator()

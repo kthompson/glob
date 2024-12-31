@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
-using System.Text;
 using GlobExpressions.AST;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,202 +15,202 @@ public class PathTraverserTests
 
     public PathTraverserTests(ITestOutputHelper printer)
     {
-            _printer = printer;
-        }
+        _printer = printer;
+    }
 
     [Fact]
     public void ShouldMatchStringWildcard()
     {
-            // *
-            var list = new DirectorySegment(new SubSegment[]
-            {
+        // *
+        var list = new DirectorySegment(new SubSegment[]
+        {
                 StringWildcard.Default,
-            });
+        });
 
-            Assert.True(list.MatchesSegment("", false));
-            Assert.True(list.MatchesSegment("a", false));
-            Assert.True(list.MatchesSegment("abc", false));
-        }
+        Assert.True(list.MatchesSegment("", false));
+        Assert.True(list.MatchesSegment("a", false));
+        Assert.True(list.MatchesSegment("abc", false));
+    }
 
     [Fact]
     public void ShouldMatchIdentWildcard()
     {
-            // ab*cd
-            var list = new DirectorySegment(new SubSegment[]
-            {
+        // ab*cd
+        var list = new DirectorySegment(new SubSegment[]
+        {
                 new Identifier("ab"),
                 StringWildcard.Default,
                 new Identifier("cd"),
-            });
+        });
 
-            Assert.True(list.MatchesSegment("abcd", false));
-            Assert.True(list.MatchesSegment("abcdcd", false));
-            Assert.True(list.MatchesSegment("ab123456cd", false));
+        Assert.True(list.MatchesSegment("abcd", false));
+        Assert.True(list.MatchesSegment("abcdcd", false));
+        Assert.True(list.MatchesSegment("ab123456cd", false));
 
-            Assert.False(list.MatchesSegment("ab123456cd11", false));
-            Assert.False(list.MatchesSegment("abcd1", false));
-            Assert.False(list.MatchesSegment("abcdcd1", false));
-            Assert.False(list.MatchesSegment("ab123456cd1", false));
-        }
+        Assert.False(list.MatchesSegment("ab123456cd11", false));
+        Assert.False(list.MatchesSegment("abcd1", false));
+        Assert.False(list.MatchesSegment("abcdcd1", false));
+        Assert.False(list.MatchesSegment("ab123456cd1", false));
+    }
 
     [Fact]
     public void ShouldMatchLiteralSet()
     {
-            // ab*{cd,ef}
-            var list = new DirectorySegment(new SubSegment[]
-            {
+        // ab*{cd,ef}
+        var list = new DirectorySegment(new SubSegment[]
+        {
                 new Identifier("ab"),
                 StringWildcard.Default,
                 new LiteralSet("cd", "ef"),
-            });
+        });
 
-            Assert.True(list.MatchesSegment("abcd", false));
-            Assert.True(list.MatchesSegment("abcdcd", false));
-            Assert.True(list.MatchesSegment("ab123456cd", false));
+        Assert.True(list.MatchesSegment("abcd", false));
+        Assert.True(list.MatchesSegment("abcdcd", false));
+        Assert.True(list.MatchesSegment("ab123456cd", false));
 
-            Assert.True(list.MatchesSegment("abef", false));
-            Assert.True(list.MatchesSegment("abcdef", false));
-            Assert.True(list.MatchesSegment("ab123456ef", false));
+        Assert.True(list.MatchesSegment("abef", false));
+        Assert.True(list.MatchesSegment("abcdef", false));
+        Assert.True(list.MatchesSegment("ab123456ef", false));
 
-            Assert.False(list.MatchesSegment("ab123456cd11", false));
-            Assert.False(list.MatchesSegment("abcd1", false));
-            Assert.False(list.MatchesSegment("abcdcd1", false));
-            Assert.False(list.MatchesSegment("ab123456cd1", false));
-        }
+        Assert.False(list.MatchesSegment("ab123456cd11", false));
+        Assert.False(list.MatchesSegment("abcd1", false));
+        Assert.False(list.MatchesSegment("abcdcd1", false));
+        Assert.False(list.MatchesSegment("ab123456cd1", false));
+    }
 
     [Fact]
     public void ShouldMatchCharacterWildcard()
     {
-            // ab?
-            var list = new DirectorySegment(new SubSegment[]
-            {
+        // ab?
+        var list = new DirectorySegment(new SubSegment[]
+        {
                 new Identifier("ab"),
                 CharacterWildcard.Default
-            });
+        });
 
-            Assert.True(list.MatchesSegment("abc", false));
-            Assert.True(list.MatchesSegment("abd", false));
-            Assert.True(list.MatchesSegment("ab1", false));
+        Assert.True(list.MatchesSegment("abc", false));
+        Assert.True(list.MatchesSegment("abd", false));
+        Assert.True(list.MatchesSegment("ab1", false));
 
-            Assert.False(list.MatchesSegment("eab", false));
-            Assert.False(list.MatchesSegment("abef", false));
-            Assert.False(list.MatchesSegment("ab123456cd11", false));
-            Assert.False(list.MatchesSegment("abcd1", false));
-            Assert.False(list.MatchesSegment("abcdcd1", false));
-            Assert.False(list.MatchesSegment("ab123456cd1", false));
-        }
+        Assert.False(list.MatchesSegment("eab", false));
+        Assert.False(list.MatchesSegment("abef", false));
+        Assert.False(list.MatchesSegment("ab123456cd11", false));
+        Assert.False(list.MatchesSegment("abcd1", false));
+        Assert.False(list.MatchesSegment("abcdcd1", false));
+        Assert.False(list.MatchesSegment("ab123456cd1", false));
+    }
 
     [Fact]
     public void ShouldMatchCharacterSet()
     {
-            // ab?[abc]
-            var list = new DirectorySegment(new SubSegment[]
-            {
+        // ab?[abc]
+        var list = new DirectorySegment(new SubSegment[]
+        {
                 new Identifier("ab"),
                 CharacterWildcard.Default,
                 new CharacterSet("abc", false)
-            });
+        });
 
-            Assert.True(list.MatchesSegment("abca", false));
-            Assert.True(list.MatchesSegment("abda", false));
-            Assert.True(list.MatchesSegment("ab1a", false));
+        Assert.True(list.MatchesSegment("abca", false));
+        Assert.True(list.MatchesSegment("abda", false));
+        Assert.True(list.MatchesSegment("ab1a", false));
 
-            Assert.True(list.MatchesSegment("abcb", false));
-            Assert.True(list.MatchesSegment("abdb", false));
-            Assert.True(list.MatchesSegment("ab1b", false));
+        Assert.True(list.MatchesSegment("abcb", false));
+        Assert.True(list.MatchesSegment("abdb", false));
+        Assert.True(list.MatchesSegment("ab1b", false));
 
-            Assert.True(list.MatchesSegment("abcc", false));
-            Assert.True(list.MatchesSegment("abdc", false));
-            Assert.True(list.MatchesSegment("ab1c", false));
-        }
+        Assert.True(list.MatchesSegment("abcc", false));
+        Assert.True(list.MatchesSegment("abdc", false));
+        Assert.True(list.MatchesSegment("ab1c", false));
+    }
 
     [Fact]
     public void ShouldMatchCharacterSetRange()
     {
-            // ab?[a-c]
-            var list = new DirectorySegment(new SubSegment[]
-            {
+        // ab?[a-c]
+        var list = new DirectorySegment(new SubSegment[]
+        {
                 new Identifier("ab"),
                 CharacterWildcard.Default,
                 new CharacterSet("a-c", false)
-            });
+        });
 
-            Assert.True(list.MatchesSegment("abca", false));
-            Assert.True(list.MatchesSegment("abda", false));
-            Assert.True(list.MatchesSegment("ab1a", false));
+        Assert.True(list.MatchesSegment("abca", false));
+        Assert.True(list.MatchesSegment("abda", false));
+        Assert.True(list.MatchesSegment("ab1a", false));
 
-            Assert.True(list.MatchesSegment("abcb", false));
-            Assert.True(list.MatchesSegment("abdb", false));
-            Assert.True(list.MatchesSegment("ab1b", false));
+        Assert.True(list.MatchesSegment("abcb", false));
+        Assert.True(list.MatchesSegment("abdb", false));
+        Assert.True(list.MatchesSegment("ab1b", false));
 
-            Assert.True(list.MatchesSegment("abcc", false));
-            Assert.True(list.MatchesSegment("abdc", false));
-            Assert.True(list.MatchesSegment("ab1c", false));
-        }
+        Assert.True(list.MatchesSegment("abcc", false));
+        Assert.True(list.MatchesSegment("abdc", false));
+        Assert.True(list.MatchesSegment("ab1c", false));
+    }
 
     [Fact]
     public void ShouldMatchCharacterSetInverted()
     {
-            // ab?[!abc]
-            var list = new DirectorySegment(new SubSegment[]
-            {
+        // ab?[!abc]
+        var list = new DirectorySegment(new SubSegment[]
+        {
                 new Identifier("ab"),
                 CharacterWildcard.Default,
                 new CharacterSet("abc", true)
-            });
+        });
 
-            Assert.True(list.MatchesSegment("abcd", false));
-            Assert.True(list.MatchesSegment("abdd", false));
-            Assert.True(list.MatchesSegment("ab1d", false));
-            Assert.True(list.MatchesSegment("abce", false));
-            Assert.True(list.MatchesSegment("abde", false));
-            Assert.True(list.MatchesSegment("ab1e", false));
-            Assert.True(list.MatchesSegment("abcf", false));
-            Assert.True(list.MatchesSegment("abdf", false));
-            Assert.True(list.MatchesSegment("ab1f", false));
+        Assert.True(list.MatchesSegment("abcd", false));
+        Assert.True(list.MatchesSegment("abdd", false));
+        Assert.True(list.MatchesSegment("ab1d", false));
+        Assert.True(list.MatchesSegment("abce", false));
+        Assert.True(list.MatchesSegment("abde", false));
+        Assert.True(list.MatchesSegment("ab1e", false));
+        Assert.True(list.MatchesSegment("abcf", false));
+        Assert.True(list.MatchesSegment("abdf", false));
+        Assert.True(list.MatchesSegment("ab1f", false));
 
-            Assert.False(list.MatchesSegment("abca", false));
-            Assert.False(list.MatchesSegment("abda", false));
-            Assert.False(list.MatchesSegment("ab1a", false));
+        Assert.False(list.MatchesSegment("abca", false));
+        Assert.False(list.MatchesSegment("abda", false));
+        Assert.False(list.MatchesSegment("ab1a", false));
 
-            Assert.False(list.MatchesSegment("abcb", false));
-            Assert.False(list.MatchesSegment("abdb", false));
-            Assert.False(list.MatchesSegment("ab1b", false));
+        Assert.False(list.MatchesSegment("abcb", false));
+        Assert.False(list.MatchesSegment("abdb", false));
+        Assert.False(list.MatchesSegment("ab1b", false));
 
-            Assert.False(list.MatchesSegment("abcc", false));
-            Assert.False(list.MatchesSegment("abdc", false));
-            Assert.False(list.MatchesSegment("ab1c", false));
-        }
+        Assert.False(list.MatchesSegment("abcc", false));
+        Assert.False(list.MatchesSegment("abdc", false));
+        Assert.False(list.MatchesSegment("ab1c", false));
+    }
 
     [Fact]
     public void TraverseFiles()
     {
-            var results = new DirectoryInfo(SourceRoot).Traverse("**/*Tests/**/P*", true, true, false).ToList();
+        var results = new DirectoryInfo(SourceRoot).Traverse("**/*Tests/**/P*", true, true, false).ToList();
 
-            results.ForEach(file => _printer.WriteLine(file.FullName));
+        results.ForEach(file => _printer.WriteLine(file.FullName));
 
-            Assert.Equal(3, results.Count);
-        }
+        Assert.Equal(3, results.Count);
+    }
 
     [Fact]
     public void TraverseDirectories()
     {
-            var results = new DirectoryInfo(SourceRoot).Traverse("**/*Tests/**/P*", true, false, true).ToList();
+        var results = new DirectoryInfo(SourceRoot).Traverse("**/*Tests/**/P*", true, false, true).ToList();
 
-            results.ForEach(file => _printer.WriteLine(file.FullName));
+        results.ForEach(file => _printer.WriteLine(file.FullName));
 
-            Assert.Single(results);
-        }
+        Assert.Single(results);
+    }
 
     [Fact]
     public void TraverseFilesAndDirectories()
     {
-            var results = new DirectoryInfo(Path.Combine(SourceRoot, "test")).Traverse("**/*Tests/**/P*", true, true, true).ToList();
+        var results = new DirectoryInfo(Path.Combine(SourceRoot, "test")).Traverse("**/*Tests/**/P*", true, true, true).ToList();
 
-            results.ForEach(file => _printer.WriteLine(file.FullName));
+        results.ForEach(file => _printer.WriteLine(file.FullName));
 
-            Assert.Equal(4, results.Count);
-        }
+        Assert.Equal(4, results.Count);
+    }
 
     [Theory]
     // Wildcard tests
@@ -258,31 +256,34 @@ public class PathTraverserTests
     [InlineData("**/somefile", "somefile")]
     public void TestGlobExpressions(string pattern, string? positiveMatch, string? negativeMatch = null)
     {
-            var parser = new Parser(pattern);
-            var segments = parser.ParseTree().Segments;
+        var parser = new Parser(pattern);
+        var segments = parser.ParseTree().Segments;
 
-            var mockFileDatas = new Dictionary<string, MockFileData>();
-            if (positiveMatch != null)
-            {
-                mockFileDatas[Path.Combine(FileSystemRoot, positiveMatch)] = MockFileData.NullObject;
-            }
-
-            if (negativeMatch != null)
-            {
-                mockFileDatas[Path.Combine(FileSystemRoot, negativeMatch)] = MockFileData.NullObject;
-            }
-
-            var cache = new MockTraverseOptions(true, true, false, new MockFileSystem(mockFileDatas));
-
-            var root = new DirectoryInfo(FileSystemRoot);
-            var results = PathTraverser.Traverse(root, segments, cache).ToArray();
-
-            if (positiveMatch != null)
-                Assert.Single(results);
-
-            if (positiveMatch == null && negativeMatch != null)
-                Assert.Empty(results);
+        var mockFileDatas = new Dictionary<string, MockFileData>();
+        if (positiveMatch != null)
+        {
+            // Use an empty MockFileData to represent the file
+            mockFileDatas[Path.Combine(FileSystemRoot, positiveMatch)] = new MockFileData(string.Empty);
         }
+
+        if (negativeMatch != null)
+        {
+            // Use an empty MockFileData to represent the file
+            mockFileDatas[Path.Combine(FileSystemRoot, negativeMatch)] = new MockFileData(string.Empty);
+        }
+
+        var cache = new MockTraverseOptions(true, true, false, new MockFileSystem(mockFileDatas));
+
+        var root = new DirectoryInfo(FileSystemRoot);
+        var results = PathTraverser.Traverse(root, segments, cache).ToArray();
+
+        if (positiveMatch != null)
+            Assert.Single(results);
+
+        if (positiveMatch == null && negativeMatch != null)
+            Assert.Empty(results);
+    }
+
 
     [Theory]
     // Double wildcard tests
@@ -293,21 +294,30 @@ public class PathTraverserTests
     [InlineData("**/a/**/b", @"a/a/a/a/b", @"a\a\a\a\b")]
     public void TestGlobExpressionsWithEmitDirectories(string pattern, string files, string matches)
     {
-            var parser = new Parser(pattern);
-            var segments = parser.ParseTree().Segments;
+        var parser = new Parser(pattern);
+        var segments = parser.ParseTree().Segments;
 
-            var mockFileDatas = new Dictionary<string, MockFileData>();
-            foreach (var file in files.Split(' '))
-            {
-                mockFileDatas[Path.Combine(FileSystemRoot, file)] = MockFileData.NullObject;
-            }
-
-            var cache = new MockTraverseOptions(false, true, true, new MockFileSystem(mockFileDatas));
-
-            var root = new DirectoryInfo(FileSystemRoot);
-            var results = PathTraverser.Traverse(root, segments, cache).Select(file => file.FullName.Substring(FileSystemRoot.Length)).OrderBy(x => x).ToArray();
-            var fileMatches = matches.Split(' ').Select(x => x.Replace('\\', Path.DirectorySeparatorChar)).OrderBy(x => x).ToArray();
-
-            Assert.Equal(fileMatches, results);
+        var mockFileDatas = new Dictionary<string, MockFileData>();
+        foreach (var file in files.Split(' '))
+        {
+            // Use an empty MockFileData to represent a file
+            mockFileDatas[Path.Combine(FileSystemRoot, file)] = new MockFileData(string.Empty);
         }
+
+        var cache = new MockTraverseOptions(false, true, true, new MockFileSystem(mockFileDatas));
+
+        var root = new DirectoryInfo(FileSystemRoot);
+        var results = PathTraverser.Traverse(root, segments, cache)
+            .Select(file => file.FullName.Substring(FileSystemRoot.Length))
+            .OrderBy(x => x)
+            .ToArray();
+        var fileMatches = matches
+            .Split(' ')
+            .Select(x => x.Replace('\\', Path.DirectorySeparatorChar))
+            .OrderBy(x => x)
+            .ToArray();
+
+        Assert.Equal(fileMatches, results);
+    }
+
 }

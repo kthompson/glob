@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Text;
-using Microsoft.DotNet.PlatformAbstractions;
+using System.Runtime.InteropServices;
 
 namespace GlobExpressions.Tests;
 
@@ -16,6 +15,5 @@ public static class TestHelpers
                                                ?? Path.Combine("..", "..", "..", "..", "..");
 
     public static readonly string FileSystemRoot =
-        RuntimeEnvironment.OperatingSystemPlatform == Platform.Windows ? "c:\\" : "/";
-
+        RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "c:\\" : "/";
 }

@@ -20,11 +20,11 @@ jobs:
                 with:
                     fetch-depth: 0
 
-            # sets up .NET 6
+            # sets up .NET 8
             -   name: Setup .NET
                 uses: actions/setup-dotnet@v4
                 with:
-                    dotnet-version: 6.0.x
+                    dotnet-version: 8.0.x
 
             # publishes Blazor project to the release-folder
             -   name: Publish .NET Core Project
