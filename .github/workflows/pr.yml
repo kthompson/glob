@@ -42,17 +42,17 @@ jobs:
           CodecovToken: ${{ secrets.CODECOV_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish: test-results'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: artifacts/test-results
       - name: 'Publish: coverage-report.zip'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report.zip
           path: artifacts/reports/coverage-report.zip
       - name: 'Publish: packages'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: packages
           path: artifacts/packages
@@ -76,17 +76,17 @@ jobs:
           CodecovToken: ${{ secrets.CODECOV_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish: test-results'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: artifacts/test-results
       - name: 'Publish: coverage-report.zip'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report.zip
           path: artifacts/reports/coverage-report.zip
       - name: 'Publish: packages'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: packages
           path: artifacts/packages
@@ -110,17 +110,17 @@ jobs:
           CodecovToken: ${{ secrets.CODECOV_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: 'Publish: test-results'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: artifacts/test-results
       - name: 'Publish: coverage-report.zip'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report.zip
           path: artifacts/reports/coverage-report.zip
       - name: 'Publish: packages'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: packages
           path: artifacts/packages
