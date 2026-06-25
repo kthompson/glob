@@ -30,7 +30,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: 'Cache: .nuke/temp, ~/.nuget/packages'
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: |
             .nuke/temp
@@ -64,7 +64,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: 'Cache: .nuke/temp, ~/.nuget/packages'
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: |
             .nuke/temp
@@ -98,7 +98,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: 'Cache: .nuke/temp, ~/.nuget/packages'
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: |
             .nuke/temp
