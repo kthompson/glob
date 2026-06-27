@@ -29,7 +29,7 @@ using Nuke.Components;
     FetchDepth = 0,
     OnPushBranches = new[] { MainBranch, DevelopBranch },
     PublishArtifacts = true,
-    InvokedTargets = new[] { nameof(IReportCoverage.ReportCoverage), nameof(IPublish.Publish) },
+    InvokedTargets = new[] { nameof(IReportCoverage.ReportCoverage), nameof(IPublish.Publish), nameof(ICreateGitHubRelease.CreateGitHubRelease) },
     CacheKeyFiles = new[] { "global.json", "**/*.csproj" },
     ImportSecrets = new [] { nameof(PublicNuGetApiKey) },
     EnableGitHubToken = true)]
@@ -45,7 +45,8 @@ class Build : NukeBuild,
     IReportCoverage,
     IReportIssues,
     IReportDuplicates,
-    IPublish
+    IPublish,
+    ICreateGitHubRelease
 {
     /// Support plugins are available for:
     ///   - JetBrains ReSharper        https://nuke.build/resharper
@@ -102,6 +103,17 @@ class Build : NukeBuild,
             IsOriginalRepository && GitHubActions != null &&
             (GitRepository.IsOnMainBranch() || GitRepository.IsOnDevelopBranch()))
         .WhenSkipped(DependencyBehavior.Execute);
+
+    string ICreateGitHubRelease.Name => $"v{From<IHazNerdbankGitVersioning>().Versioning.NuGetPackageVersion}";
+
+    IEnumerable<AbsolutePath> ICreateGitHubRelease.AssetFiles =>
+        From<IPack>().PackagesDirectory.GlobFiles("*.nupkg");
+
+    Target ICreateGitHubRelease.CreateGitHubRelease => _ => _
+        .Inherit<ICreateGitHubRelease>()
+        .TriggeredBy(From<IPublish>().Publish)
+        .OnlyWhenStatic(() => IsOriginalRepository && GitRepository.IsOnMainBranch())
+        .WhenSkipped(DependencyBehavior.Skip);
 
     T From<T>()
         where T : INukeBuild

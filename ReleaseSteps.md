@@ -4,7 +4,12 @@ This project uses [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.Gi
 
 ## Normal release (patch/build increment)
 
-1. **Update `CHANGELOG.md`** — move items from `[Unreleased]` into a new versioned section. You won't know the exact version number until after the merge, but you can look it up from the CI build or use `nbgv get-version` locally beforehand.
+1. **Update `CHANGELOG.md`** — move items from `[Unreleased]` into a new versioned section. You can check the upcoming version with:
+
+   ```bash
+   dotnet tool install -g nbgv
+   nbgv get-version -v NuGetPackageVersion
+   ```
 
 2. **Merge to `main`** — a fast-forward merge is preferred so the version that was tested on the source branch is identical to what gets published:
 
@@ -16,9 +21,11 @@ This project uses [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.Gi
 
    If a fast-forward is not possible, a regular merge commit is fine — it will just increment the version height by one.
 
-3. **CI publishes automatically** — the `continuous` workflow runs on push to `main`, builds the package, and pushes it to NuGet.org using the `PUBLIC_NUGET_API_KEY` secret. No manual action needed.
-
-4. **Create a GitHub release** (optional but recommended) — after the CI build completes, create a GitHub release tagged with the version number for visibility.
+3. **CI does the rest automatically** — the `continuous` workflow runs on push to `main` and:
+   - Builds and runs tests
+   - Publishes the NuGet package to nuget.org
+   - Creates a GitHub release tagged with the NBGV version (e.g., `v2.0.42`), using the first section of `CHANGELOG.md` as the release notes
+   - Attaches the `.nupkg` files as release assets
 
 ## Bumping the major or minor version
 
