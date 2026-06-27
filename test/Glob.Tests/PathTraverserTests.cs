@@ -1,9 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
-using System.Text;
 using GlobExpressions.AST;
 using Xunit;
 using Xunit.Abstractions;
@@ -242,10 +240,6 @@ public class PathTraverserTests
     [InlineData("a{b,c}d", "abd", "a")]
     [InlineData("a{b,c}d", "acd")]
 
-    // Root tests
-    [InlineData("**/*.sln", "/mnt/e/code/csharp-glob/Glob.sln", "/mnt/e/code/csharp-glob/Glob.Tests/Glob.Tests.csproj")]
-    [InlineData(@"**/*.txt", @"C:\Users\Kevin\Desktop\notes.txt", @"C:\Users\Kevin\Downloads\yarn-0.17.6.msi")]
-
     // Double wildcard tests
     [InlineData("a**/*.cs", "ab/c.cs", "a/b/c.cs")]
     [InlineData("a**/*.cs", "a/c.cs")]
@@ -258,31 +252,23 @@ public class PathTraverserTests
     [InlineData("**/somefile", "somefile")]
     public void TestGlobExpressions(string pattern, string? positiveMatch, string? negativeMatch = null)
     {
-            var parser = new Parser(pattern);
-            var segments = parser.ParseTree().Segments;
+        var pathsToCreate = new[] { positiveMatch, negativeMatch }.Where(match => match != null).Select(match => match!);
+        var testRoot = CreateTemporaryFileTree(pathsToCreate);
+        try
+        {
+            var results = TraverseRelativeMatches(testRoot, pattern, caseSensitive: true, emitFiles: true, emitDirectories: false);
 
-            var mockFileDatas = new Dictionary<string, MockFileData>();
             if (positiveMatch != null)
-            {
-                mockFileDatas[Path.Combine(FileSystemRoot, positiveMatch)] = MockFileData.NullObject;
-            }
+                Assert.Contains(NormalizeRelativePath(positiveMatch), results);
 
             if (negativeMatch != null)
-            {
-                mockFileDatas[Path.Combine(FileSystemRoot, negativeMatch)] = MockFileData.NullObject;
-            }
-
-            var cache = new MockTraverseOptions(true, true, false, new MockFileSystem(mockFileDatas));
-
-            var root = new DirectoryInfo(FileSystemRoot);
-            var results = PathTraverser.Traverse(root, segments, cache).ToArray();
-
-            if (positiveMatch != null)
-                Assert.Single(results);
-
-            if (positiveMatch == null && negativeMatch != null)
-                Assert.Empty(results);
+                Assert.DoesNotContain(NormalizeRelativePath(negativeMatch), results);
         }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
 
     [Theory]
     // Double wildcard tests
@@ -293,21 +279,319 @@ public class PathTraverserTests
     [InlineData("**/a/**/b", @"a/a/a/a/b", @"a\a\a\a\b")]
     public void TestGlobExpressionsWithEmitDirectories(string pattern, string files, string matches)
     {
-            var parser = new Parser(pattern);
-            var segments = parser.ParseTree().Segments;
+        var pathsToCreate = files.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var testRoot = CreateTemporaryFileTree(pathsToCreate);
+        try
+        {
+            var results = TraverseRelativeMatches(testRoot, pattern, caseSensitive: false, emitFiles: true, emitDirectories: true);
+            var expectedMatches = matches
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(NormalizePath)
+                .OrderBy(x => x, StringComparer.Ordinal)
+                .ToArray();
 
-            var mockFileDatas = new Dictionary<string, MockFileData>();
-            foreach (var file in files.Split(' '))
+            Assert.Equal(expectedMatches, results);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void TestRootedPatternTraversal()
+    {
+        var testRoot = CreateTemporaryFileTree(new[] { "rooted/path/target.sln", "rooted/path/target.csproj" });
+        try
+        {
+            var fileSystemRoot = Path.GetPathRoot(testRoot)!;
+            var positiveMatch = NormalizePath(Path.Combine(testRoot, "rooted/path/target.sln"));
+            var negativeMatch = NormalizePath(Path.Combine(testRoot, "rooted/path/target.csproj"));
+            var rootedPattern = NormalizeRelativePath(Path.GetRelativePath(fileSystemRoot, positiveMatch));
+
+            var results = TraverseFromRootMatches(fileSystemRoot, rootedPattern, caseSensitive: true, emitFiles: true, emitDirectories: false);
+            Assert.Contains(positiveMatch, results);
+            Assert.DoesNotContain(negativeMatch, results);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void TraversalCanBeCaseInsensitive()
+    {
+        var testRoot = CreateTemporaryFileTree(new[] { "Folder/File.TXT" });
+        try
+        {
+            var caseSensitiveResults = TraverseRelativeMatches(testRoot, "folder/*.txt", caseSensitive: true, emitFiles: true, emitDirectories: false);
+            Assert.Empty(caseSensitiveResults);
+
+            var caseInsensitiveResults = TraverseRelativeMatches(testRoot, "folder/*.txt", caseSensitive: false, emitFiles: true, emitDirectories: false);
+            Assert.Equal(new[] { NormalizePath("Folder/File.TXT") }, caseInsensitiveResults);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void TraversalWithNoEmitFlagsReturnsNoResults()
+    {
+        var testRoot = CreateTemporaryFileTree(new[] { "a/b/c.txt" });
+        try
+        {
+            var results = TraverseRelativeMatches(testRoot, "**", caseSensitive: true, emitFiles: false, emitDirectories: false);
+            Assert.Empty(results);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void MultiWildcardTraversalDoesNotEmitDuplicateFiles()
+    {
+        var testRoot = CreateTemporaryFileTree(new[] { "a/b/target.txt" });
+        try
+        {
+            var results = TraverseRelativeMatches(testRoot, "**/**/target.txt", caseSensitive: true, emitFiles: true, emitDirectories: false);
+            Assert.Equal(new[] { NormalizePath("a/b/target.txt") }, results);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void EmitDirectoriesOnlyReturnsMatchingDirectories()
+    {
+        var testRoot = CreateTemporaryFileTree(new[] { "a/bin/file.txt", "a/bin/sub/deep.txt", "a/obj/file.txt" });
+        try
+        {
+            var results = TraverseRelativeMatches(testRoot, "**/bin", caseSensitive: true, emitFiles: false, emitDirectories: true);
+            Assert.Equal(new[] { NormalizePath("a/bin") }, results);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void TraversalOnMissingRootReturnsEmpty()
+    {
+        var missingRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", Guid.NewGuid().ToString("N"), "missing");
+        var results = TraverseRelativeMatches(missingRoot, "**/*.txt", caseSensitive: true, emitFiles: true, emitDirectories: true);
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public void TraversalSupportsEscapedAndSpecialCharacterNames()
+    {
+        var testRoot = CreateTemporaryFileTree(new[] { "Generated Files/file[1].txt", ".config" });
+        try
+        {
+            var bracketMatch = TraverseRelativeMatches(testRoot, @"Generated\ Files/file\[1\].txt", caseSensitive: true, emitFiles: true, emitDirectories: false);
+            Assert.Equal(new[] { NormalizePath("Generated Files/file[1].txt") }, bracketMatch);
+
+            var hiddenFileMatch = TraverseRelativeMatches(testRoot, ".config", caseSensitive: true, emitFiles: true, emitDirectories: false);
+            Assert.Equal(new[] { ".config" }, hiddenFileMatch);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void TraversalSupportsLiteralSetWithEmptyOption()
+    {
+        var testRoot = CreateTemporaryFileTree(new[] { "VbitResource_ById", "VbitResource_ByIds", "VbitResource_ByIda" });
+        try
+        {
+            var results = TraverseRelativeMatches(testRoot, "VbitResource_ById{,s}", caseSensitive: true, emitFiles: true, emitDirectories: false);
+            Assert.Equal(new[] { "VbitResource_ById", "VbitResource_ByIds" }, results);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void TraversalCanReturnFileAndDirectoryWithSameName()
+    {
+        var testRoot = CreateTemporaryFileTree(new[] { "a/x", "b/x/child.txt" });
+        try
+        {
+            var results = TraverseRelativeMatches(testRoot, "**/x", caseSensitive: true, emitFiles: true, emitDirectories: true);
+            Assert.Equal(new[] { NormalizePath("a/x"), NormalizePath("b/x") }, results);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void TraversalCanBeReEnumeratedAfterPartialConsumption()
+    {
+        var testRoot = CreateTemporaryFileTree(new[] { "a/file.txt", "b/inner/file2.txt" });
+        try
+        {
+            var segments = new Parser("**").ParseTree().Segments;
+            var options = new TraverseOptions(caseSensitive: true, emitFiles: true, emitDirectories: true);
+            var traversal = PathTraverser
+                .Traverse(new DirectoryInfo(testRoot), segments, options)
+                .Select(file => NormalizePath(Path.GetRelativePath(testRoot, file.FullName)));
+
+            var firstEnumeration = new List<string>();
+            using (var enumerator = traversal.GetEnumerator())
             {
-                mockFileDatas[Path.Combine(FileSystemRoot, file)] = MockFileData.NullObject;
+                Assert.True(enumerator.MoveNext());
+                firstEnumeration.Add(enumerator.Current);
+
+                while (enumerator.MoveNext())
+                    firstEnumeration.Add(enumerator.Current);
             }
 
-            var cache = new MockTraverseOptions(false, true, true, new MockFileSystem(mockFileDatas));
-
-            var root = new DirectoryInfo(FileSystemRoot);
-            var results = PathTraverser.Traverse(root, segments, cache).Select(file => file.FullName.Substring(FileSystemRoot.Length)).OrderBy(x => x).ToArray();
-            var fileMatches = matches.Split(' ').Select(x => x.Replace('\\', Path.DirectorySeparatorChar)).OrderBy(x => x).ToArray();
-
-            Assert.Equal(fileMatches, results);
+            var secondEnumeration = traversal.ToList();
+            Assert.Equal(firstEnumeration.OrderBy(x => x, StringComparer.Ordinal), secondEnumeration.OrderBy(x => x, StringComparer.Ordinal));
         }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void TraversalWithRecursiveSymlinkDoesNotExpandInfinitely()
+    {
+        if (OperatingSystem.IsWindows())
+            return;
+
+        var testRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", Guid.NewGuid().ToString("N"));
+        var realDirectory = Path.Combine(testRoot, "real");
+        var loopLink = Path.Combine(realDirectory, "loop");
+        Directory.CreateDirectory(realDirectory);
+        File.AppendAllText(Path.Combine(realDirectory, "leaf.txt"), "");
+
+        try
+        {
+            try
+            {
+                Directory.CreateSymbolicLink(loopLink, realDirectory);
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException or PlatformNotSupportedException or NotSupportedException)
+            {
+                return;
+            }
+
+            var segments = new Parser("**/*.txt").ParseTree().Segments;
+            var options = new TraverseOptions(caseSensitive: true, emitFiles: true, emitDirectories: false);
+
+            var results = PathTraverser
+                .Traverse(new DirectoryInfo(testRoot), segments, options)
+                .Select(file => NormalizePath(Path.GetRelativePath(testRoot, file.FullName)))
+                .Take(20)
+                .ToArray();
+
+            Assert.Contains(NormalizePath("real/leaf.txt"), results);
+            Assert.True(results.Length < 20);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    [Fact]
+    public void DeepWildcardTraversalOnLargerTreeReturnsEachFileOnce()
+    {
+        var paths = new List<string>();
+        for (var i = 0; i < 20; i++)
+        {
+            paths.Add($"root{i}/a/b/file{i}.txt");
+            paths.Add($"root{i}/a/c/other{i}.txt");
+            paths.Add($"root{i}/x/y/ignore{i}.log");
+        }
+
+        var testRoot = CreateTemporaryFileTree(paths);
+        try
+        {
+            var expected = paths
+                .Where(path => path.EndsWith(".txt", StringComparison.Ordinal))
+                .Select(NormalizePath)
+                .OrderBy(path => path, StringComparer.Ordinal)
+                .ToArray();
+
+            var results = TraverseRelativeMatches(testRoot, "**/**/**/*.txt", caseSensitive: true, emitFiles: true, emitDirectories: false);
+            Assert.Equal(expected, results);
+            Assert.Equal(results.Length, results.Distinct(StringComparer.Ordinal).Count());
+
+            var expectedDirectories = Enumerable.Range(0, 20)
+                .Select(i => NormalizePath($"root{i}/a/b"))
+                .OrderBy(path => path, StringComparer.Ordinal)
+                .ToArray();
+            var directories = TraverseRelativeMatches(testRoot, "**/a/**/b", caseSensitive: true, emitFiles: true, emitDirectories: true);
+            Assert.Equal(expectedDirectories, directories);
+        }
+        finally
+        {
+            Directory.Delete(testRoot, true);
+        }
+    }
+
+    private static string[] TraverseRelativeMatches(string testRoot, string pattern, bool caseSensitive, bool emitFiles, bool emitDirectories)
+    {
+        var segments = new Parser(pattern).ParseTree().Segments;
+        var options = new TraverseOptions(caseSensitive, emitFiles, emitDirectories);
+
+        return PathTraverser
+            .Traverse(new DirectoryInfo(testRoot), segments, options)
+            .Select(file => NormalizePath(Path.GetRelativePath(testRoot, file.FullName)))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
+    }
+
+    private static string[] TraverseFromRootMatches(string rootPath, string pattern, bool caseSensitive, bool emitFiles, bool emitDirectories)
+    {
+        var segments = new Parser(pattern).ParseTree().Segments;
+        var options = new TraverseOptions(caseSensitive, emitFiles, emitDirectories);
+
+        return PathTraverser
+            .Traverse(new DirectoryInfo(rootPath), segments, options)
+            .Select(file => NormalizePath(file.FullName))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
+    }
+
+    private static string CreateTemporaryFileTree(IEnumerable<string> relativePaths)
+    {
+        var testRoot = Path.Combine(Path.GetTempPath(), "Glob", "PathTraverserTests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(testRoot);
+
+        foreach (var path in relativePaths)
+        {
+            var normalizedPath = NormalizeRelativePath(path);
+            var fullPath = Path.Combine(testRoot, normalizedPath);
+            var directoryName = Path.GetDirectoryName(fullPath);
+            if (directoryName != null)
+                Directory.CreateDirectory(directoryName);
+            File.AppendAllText(fullPath, "");
+        }
+
+        return testRoot;
+    }
+
+    private static string NormalizeRelativePath(string path) =>
+        NormalizePath(path).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+    private static string NormalizePath(string path) =>
+        path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
 }
