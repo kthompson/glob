@@ -307,7 +307,9 @@ public class PathTraverserTests
             var fileSystemRoot = Path.GetPathRoot(testRoot)!;
             var positiveMatch = NormalizePath(Path.Combine(testRoot, "rooted/path/target.sln"));
             var negativeMatch = NormalizePath(Path.Combine(testRoot, "rooted/path/target.csproj"));
-            var rootedPattern = NormalizeRelativePath(Path.GetRelativePath(fileSystemRoot, positiveMatch));
+            var rootedPattern = NormalizeRelativePath(Path.GetRelativePath(fileSystemRoot, positiveMatch))
+                .Replace(Path.DirectorySeparatorChar, '/')
+                .Replace(Path.AltDirectorySeparatorChar, '/');
 
             var results = TraverseFromRootMatches(fileSystemRoot, rootedPattern, caseSensitive: true, emitFiles: true, emitDirectories: false);
             Assert.Contains(positiveMatch, results);
