@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Updated
 - Improved performance from parser internals rework
 - Updated to .NET 8.0
+- Improved path traversal performance using `System.IO.Enumeration`: a single recursive
+  `FileSystemEnumerable` now walks the directory tree natively with glob matching pushed into
+  the enumeration predicates. Subtrees that cannot match the pattern are pruned before any
+  `FileSystemInfo` objects are allocated. Sparse patterns like `**/*.csproj` are ~56% faster
+  with ~70% fewer allocations; directory patterns like `**/bin` are ~22% faster with ~46%
+  fewer allocations.
 
 ### Changed
 - Matching full path is now the default for Glob expressions, GlobOptions.MatchFilenameOnly

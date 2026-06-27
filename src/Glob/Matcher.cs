@@ -9,9 +9,12 @@ namespace GlobExpressions;
 internal static class Matcher
 {
     public static bool MatchesSegment(this DirectorySegment segment, string pathSegment, bool caseSensitive) =>
+        MatchesSegment(segment, pathSegment.AsSpan(), caseSensitive);
+
+    public static bool MatchesSegment(this DirectorySegment segment, ReadOnlySpan<char> pathSegment, bool caseSensitive) =>
         MatchesSubSegment(segment.SubSegments, 0, -1, pathSegment, 0, caseSensitive);
 
-    private static bool MatchesSubSegment(SubSegment[] segments, int segmentIndex, int literalSetIndex, string pathSegment, int pathIndex, bool caseSensitive)
+    private static bool MatchesSubSegment(SubSegment[] segments, int segmentIndex, int literalSetIndex, ReadOnlySpan<char> pathSegment, int pathIndex, bool caseSensitive)
     {
             var nextSegment = segmentIndex + 1;
             if (nextSegment > segments.Length)
@@ -67,6 +70,6 @@ internal static class Matcher
             }
         }
 
-    private static bool SubstringEquals(string segment, int segmentIndex, string search, bool caseSensitive) =>
-        string.Compare(segment, segmentIndex, search, 0, search.Length, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) == 0;
+    private static bool SubstringEquals(ReadOnlySpan<char> segment, int segmentIndex, string search, bool caseSensitive) =>
+        segment.Slice(segmentIndex, search.Length).Equals(search.AsSpan(), caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
 }
