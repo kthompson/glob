@@ -45,21 +45,21 @@ public class GlobExtensionTests
         }
 
     [Fact]
-    public void CanMatchInfoInFileSystemInfo()
+    public void CanMatchSrcInFileSystemInfo()
     {
             var root = new DirectoryInfo(SourceRoot);
-            var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*info");
+            var allSrcFilesAndFolders = root.GlobFileSystemInfos("**/*src");
 
-            Assert.True(allInfoFilesAndFolders.Any(), "There should be some 'allInfoFilesAndFolders'");
+            Assert.True(allSrcFilesAndFolders.Any(), "There should be some items named 'src'");
         }
 
     [Fact]
-    public void CanMatchInfoInFileSystemInfoCaseInsensitive()
+    public void CanMatchSrcInFileSystemInfoCaseInsensitive()
     {
             var root = new DirectoryInfo(SourceRoot);
-            var allInfoFilesAndFolders = root.GlobFileSystemInfos("**/*INFO", GlobOptions.CaseInsensitive);
+            var allSrcFilesAndFolders = root.GlobFileSystemInfos("**/*SRC", GlobOptions.CaseInsensitive);
 
-            Assert.True(allInfoFilesAndFolders.Any(), "There should be some 'allINFOFilesAndFolders'");
+            Assert.True(allSrcFilesAndFolders.Any(), "There should be some items named 'src'");
         }
 
     [Fact]
