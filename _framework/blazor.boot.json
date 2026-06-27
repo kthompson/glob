@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "GlobApp",
   "resources": {
-    "hash": "sha256-qQ8L5swpJGsC/E4rMgNGjlOgPnvEnRUBt0ZQkDV9Gno=",
+    "hash": "sha256-3UWwMZgpST1GZT3JUFbbtibMAUdv5IiKlTyEiRWpC7M=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-YDHEHpc+/PUWFYa9BMCN3EcVlpemjKD024swcpPfMIQ="
     },
@@ -18,8 +18,8 @@
     },
     "coreAssembly": {},
     "assembly": {
-      "Glob.wasm": "sha256-Bl3YNy2HZBWwwQGIWIxSOki8ZKIkC2n/Lgm4qfLOu1c=",
-      "GlobApp.wasm": "sha256-kMwYLJz/2mZG8XPUMn6Yw/AlMHLHL0MjTJVaaYHNfg4=",
+      "Glob.wasm": "sha256-+PygAshCwMUy8fEBXCPGEbF3+r3ioWm465vsIpJixa0=",
+      "GlobApp.wasm": "sha256-gooRdhrSZ0VDZvog17r5E7/Hj8MyEXKG52e1XD0zzOw=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-RAN3w/MlFiW5alU7HZ1DtupYEHOq9fd2uhQHgWia560=",
       "Microsoft.AspNetCore.Components.WebAssembly.wasm": "sha256-pA4vg4MPpEzLGtk/OW5ztYVKNUKZS7aS+QaT5uWRSXE=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-GZAHuKv4SAnKsZQo+yXFalCcyiKOJeAxAMbqbReBdyI=",
