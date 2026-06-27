@@ -45,11 +45,11 @@ Commit this change on `develop` (or a feature branch), then follow the normal re
 
 ## How versioning works
 
-| Branch | Version format | Example |
-|--------|---------------|---------|
-| `main` | `{major}.{minor}.{height}` | `2.0.42` |
-| `develop` | `{major}.{minor}.{height}-beta` | `2.0.42-beta` |
-| Feature branch | `{major}.{minor}.{height}-beta+{commitId}` | `2.0.42-beta+abc1234` |
+| Branch         | Version format                              | Example                  |
+|----------------|---------------------------------------------|--------------------------|
+| `main`         | `{major}.{minor}.{height}`                  | `2.0.42`                 |
+| `develop`      | `{major}.{minor}.{height}-beta`             | `2.0.42-beta`            |
+| Feature branch | `{major}.{minor}.{height}-beta+{commitId}`  | `2.0.42-beta+abc1234`    |
 
 The **height** is the number of commits since `version.json` was last changed on that branch. Only `main` (and `v*` branches) produce public release versions — all other branches produce prerelease packages.
 
